@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 D:\HKII_2025_2026\PhanTan\BaiTapLon\hotel_mariadb_ptan\src\main\java\iuh\app\MainApp.java
 D:\HKII_2025_2026\PhanTan\BaiTapLon\hotel_mariadb_ptan\src\main\java\iuh\db\JPAUtil.java
 D:\HKII_2025_2026\PhanTan\BaiTapLon\hotel_mariadb_ptan\src\main\java\iuh\entity\Ca.java
@@ -24,3 +25,28 @@ D:\HKII_2025_2026\PhanTan\BaiTapLon\hotel_mariadb_ptan\src\main\java\iuh\view\Th
 D:\HKII_2025_2026\PhanTan\BaiTapLon\hotel_mariadb_ptan\src\main\java\iuh\view\TrangChuPanel.java
 D:\HKII_2025_2026\PhanTan\BaiTapLon\hotel_mariadb_ptan\src\main\java\iuh\view\VictoryaDashboard.java
 D:\HKII_2025_2026\PhanTan\BaiTapLon\hotel_mariadb_ptan\src\main\java\iuh\view\VictoryaLogin.java
+=======
+E:\he-thong-quan-ly-khach-san-victorya-main\hotel_mariadb_ptan\src\main\java\iuh\app\MainApp.java
+E:\he-thong-quan-ly-khach-san-victorya-main\hotel_mariadb_ptan\src\main\java\iuh\db\JPAUtil.java
+E:\he-thong-quan-ly-khach-san-victorya-main\hotel_mariadb_ptan\src\main\java\iuh\entity\Ca.java
+E:\he-thong-quan-ly-khach-san-victorya-main\hotel_mariadb_ptan\src\main\java\iuh\entity\CaLamViecNhanVien.java
+E:\he-thong-quan-ly-khach-san-victorya-main\hotel_mariadb_ptan\src\main\java\iuh\entity\ChiTietHoaDon.java
+E:\he-thong-quan-ly-khach-san-victorya-main\hotel_mariadb_ptan\src\main\java\iuh\entity\ChiTietHoaDonDichVu.java
+E:\he-thong-quan-ly-khach-san-victorya-main\hotel_mariadb_ptan\src\main\java\iuh\entity\ChiTietPhieuDatPhong.java
+E:\he-thong-quan-ly-khach-san-victorya-main\hotel_mariadb_ptan\src\main\java\iuh\entity\DichVu.java
+E:\he-thong-quan-ly-khach-san-victorya-main\hotel_mariadb_ptan\src\main\java\iuh\entity\HoaDon.java
+E:\he-thong-quan-ly-khach-san-victorya-main\hotel_mariadb_ptan\src\main\java\iuh\entity\HuyPhong.java
+E:\he-thong-quan-ly-khach-san-victorya-main\hotel_mariadb_ptan\src\main\java\iuh\entity\KhachHang.java
+E:\he-thong-quan-ly-khach-san-victorya-main\hotel_mariadb_ptan\src\main\java\iuh\entity\KhuyenMai.java
+E:\he-thong-quan-ly-khach-san-victorya-main\hotel_mariadb_ptan\src\main\java\iuh\entity\LoaiDatPhong.java
+E:\he-thong-quan-ly-khach-san-victorya-main\hotel_mariadb_ptan\src\main\java\iuh\entity\LoaiPhong.java
+E:\he-thong-quan-ly-khach-san-victorya-main\hotel_mariadb_ptan\src\main\java\iuh\entity\NhanVien.java
+E:\he-thong-quan-ly-khach-san-victorya-main\hotel_mariadb_ptan\src\main\java\iuh\entity\PhieuDatPhong.java
+E:\he-thong-quan-ly-khach-san-victorya-main\hotel_mariadb_ptan\src\main\java\iuh\entity\Phong.java
+E:\he-thong-quan-ly-khach-san-victorya-main\hotel_mariadb_ptan\src\main\java\iuh\entity\TaiKhoan.java
+E:\he-thong-quan-ly-khach-san-victorya-main\hotel_mariadb_ptan\src\main\java\iuh\Main.java
+E:\he-thong-quan-ly-khach-san-victorya-main\hotel_mariadb_ptan\src\main\java\iuh\repository\KhachHangRepository.java
+E:\he-thong-quan-ly-khach-san-victorya-main\hotel_mariadb_ptan\src\main\java\iuh\view\ThongKePanel.java
+E:\he-thong-quan-ly-khach-san-victorya-main\hotel_mariadb_ptan\src\main\java\iuh\view\VictoryaDashboard.java
+E:\he-thong-quan-ly-khach-san-victorya-main\hotel_mariadb_ptan\src\main\java\iuh\view\VictoryaLogin.java
+>>>>>>> 3670e2a4040a11270f132fec10dcdfa1a804d3b9
