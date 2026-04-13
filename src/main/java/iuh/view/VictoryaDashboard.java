@@ -105,7 +105,7 @@ public class VictoryaDashboard extends JFrame {
         sidebar.add(navRow(NavIcon.TRANG_CHU, "Trang chủ", 0, true, "trangchu"));
         // Phòng expand group
         sidebar.add(buildPhongGroup(sidebar));
-        sidebar.add(navRow(NavIcon.KHUYEN_MAI, "Khuyến Mãi", 0, false, null));
+        sidebar.add(navRow(NavIcon.KHUYEN_MAI, "Khuyến Mãi", 0, false, "quanlykhuyenmai"));
         sidebar.add(navRow(NavIcon.THONG_KE, "Thống Kê", 0, false, "thongke"));
         sidebar.add(navRow(NavIcon.CA_LAM_VIEC, "Ca làm việc", 0, false, null));
         sidebar.add(navRow(NavIcon.TAI_KHOAN, "Tài Khoản", 0, false, null));
