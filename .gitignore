@@ -1,4 +1,0 @@
-git rm -r --cached target
-git add .
-git commit -m "add gitignore and remove target"
-git push
