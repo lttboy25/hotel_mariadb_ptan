@@ -220,6 +220,9 @@ public class VictoryaLogin extends JFrame {
         forgotLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         forgotLink.setAlignmentX(Component.LEFT_ALIGNMENT);
         forgotLink.addMouseListener(new MouseAdapter() {
+            @Override public void mouseClicked(MouseEvent e) {
+                new QuenMatKhauFrame();
+            }
             @Override public void mouseEntered(MouseEvent e) {
                 forgotLink.setForeground(BLUE_DARK);
             }

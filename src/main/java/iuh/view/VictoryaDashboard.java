@@ -60,6 +60,13 @@ public class VictoryaDashboard extends JFrame {
         contentCards.add(new HuyPhongPanel(), "huyphong");
         contentCards.add(new DoiPhongPanel(), "doiphong");
         contentCards.add(new TaiKhoanPanel(), "taikhoan");
+        contentCards.add(new QuanLyKhachHangPanel(), "quanlykhachhang");
+        contentCards.add(new QuanLyNhanVienPanel(), "quanlynhanvien");
+        contentCards.add(new QuanLyDichVuPanel(), "quanlydichvu");
+        contentCards.add(new QuanLyHoaDonPanel(), "quanlyhoadon");
+        contentCards.add(new QuanLyKhuyenMaiPanel(), "quanlykhuyenmai");
+        contentCards.add(new GiaHanPhongPanel(), "giahanphong");
+
 
         // Sidebar (built after contentCards so it can reference it)
         JPanel sidebar = buildSidebar();
@@ -99,14 +106,14 @@ public class VictoryaDashboard extends JFrame {
         sidebar.add(navRow(NavIcon.TRANG_CHU,  "Trang chủ",         0, true,  "trangchu"));
         // Phòng expand group
         sidebar.add(buildPhongGroup(sidebar));
-        sidebar.add(navRow(NavIcon.KHUYEN_MAI, "Khuyến Mãi",        0, false, null));
+        sidebar.add(navRow(NavIcon.KHUYEN_MAI, "Khuyến Mãi",        0, false, "quanlykhuyenmai"));
         sidebar.add(navRow(NavIcon.THONG_KE,   "Thống Kê",          0, false, "thongke"));
         sidebar.add(navRow(NavIcon.CA_LAM_VIEC,"Ca làm việc",       0, false, null));
         sidebar.add(navRow(NavIcon.TAI_KHOAN,  "Tài Khoản",         0, false, "taikhoan"));
-        sidebar.add(navRow(NavIcon.KHACH_HANG, "Quản lý Khách hàng", 0, false, null));
-        sidebar.add(navRow(NavIcon.NHAN_VIEN,  "Quản lý nhân viên", 0, false, null));
-        sidebar.add(navRow(NavIcon.DICH_VU,    "Quản lý dịch vụ",   0, false, null));
-        sidebar.add(navRow(NavIcon.HOA_DON,    "Quản lý hóa đơn",   0, false, null));
+        sidebar.add(navRow(NavIcon.KHACH_HANG, "Quản lý Khách hàng", 0, false, "quanlykhachhang"));
+        sidebar.add(navRow(NavIcon.NHAN_VIEN,  "Quản lý nhân viên", 0, false, "quanlynhanvien"));
+        sidebar.add(navRow(NavIcon.DICH_VU,    "Quản lý dịch vụ",   0, false, "quanlydichvu"));
+        sidebar.add(navRow(NavIcon.HOA_DON,    "Quản lý hóa đơn",   0, false, "quanlyhoadon"));
 
         sidebar.add(Box.createVerticalGlue());
         sidebar.add(navRow(NavIcon.CAU_HINH, "Cấu hình hệ thống", 0, false, null));
@@ -128,7 +135,7 @@ public class VictoryaDashboard extends JFrame {
         // Child rows (initially hidden)
         Object[][] children = {
                 {NavIcon.DAT_PHONG, "Đặt Phòng",     "datphong"},
-                {NavIcon.GIA_HAN,   "Gia Hạn Phòng", null},
+                {NavIcon.GIA_HAN,   "Gia Hạn Phòng", "giahanphong"},
                 {NavIcon.HUY_PHONG, "Hủy Phòng",     "huyphong"},
                 {NavIcon.DAT_PHONG, "Đổi phòng",     "doiphong"},
         };
