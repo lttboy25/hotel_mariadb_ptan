@@ -1,37 +1,32 @@
 package iuh.entity;
 
-import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.*;
 
+import java.time.LocalDate;
+import java.util.Set;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Getter
+@Setter
+@ToString(exclude = {"caLamViecNhanViens"})
+
+@Entity
+@Table(name = "cas")
 public class Ca {
+    @Id
     private String maCa;
     private LocalDate ngayBatDau;
     private LocalDate ngayKetThuc;
-    
-    public Ca(String maCa, LocalDate ngayBatDau, LocalDate ngayKetThuc) {
-        this.maCa = maCa;
-        this.ngayBatDau = ngayBatDau;
-        this.ngayKetThuc = ngayKetThuc;
-    }
 
-    public String getMaCa() {
-        return maCa;
-    }
+    @OneToMany(mappedBy = "ca")
+    @JsonIgnore
+    private Set<CaLamViecNhanVien> caLamViecNhanViens;
 
-    public LocalDate getNgayBatDau() {
-        return ngayBatDau;
-    }
-
-    public LocalDate getNgayKetThuc() {
-        return ngayKetThuc;
-    }
-
-    public void setNgayBatDau(LocalDate ngayBatDau) {
-        this.ngayBatDau = ngayBatDau;
-    }
-
-    public void setNgayKetThuc(LocalDate ngayKetThuc) {
-        this.ngayKetThuc = ngayKetThuc;
-    }
-
-    
 }
