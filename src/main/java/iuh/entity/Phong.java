@@ -1,95 +1,45 @@
 package iuh.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-
-public class    Phong {
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "Phong")
+public class Phong {
+    @Id
+    @Column(name = "maPhong")
     private String maPhong;
+
+    @Column(name = "soPhong")
     private String soPhong;
+
+    @ManyToOne
+    @JoinColumn(name = "maLoaiPhong")
     private LoaiPhong loaiPhong;
+
+    @Column(name = "trangThai")
     private String trangThai;
+
+    @Column(name = "tang")
     private int tang;
+
+    @Column(name = "tinhTrang")
     private String tinhTrang;
+
+    @Column(name = "moTa")
     private String moTa;
 
-    public String getMoTa() {
-        return moTa;
-    }
-
-    public void setMoTa(String moTa) {
-        this.moTa = moTa;
-    }
-
-    public Phong(String maPhong, String soPhong, LoaiPhong loaiPhong, String trangThai, int tang) {
-        this.maPhong = maPhong;
-        this.soPhong = soPhong;
-        this.loaiPhong = loaiPhong;
-        this.trangThai = trangThai;
-        this.tang = tang;
-    }
-
-
-    public Phong(LoaiPhong loaiPhong, String maPhong, String moTa, String soPhong, int tang, String tinhTrang, String trangThai) {
-        this.loaiPhong = loaiPhong;
-        this.maPhong = maPhong;
-        this.moTa = moTa;
-        this.soPhong = soPhong;
-        this.tang = tang;
-        this.tinhTrang = tinhTrang;
-        this.trangThai = trangThai;
-    }
-
-    public Phong(String maPhong) {
-        this.maPhong = maPhong;
-    }
-
-    public void setSoPhong(String soPhong) {
-        this.soPhong = soPhong;
-    }
-
-    public void setLoaiPhong(LoaiPhong loaiPhong) {
-        this.loaiPhong = loaiPhong;
-    }
-
-    public void setTrangThai(String trangThai) {
-        this.trangThai = trangThai;
-    }
-
-    public String getMaPhong() {
-        return maPhong;
-    }
-
-    public String getSoPhong() {
-        return soPhong;
-    }
-
-    public LoaiPhong getLoaiPhong() {
-        return loaiPhong;
-    }
-
-    public String getTrangThai() {
-        return trangThai;
-    }
-
-    public int getTang() {
-        return tang;
-    }
-
-    public void setTang(int tang) {
-        this.tang = tang;
-    }
-
-
-
-
-    public String getTinhTrang() {
-        return tinhTrang;
-    }
-
-
-
-    public void setTinhTrang(String tinhTrang) {
-        this.tinhTrang = tinhTrang;
-    }
-
-    
 }

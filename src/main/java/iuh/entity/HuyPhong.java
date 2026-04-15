@@ -2,72 +2,40 @@ package iuh.entity;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Data
+@Entity
+@Table(name = "HuyPhong")
 public class HuyPhong {
-
+    @Id
     private int maHuyPhong;
-    private String maPhieuDatPhong;
-    private String maPhong;
+
+    @ManyToOne
+    @JoinColumn(name = "maPhieuDatPhong")
+    private PhieuDatPhong phieuDatPhong;
+
+    @ManyToOne
+    @JoinColumn(name = "maPhong")
+    private Phong phong;
+
+    @Column(name = "lyDo")
     private String lyDo;
+
+    @Column(name = "ngayHuy")
     private LocalDateTime ngayHuy;
 
-    public HuyPhong() {
-    }
-
-    public HuyPhong(int maHuyPhong, String maPhieuDatPhong, String maPhong, String lyDo, LocalDateTime ngayHuy) {
-        this.maHuyPhong = maHuyPhong;
-        this.maPhieuDatPhong = maPhieuDatPhong;
-        this.maPhong = maPhong;
-        this.lyDo = lyDo;
-        this.ngayHuy = ngayHuy;
-    }
-    public int getMaHuyPhong() {
-        return maHuyPhong;
-    }
-
-    public void setMaHuyPhong(int maHuyPhong) {
-        this.maHuyPhong = maHuyPhong;
-    }
-
-    public String getMaPhieuDatPhong() {
-        return maPhieuDatPhong;
-    }
-
-    public void setMaPhieuDatPhong(String maPhieuDatPhong) {
-        this.maPhieuDatPhong = maPhieuDatPhong;
-    }
-
-    public String getMaPhong() {
-        return maPhong;
-    }
-
-    public void setMaPhong(String maPhong) {
-        this.maPhong = maPhong;
-    }
-
-    public String getLyDo() {
-        return lyDo;
-    }
-
-    public void setLyDo(String lyDo) {
-        this.lyDo = lyDo;
-    }
-
-    public LocalDateTime getNgayHuy() {
-        return ngayHuy;
-    }
-
-    public void setNgayHuy(LocalDateTime ngayHuy) {
-        this.ngayHuy = ngayHuy;
-    }
-
-    @Override
-    public String toString() {
-        return "HuyPhong{" +
-                "maHuyPhong=" + maHuyPhong +
-                ", maPhieuDatPhong='" + maPhieuDatPhong + '\'' +
-                ", lyDo='" + lyDo + '\'' +
-                ", ngayHuy=" + ngayHuy +
-                '}';
-    }
 }
