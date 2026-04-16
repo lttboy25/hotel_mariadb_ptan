@@ -1,157 +1,66 @@
 package iuh.entity;
 
-import java.time.LocalDate;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Table(name = "NhanVien")
+@Entity
 public class NhanVien {
+
+    @Id
+    @EqualsAndHashCode.Include
+    @Column(name = "maNhanVien", nullable = false, length = 20)
     private String maNhanVien;
+
+    @Column(name = "CCCD", length = 12)
     private String CCCD;
+
+    @Column(name = "tenNhanVien", nullable = false, length = 100)
     private String tenNhanVien;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tenDangNhap", unique = true)
     private TaiKhoan taiKhoan;
+
+    @Column(name = "gioiTinh")
     private boolean gioiTinh;
+
+    @Column(name = "ngaySinh")
     private LocalDate ngaySinh;
+
+    @Column(name = "email", length = 100)
     private String email;
+
+    @Column(name = "soDienThoai", length = 20)
     private String soDienThoai;
+
+    @Column(name = "ngayBatDau")
     private LocalDate ngayBatDau;
+
+    @Column(name = "trangThai", length = 50)
     private String trangThai;
+
+    @Column(name = "diaChi", length = 255)
     private String diaChi;
 
-    public NhanVien(String maNhanVien, String cCCD, String tenNhanVien, TaiKhoan taiKhoan, boolean gioiTinh,
-            LocalDate ngaySinh, String email, String soDienThoai, LocalDate ngayBatDau, String trangThai,
-            String diaChi) {
-        this.maNhanVien = maNhanVien;
-        CCCD = cCCD;
-        this.tenNhanVien = tenNhanVien;
-        this.taiKhoan = taiKhoan;
-        this.gioiTinh = gioiTinh;
-        this.ngaySinh = ngaySinh;
-        this.email = email;
-        this.soDienThoai = soDienThoai;
-        this.ngayBatDau = ngayBatDau;
-        this.trangThai = trangThai;
-        this.diaChi = diaChi;
-    }
+    @OneToMany(mappedBy = "nhanVien")
+    private Set<CaLamViecNhanVien> caLamViecNhanViens = new HashSet<>();
 
-    public NhanVien() {
-        // TODO Auto-generated constructor stub
-    }
-
-    public NhanVien(String maNV, String ten, TaiKhoan tk, Boolean gioiTinh2, LocalDate ngaySinh2, String email2,
-            String soDienThoai2, LocalDate ngayBatDau2) {
-        this.maNhanVien = maNV;
-        this.tenNhanVien = ten;
-        this.taiKhoan = tk;
-        this.gioiTinh = gioiTinh2 != null ? gioiTinh2 : false;
-        this.ngaySinh = ngaySinh2;
-        this.email = email2;
-        this.soDienThoai = soDienThoai2;
-        this.ngayBatDau = ngayBatDau2;
-    }
-
-    public NhanVien(String tenNV, TaiKhoan tk, boolean gioiTinhValue, LocalDate ngaySinh2, String email2,
-            String soDienThoai2, String cccd2, String diaChi2) {
-        this.tenNhanVien = tenNV;
-        this.taiKhoan = tk;
-        this.gioiTinh = gioiTinhValue;
-        this.ngaySinh = ngaySinh2;
-        this.email = email2;
-        this.soDienThoai = soDienThoai2;
-        this.CCCD = cccd2;
-        this.diaChi = diaChi2;
-    }
-
-    public void setMaNhanVien(String maNhanVien) {
-        this.maNhanVien = maNhanVien;
-    }
-
-    public NhanVien(String email) {
-        this.email = email;
-    }
-
-    public String getMaNhanVien() {
-        return maNhanVien;
-    }
-
-    public String getTenNhanVien() {
-        return tenNhanVien;
-    }
-
-    public TaiKhoan getTaiKhoan() {
-        return taiKhoan;
-    }
-
-    public boolean isGioiTinh() {
-        return gioiTinh;
-    }
-
-    public LocalDate getNgaySinh() {
-        return ngaySinh;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getSoDienThoai() {
-        return soDienThoai;
-    }
-
-    public boolean getGioiTinh() {
-        return gioiTinh;
-    }
-
-    public LocalDate getNgayBatDau() {
-        return ngayBatDau;
-    }
-
-    public void setTenNhanVien(String tenNhanVien) {
-        this.tenNhanVien = tenNhanVien;
-    }
-
-    public void setTaiKhoan(TaiKhoan taiKhoan) {
-        this.taiKhoan = taiKhoan;
-    }
-
-    public void setGioiTinh(boolean gioiTinh) {
-        this.gioiTinh = gioiTinh;
-    }
-
-    public void setNgaySinh(LocalDate ngaySinh) {
-        this.ngaySinh = ngaySinh;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setSoDienThoai(String soDienThoai) {
-        this.soDienThoai = soDienThoai;
-    }
-
-    public void setNgayBatDau(LocalDate ngayBatDau) {
-        this.ngayBatDau = ngayBatDau;
-    }
-
-    public String getTrangThai() {
-        return trangThai;
-    }
-
-    public void setTrangThai(String trangThai) {
-        this.trangThai = trangThai;
-    }
-
-    public String getCCCD() {
-        return CCCD;
-    }
-
-    public void setCCCD(String cCCD) {
-        CCCD = cCCD;
-    }
-
-    public String getDiaChi() {
-        return diaChi;
-    }
-
-    public void setDiaChi(String diaChi) {
-        this.diaChi = diaChi;
-    }
+    @OneToMany(mappedBy = "nhanVien", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<HoaDon> hoaDons = new HashSet<>();
 }

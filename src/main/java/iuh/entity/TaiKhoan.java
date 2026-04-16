@@ -1,55 +1,38 @@
 package iuh.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Entity
+@Table(name = "TaiKhoan")
 public class TaiKhoan {
+
+    @Id
+    @EqualsAndHashCode.Include
+    @Column(name = "tenDangNhap", nullable = false, length = 50)
     private String tenDangNhap;
+
+    @Column(name = "matKhau", nullable = false, length = 100)
     private String matKhau;
+
+    @Column(name = "vaiTro", nullable = false, length = 50)
     private String vaiTro;
 
-    public TaiKhoan(String tenDangNhap, String matKhau, String vaiTro) {
-        this.tenDangNhap = tenDangNhap;
-        this.matKhau = matKhau;
-        this.vaiTro = vaiTro;
-    }
-
-    public TaiKhoan(String tenDangNhap, String vaiTro) {
-        this.tenDangNhap = tenDangNhap;
-        this.vaiTro = vaiTro;
-    }
-
-    public TaiKhoan(String email) {
-        // TODO Auto-generated constructor stub
-    }
-
-    public String getTenDangNhap() {
-        return tenDangNhap;
-    }
-
-    public void settenDangNhap(String tenDangNhap) {
-        this.tenDangNhap = tenDangNhap;
-    }
-
-    public String getMatKhau() {
-        return matKhau;
-    }
-
-    public void setMatKhau(String matKhau) {
-        this.matKhau = matKhau;
-    }
-
-    public String getVaiTro() {
-        if (vaiTro == null)
-            return "Không xác định";
-
-        if (vaiTro.equalsIgnoreCase("employee"))
-            return "Nhân viên";
-        else if (vaiTro.equalsIgnoreCase("admin"))
-            return "Quản lý";
-        else
-            return vaiTro;
-    }
-
-    public void setVaiTro(String vaiTro) {
-        this.vaiTro = vaiTro;
-    }
-
+    @OneToOne(mappedBy = "taiKhoan")
+    private NhanVien nhanVien;
 }

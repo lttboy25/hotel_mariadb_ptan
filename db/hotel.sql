@@ -29,7 +29,7 @@ CREATE TABLE NhanVien (
     email VARCHAR(100),
     soDienThoai VARCHAR(20),
     ngayBatDau DATE DEFAULT (CURRENT_DATE),
-    tenDangNhap VARCHAR(50),
+    tenDangNhap VARCHAR(50) UNIQUE,
     trangThai VARCHAR(50) DEFAULT 'Đang làm việc',
     diaChi VARCHAR(255),
     CONSTRAINT FK_NhanVien_TaiKhoan FOREIGN KEY (tenDangNhap) REFERENCES TaiKhoan(tenDangNhap)

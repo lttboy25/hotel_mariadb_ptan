@@ -1,16 +1,23 @@
 package iuh.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Getter
+@Setter
+
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "KhachHang")
 public class KhachHang {
     @Id
+    @EqualsAndHashCode.Include
     @Column(name = "maKhachHang", nullable = false, length = 20)
     private String maKhachHang;
 
@@ -29,76 +36,9 @@ public class KhachHang {
     @Column(name = "ngayTao")
     private LocalDate ngayTao;
 
-    public KhachHang() {
-    }
+    @OneToMany(mappedBy = "khachHang")
+    List<HoaDon> hoaDon;
 
-    public KhachHang(String maKhachHang) {
-        this.maKhachHang = maKhachHang;
-    }
 
-    public KhachHang(String maKhachHang, String CCCD, String tenKhachHang, String soDienThoai, String email,
-            LocalDate ngayTao) {
-        this.maKhachHang = maKhachHang;
-        this.CCCD = CCCD;
-        this.tenKhachHang = tenKhachHang;
-        this.soDienThoai = soDienThoai;
-        this.email = email;
-        this.ngayTao = ngayTao;
-    }
 
-    public KhachHang(String maKhachHang, String CCCD, String tenKhachHang, String soDienThoai, String email) {
-        this.maKhachHang = maKhachHang;
-        this.CCCD = CCCD;
-        this.tenKhachHang = tenKhachHang;
-        this.soDienThoai = soDienThoai;
-        this.email = email;
-    }
-
-    public String getMaKhachHang() {
-        return maKhachHang;
-    }
-
-    public void setMaKhachHang(String maKhachHang) {
-        this.maKhachHang = maKhachHang;
-    }
-
-    public String getCCCD() {
-        return CCCD;
-    }
-
-    public void setCCCD(String CCCD) {
-        this.CCCD = CCCD;
-    }
-
-    public String getTenKhachHang() {
-        return tenKhachHang;
-    }
-
-    public void setTenKhachHang(String tenKhachHang) {
-        this.tenKhachHang = tenKhachHang;
-    }
-
-    public String getSoDienThoai() {
-        return soDienThoai;
-    }
-
-    public void setSoDienThoai(String soDienThoai) {
-        this.soDienThoai = soDienThoai;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public LocalDate getNgayTao() {
-        return ngayTao;
-    }
-
-    public void setNgayTao(LocalDate ngayTao) {
-        this.ngayTao = ngayTao;
-    }
 }
