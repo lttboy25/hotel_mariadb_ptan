@@ -7,10 +7,12 @@
     <persistence-unit name="mariadb-pu">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-        <class>iuh.entity.TaiKhoan</class>
-        <class>iuh.entity.NhanVien</class>
-        <class>iuh.entity.Phong</class>
+        <class>iuh.entity.Ca</class>
+        <class>iuh.entity.CaLamViecNhanVien</class>
         <class>iuh.entity.KhachHang</class>
+        <class>iuh.entity.LoaiPhong</class>
+        <class>iuh.entity.Phong</class>
+
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver" />
 
