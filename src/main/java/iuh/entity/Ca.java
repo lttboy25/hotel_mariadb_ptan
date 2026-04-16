@@ -16,11 +16,13 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString(exclude = {"caLamViecNhanViens"})
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 
 @Entity
 @Table(name = "cas")
 public class Ca {
     @Id
+    @EqualsAndHashCode.Include
     private String maCa;
     private LocalDate ngayBatDau;
     private LocalDate ngayKetThuc;

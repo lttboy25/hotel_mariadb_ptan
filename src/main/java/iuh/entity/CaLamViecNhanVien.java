@@ -12,11 +12,13 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString(exclude = {"ca"})
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 
 @Entity
 @Table(name = "caLamViecNhanViens")
 public class CaLamViecNhanVien {
     @Id
+    @EqualsAndHashCode.Include
     private String maCaLamViec;
     private String tenCaLamViec;
     private LocalDateTime thoiGianBatDau;
