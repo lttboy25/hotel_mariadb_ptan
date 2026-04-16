@@ -236,3 +236,17 @@ INSERT INTO LoaiPhong (maLoaiPhong, tenLoaiPhong, gia, soNguoiLonToiDa, soTreEmT
 INSERT INTO Phong (maPhong, soPhong, trangThai, maLoaiPhong, tang, tinhTrang) VALUES
 ('P-0001', '101', 'Trống', 'LP01', 1, 'Tốt'),
 ('P-0002', '102', 'Trống', 'LP02', 1, 'Tốt');
+
+INSERT INTO KhuyenMai (
+    maKhuyenMai,
+    tenKhuyenMai,
+    ngayBatDau,
+    ngayKetThuc,
+    trangThai,
+    heSo,
+    tongTienToiThieu,
+    tongKhuyenMaiToiDa
+) VALUES
+('KM001', 'Giảm 10% mùa hè', '2026-06-01 00:00:00', '2026-08-31 23:59:59', 'CHUA_AP_DUNG', 0.10, 500000, 200000),
+('KM002', 'Ưu đãi cuối tuần', '2026-04-01 00:00:00', '2026-12-31 23:59:59', 'DANG_AP_DUNG', 0.15, 1000000, 300000),
+('KM003', 'Khuyến mãi năm cũ', '2025-01-01 00:00:00', '2025-12-31 23:59:59', 'KET_THUC', 0.20, 1500000, 500000);

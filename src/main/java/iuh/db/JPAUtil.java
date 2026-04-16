@@ -15,26 +15,33 @@ package iuh.db;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
+import org.hibernate.jpa.HibernatePersistenceProvider;
 
 public class JPAUtil {
 
-    private static final String PERSISTENCE_UNIT_NAME="mariadb-pu";
-    private static EntityManagerFactory factory;
+    private static final String PERSISTENCE_UNIT_NAME = "mariadb-pu";
+    private static volatile EntityManagerFactory factory;
 
-    static{
-        try{
-            factory= Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-
-        }
+    private JPAUtil() {
     }
+
     public static EntityManagerFactory getFactory() {
+        if (factory == null) {
+            synchronized (JPAUtil.class) {
+                if (factory == null) {
+                    factory = new HibernatePersistenceProvider()
+                            .createEntityManagerFactory(PERSISTENCE_UNIT_NAME, null);
+                    if (factory == null) {
+                        throw new IllegalStateException("Không thể khởi tạo EntityManagerFactory cho persistence unit: " + PERSISTENCE_UNIT_NAME);
+                    }
+                }
+            }
+        }
         return factory;
     }
-        public static EntityManager getEntityManager(){
-            return factory.createEntityManager();
+
+    public static EntityManager getEntityManager(){
+            return getFactory().createEntityManager();
     }
 
 }
