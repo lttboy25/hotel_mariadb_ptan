@@ -1,5 +1,8 @@
 package iuh.entity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +14,9 @@ public class PhieuDatPhong {
     private List<ChiTietPhieuDatPhong> dsachPhieuDatPhong = new ArrayList<>();
     private String trangThai;
     private long tienDatCoc;
+
+//    @OneToOne(mappedBy = "phieuDatPhong")
+//    private HuyPhong huyPhong;
 
     public PhieuDatPhong(String maPhieuDatPhong, KhachHang khachHang, LocalDate ngayTao,
             List<ChiTietPhieuDatPhong> dsachPhieuDatPhong) {

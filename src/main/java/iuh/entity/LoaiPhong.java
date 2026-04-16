@@ -10,14 +10,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
 @Builder
@@ -30,6 +29,7 @@ public class LoaiPhong {
     @Id
 
     @Column(name = "maLoaiPhong")
+    @EqualsAndHashCode.Include
     private String maLoaiPhong;
 
     @Column(name = "tenLoaiPhong")

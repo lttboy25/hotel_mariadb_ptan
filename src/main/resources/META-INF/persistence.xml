@@ -12,6 +12,7 @@
         <class>iuh.entity.KhachHang</class>
         <class>iuh.entity.LoaiPhong</class>
         <class>iuh.entity.Phong</class>
+        <class>iuh.entity.HuyPhong</class>
         <class>iuh.entity.HoaDon</class>
         <class>iuh.entity.KhuyenMai</class>
         <class>iuh.entity.NhanVien</class>

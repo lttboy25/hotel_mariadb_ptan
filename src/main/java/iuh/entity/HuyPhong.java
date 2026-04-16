@@ -2,16 +2,11 @@ package iuh.entity;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
@@ -22,11 +17,10 @@ import lombok.NoArgsConstructor;
 @Table(name = "HuyPhong")
 public class HuyPhong {
     @Id
+    @EqualsAndHashCode.Include
     private int maHuyPhong;
 
-    @ManyToOne
-    @JoinColumn(name = "maPhieuDatPhong")
-    private PhieuDatPhong phieuDatPhong;
+//    private PhieuDatPhong phieuDatPhong;
 
     @ManyToOne
     @JoinColumn(name = "maPhong")

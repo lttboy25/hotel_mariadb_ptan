@@ -9,6 +9,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -21,6 +22,7 @@ import lombok.ToString;
 public class Phong {
     @Id
     @Column(name = "maPhong")
+    @EqualsAndHashCode.Include
     private String maPhong;
 
     @Column(name = "soPhong")
