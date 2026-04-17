@@ -14,17 +14,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 @Entity
-@Table(name = "HuyPhong")
-public class HuyPhong {
+@Table(name = "PhieuHuyPhong")
+public class PhieuHuyPhong {
     @Id
     @EqualsAndHashCode.Include
-    private int maHuyPhong;
+    private Long maHuyPhong;
 
-//    private PhieuDatPhong phieuDatPhong;
-
-    @ManyToOne
-    @JoinColumn(name = "maPhong")
-    private Phong phong;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chiTietId", unique = true)
+    private ChiTietPhieuDatPhong chiTietPhieuDatPhong;
 
     @Column(name = "lyDo")
     private String lyDo;
