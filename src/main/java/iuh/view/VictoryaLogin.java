@@ -59,9 +59,8 @@ public class VictoryaLogin extends JFrame {
         setVisible(true);
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // City illustration panel (left side)
-    // ─────────────────────────────────────────────────────────────────────────
+
+
     static class CityPanel extends JPanel {
         CityPanel() {
             setOpaque(false);
@@ -168,10 +167,6 @@ public class VictoryaLogin extends JFrame {
             }
         }
     }
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Right login panel
-    // ─────────────────────────────────────────────────────────────────────────
     private JPanel createRightPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(BG_WHITE);
