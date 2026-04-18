@@ -53,6 +53,6 @@ public class LoaiPhong {
 
     @Override
     public String toString() {
-        return (tenLoaiPhong != null && !tenLoaiPhong.isBlank()) ? tenLoaiPhong : maLoaiPhong;
+        return this.getTenLoaiPhong();
     }
 }

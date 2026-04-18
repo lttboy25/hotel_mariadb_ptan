@@ -20,4 +20,24 @@ public class PhongService {
     public List<Phong> getRoomByKeyword(String keyword) {
         return phongDao.findByKeyword(keyword);
     }
+
+    public Phong createPhong(Phong phong) {
+        return phongDao.save(phong);
+    }
+
+    public Phong updatePhong(Phong phong) {
+        return phongDao.updateRoom(phong);
+    }
+
+    public boolean deletePhong(String maPhong) {
+        return phongDao.deleteRoom(maPhong);
+    }
+
+    public boolean checkNull(Phong phong) {
+        if (phong.getTang() == 0 || phong.getLoaiPhong() == null || phong.getTinhTrang() == null
+                || phong.getTrangThai() == null) {
+            return false;
+        }
+        return true;
+    }
 }

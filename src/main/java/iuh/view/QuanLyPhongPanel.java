@@ -1,6 +1,8 @@
 package iuh.view;
 
+import iuh.entity.LoaiPhong;
 import iuh.entity.Phong;
+import iuh.service.LoaiPhongService;
 import iuh.service.PhongService;
 
 import javax.swing.*;
@@ -38,6 +40,7 @@ public class QuanLyPhongPanel extends JPanel {
     private static final String SEARCH_PLACEHOLDER = "Tìm theo mã phòng, số phòng, loại...";
 
     private final PhongService phongService = new PhongService();
+    private final LoaiPhongService loaiPhongService = new LoaiPhongService();
 
     private DefaultTableModel tableModel;
     private JTable table;
@@ -371,10 +374,11 @@ class PhongModal extends JDialog {
     private JTextField tfMa;
     private JTextField tfSo;
     private JComboBox<Integer> cbTang;
-    private JComboBox<String> cbLoaiPhong;
+    private JComboBox<LoaiPhong> cbLoaiPhong;
     private JTextField tfMoTa;
     private JComboBox<String> cbTinhTrang;
     private JComboBox<String> cbTrangThai;
+    private LoaiPhongService loaiPhongService = new LoaiPhongService();
 
     PhongModal(JFrame owner, Phong phong, boolean isNew, Runnable onChanged) {
         super(owner, isNew ? "Thêm phòng" : "Chi tiết phòng", true);
@@ -449,15 +453,18 @@ class PhongModal extends JDialog {
         g.weighty = 0;
         g.weightx = 0.5;
 
-        tfMa = field(current.getMaPhong(), isNew);
-        tfSo = field(current.getSoPhong(), true);
+        tfMa = field(current.getMaPhong(), false);
+        tfSo = field(current.getSoPhong(), false);
 
         cbTang = new JComboBox<>(new Integer[] { 1, 2, 3, 4, 5 });
         styleCombo(cbTang);
         if (!isNew)
             cbTang.setSelectedItem(current.getTang());
 
-        cbLoaiPhong = new JComboBox<>(new String[] { "LP001 – Standard", "LP002 – Deluxe", "LP003 – VIP" });
+        cbLoaiPhong = new JComboBox<>();
+        for (LoaiPhong lp : loaiPhongService.getAll()) {
+            cbLoaiPhong.addItem(lp);
+        }
         styleCombo(cbLoaiPhong);
 
         tfMoTa = field(current.getMoTa(), true);
@@ -574,9 +581,30 @@ class PhongModal extends JDialog {
         return f;
     }
 
+    public Phong getThisForm() {
+        int tang = (Integer) cbTang.getSelectedItem();
+        LoaiPhong loaiPhong = (LoaiPhong) cbLoaiPhong.getSelectedItem();
+        String moTa = tfMoTa.getText();
+        String tinhTrang = cbTinhTrang.getSelectedItem().toString();
+        String trangThai = cbTrangThai.getSelectedItem().toString();
+
+        Phong phongMoi = Phong.builder()
+                .tang(tang)
+                .moTa(moTa)
+                .loaiPhong(loaiPhong)
+                .tinhTrang(tinhTrang)
+                .trangThai(trangThai)
+                .build();
+        if (phongService.checkNull(phongMoi)) {
+            return phongMoi;
+        }
+        return null;
+    }
+
     private void onSave() {
         try {
-            // TODO: Validate and save
+            Phong phongMoi = getThisForm();
+            phongService.createPhong(phongMoi);
             JOptionPane.showMessageDialog(this, "Đã thêm phòng.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             if (onChanged != null)
                 onChanged.run();
@@ -588,6 +616,13 @@ class PhongModal extends JDialog {
 
     private void onUpdate() {
         try {
+            String maPhong = tfMa.getText().trim();
+            String soPhong = tfSo.getText().trim();
+            Phong phongMoi = getThisForm();
+            phongMoi.setMaPhong(maPhong);
+            phongMoi.setSoPhong(soPhong);
+            phongService.updatePhong(phongMoi);
+
             // TODO: Validate and update
             JOptionPane.showMessageDialog(this, "Đã cập nhật phòng.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             if (onChanged != null)
@@ -604,7 +639,12 @@ class PhongModal extends JDialog {
             return;
         try {
             // TODO: Delete room
-            JOptionPane.showMessageDialog(this, "Đã xóa phòng.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            String maPhong = tfMa.getText().trim();
+            if (phongService.deletePhong(maPhong))
+                JOptionPane.showMessageDialog(this, "Đã xóa phòng.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            else
+                JOptionPane.showMessageDialog(this, "Đã xóa phòng thất bại!.", "Thông báo", JOptionPane.ERROR_MESSAGE);
+
             if (onChanged != null)
                 onChanged.run();
             dispose();
