@@ -52,8 +52,9 @@ public class NhanVien {
     @Column(name = "ngayBatDau")
     private LocalDate ngayBatDau;
 
-    @Column(name = "trangThai", length = 50)
-    private String trangThai;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TrangThaiNhanVien trangThai;
 
     @Column(name = "diaChi", length = 255)
     private String diaChi;

@@ -7,11 +7,14 @@ package iuh.dao;
 
 
 import iuh.db.JPAUtil;
+import iuh.entity.KhuyenMai;
 import iuh.entity.NhanVien;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /*
  * @description:
@@ -20,11 +23,17 @@ import java.util.Optional;
  * @version:    1.0
  * @created:
  */
-public class NhanVienDao {
+public class NhanVienDao extends AbstractGenericDaoImpl<NhanVien, String>{
+    public NhanVienDao() {
+        super(NhanVien.class);
+    }
+
+    public NhanVienDao(Class entityClass) {
+        super(entityClass);
+    }
+
     public List<NhanVien> findAll(){
-        try(EntityManager em = JPAUtil.getEntityManager()){
-            return em.createQuery("select n from NhanVien n order by n.tenNhanVien asc ", NhanVien.class).getResultList();
-        }
+        return loadAll();
     }
 
     public Optional<NhanVien> findById(String maNhanVien){
@@ -45,20 +54,7 @@ public class NhanVienDao {
     }
 
     public NhanVien save(NhanVien nhanVien){
-        EntityManager em = JPAUtil.getEntityManager();
-        try{
-            em.getTransaction().begin();
-            em.persist(nhanVien);
-            em.getTransaction().commit();
-            return nhanVien;
-        }catch(Exception e){
-            if(em.getTransaction().isActive()){
-                em.getTransaction().rollback();
-            }
-            throw e;
-        }finally{
-            em.close();
-        }
+        return create(nhanVien);
     }
 
     public NhanVien update(NhanVien nhanVien){
@@ -98,4 +94,59 @@ public class NhanVienDao {
             em.close();
         }
     }
+
+    public List<NhanVien> search(String keyword) {
+        EntityManager em = JPAUtil.getEntityManager();
+
+        return em.createQuery(
+                        "SELECT n FROM NhanVien n WHERE n.maNhanVien LIKE :kw OR n.tenNhanVien LIKE :kw",
+                        NhanVien.class
+                )
+                .setParameter("kw", "%" + keyword + "%")
+                .getResultList();
+    }
+
+    public String generateMaNV() {
+        List<String> allCodes = doInTransaction(em ->
+                em.createQuery("select n.maNhanVien from NhanVien n", String.class)
+                        .getResultList()
+        );
+
+        Set<String> existingCodes = allCodes.stream()
+                .filter(code -> code != null && !code.isBlank())
+                .collect(Collectors.toSet());
+
+        int nextNumber = allCodes.stream()
+                .map(this::extractNumber)
+                .max(Integer::compareTo)
+                .orElse(0) + 1;
+
+        String candidate = formatMaNV(nextNumber);
+
+        while (existingCodes.contains(candidate)) {
+            nextNumber++;
+            candidate = formatMaNV(nextNumber);
+        }
+
+        return candidate;
+    }
+
+    private int extractNumber(String code) {
+        if (code == null) return 0;
+
+        try {
+            return Integer.parseInt(code.replaceAll("\\D+", ""));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    private String formatMaNV(int number) {
+        return String.format("NV%03d", number);
+    }
+
+    public boolean existsById(String maNhanVien) {
+        return findById(maNhanVien).isPresent();
+    }
+
 }
