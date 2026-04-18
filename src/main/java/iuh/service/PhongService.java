@@ -1,5 +1,6 @@
 package iuh.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,5 +40,29 @@ public class PhongService {
             return false;
         }
         return true;
+    }
+
+    public List<Integer> getAllTang() {
+        return getAllRoom()
+                .stream()
+                .map(p -> p.getTang())
+                .distinct()
+                .toList();
+    }
+
+    public List<String> getAllTinhTrang() {
+        return getAllRoom()
+                .stream()
+                .map(p -> p.getTinhTrang())
+                .distinct()
+                .toList();
+    }
+
+    public List<String> getAllTrangThai() {
+        return getAllRoom()
+                .stream()
+                .map(p -> p.getTrangThai())
+                .distinct()
+                .toList();
     }
 }

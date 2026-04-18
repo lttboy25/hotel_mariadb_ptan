@@ -456,7 +456,10 @@ class PhongModal extends JDialog {
         tfMa = field(current.getMaPhong(), false);
         tfSo = field(current.getSoPhong(), false);
 
-        cbTang = new JComboBox<>(new Integer[] { 1, 2, 3, 4, 5 });
+        cbTang = new JComboBox<>();
+        for (int t : phongService.getAllTang()) {
+            cbTang.addItem(t);
+        }
         styleCombo(cbTang);
         if (!isNew)
             cbTang.setSelectedItem(current.getTang());
@@ -469,12 +472,18 @@ class PhongModal extends JDialog {
 
         tfMoTa = field(current.getMoTa(), true);
 
-        cbTinhTrang = new JComboBox<>(new String[] { "Trống", "Đang thuê" });
+        cbTinhTrang = new JComboBox<>();
+        for (String tinhTrang : phongService.getAllTinhTrang()) {
+            cbTinhTrang.addItem(tinhTrang);
+        }
         styleCombo(cbTinhTrang);
         if (!isNew)
             cbTinhTrang.setSelectedItem(current.getTinhTrang() != null ? current.getTinhTrang().toString() : "Trống");
 
-        cbTrangThai = new JComboBox<>(new String[] { "Sẵn sàng", "Đang sửa chữa" });
+        cbTrangThai = new JComboBox<>();
+        for (String trangThai : phongService.getAllTrangThai()) {
+            cbTrangThai.addItem(trangThai);
+        }
         styleCombo(cbTrangThai);
         if (!isNew)
             cbTrangThai
