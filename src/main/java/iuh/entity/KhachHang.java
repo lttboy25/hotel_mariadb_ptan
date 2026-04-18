@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
-
+@ToString(exclude = {"hoaDon"}) // CỰC KỲ QUAN TRỌNG: Ngắt vòng lặp để không văng app
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "KhachHang")
@@ -37,8 +37,5 @@ public class KhachHang {
     private LocalDate ngayTao;
 
     @OneToMany(mappedBy = "khachHang")
-    List<HoaDon> hoaDon;
-
-
-
+    private List<HoaDon> hoaDon;
 }
