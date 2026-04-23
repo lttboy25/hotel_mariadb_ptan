@@ -67,6 +67,7 @@ public class VictoryaDashboard extends JFrame {
         contentCards.add(new QuanLyKhuyenMaiPanel(), "quanlykhuyenmai");
         contentCards.add(new GiaHanPhongPanel(), "giahanphong");
         contentCards.add(new QuanLyPhongPanel(), "quanlyphong");
+        contentCards.add(new ThanhToanPanel(), "thanhtoan");
 
         // Sidebar (built after contentCards so it can reference it)
         JPanel sidebar = buildSidebar();
@@ -115,6 +116,7 @@ public class VictoryaDashboard extends JFrame {
         sidebar.add(navRow(NavIcon.DICH_VU, "Quản lý dịch vụ", 0, false, "quanlydichvu"));
         sidebar.add(navRow(NavIcon.HOA_DON, "Quản lý hóa đơn", 0, false, "quanlyhoadon"));
         sidebar.add(navRow(NavIcon.HOA_DON, "Quản lý phòng", 0, false, "quanlyphong"));
+        sidebar.add(navRow(NavIcon.HOA_DON, "Thanh toán", 0, false, "thanhtoan"));
 
         sidebar.add(Box.createVerticalGlue());
         sidebar.add(navRow(NavIcon.CAU_HINH, "Cấu hình hệ thống", 0, false, null));

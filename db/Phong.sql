@@ -1,3 +1,4 @@
+-- Active: 1776938476085@@127.0.0.1@3306@hotel
 INSERT INTO `phong` (`maPhong`, `moTa`, `soPhong`, `tang`, `tinhTrang`, `trangThai`, `maLoaiPhong`) VALUES
 ('P101', 'View sân vườn', '101', 1, 'Trống', 'Sẵn sàng', 'LP001'),
 ('P102', 'Gần thang máy', '102', 1, 'Đang thuê', 'Sẵn sàng', 'LP001'),
