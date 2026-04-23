@@ -58,7 +58,7 @@ public class VictoryaDashboard extends JFrame {
         contentCards.add(new ThongKePanel(), "thongke");
         contentCards.add(new DatPhongPanel(), "datphong");
         contentCards.add(new HuyPhongPanel(), "huyphong");
-        contentCards.add(new DoiPhongPanel(), "doiphong");
+        contentCards.add(new DoiPhongPanel("PDP001"), "doiphong");
         contentCards.add(new TaiKhoanPanel(), "taikhoan");
         contentCards.add(new QuanLyKhachHangPanel(), "quanlykhachhang");
         contentCards.add(new QuanLyNhanVienPanel(), "quanlynhanvien");

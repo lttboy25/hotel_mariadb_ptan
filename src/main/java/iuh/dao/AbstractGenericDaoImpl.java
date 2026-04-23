@@ -71,4 +71,6 @@ public abstract class AbstractGenericDaoImpl<T, ID> implements GenericDao<T, ID>
                     .getResultList();
         });
     }
+
+    
 }

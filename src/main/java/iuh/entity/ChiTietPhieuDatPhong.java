@@ -26,7 +26,9 @@ public class ChiTietPhieuDatPhong {
     private Phong phong;
 
     private String trangThai;
-    private int soGioLuuTru;
+
+    @Column(name = "soGioLuuTru", insertable = false, updatable = false)
+    private long soGioLuuTru;
     private LocalDateTime thoiGianNhanPhong;
     private LocalDateTime thoiGianTraPhong;
     private int soNguoi;
