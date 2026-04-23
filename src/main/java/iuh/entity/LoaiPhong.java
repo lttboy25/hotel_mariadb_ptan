@@ -1,8 +1,6 @@
 package iuh.entity;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -28,7 +26,7 @@ public class LoaiPhong {
 
     @Id
 
-    @Column(name = "maLoaiPhong")
+    @Column(name = "maLoaiPhong", nullable = false, length = 20)
     @EqualsAndHashCode.Include
     private String maLoaiPhong;
 

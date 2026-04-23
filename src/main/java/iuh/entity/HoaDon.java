@@ -16,7 +16,9 @@ import java.util.List;
 @Setter
 public class HoaDon {
     @Id
+    @Column(name = "maHoaDon", nullable = false, length = 20)
     private String maHoaDon;
+    @Column(name = "ngayDat")
     private LocalDateTime ngayDat;
     @ManyToOne(optional = false)
     @JoinColumn(name = "maKhachHang", nullable = false)

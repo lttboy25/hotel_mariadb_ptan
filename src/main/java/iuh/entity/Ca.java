@@ -23,6 +23,7 @@ import java.util.Set;
 public class Ca {
     @Id
     @EqualsAndHashCode.Include
+    @jakarta.persistence.Column(name = "maCa", nullable = false, length = 20)
     private String maCa;
     private LocalDate ngayBatDau;
     private LocalDate ngayKetThuc;

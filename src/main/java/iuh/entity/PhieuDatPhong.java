@@ -16,24 +16,28 @@ import java.util.List;
 public class PhieuDatPhong {
 
     @Id
+    @Column(name = "maPhieuDatPhong", nullable = false, length = 20)
     private String maPhieuDatPhong;
 
+    @Column(name = "ngayTao")
     private LocalDate ngayTao;
+    @Column(name = "trangThai", length = 20)
     private String trangThai;
+    @Column(name = "tienDatCoc")
     private long tienDatCoc;
 
     @ManyToOne
-    @JoinColumn(name = "maKhachHang")
+    @JoinColumn(name = "maKhachHang", nullable = false)
     private KhachHang khachHang;
 
     @OneToMany(mappedBy = "phieuDatPhong", cascade = CascadeType.ALL)
     @Builder.Default
     private List<ChiTietPhieuDatPhong> dsachPhieuDatPhong = new ArrayList<>();
 
-    public long tinhTongTien() {
+    public double tinhTongTien() {
         if (dsachPhieuDatPhong == null)
-            return 0;
-        long tongTien = 0;
+            return 0.0;
+        double tongTien = 0;
         for (ChiTietPhieuDatPhong ct : dsachPhieuDatPhong) {
             tongTien += ct.tinhThanhTien();
         }

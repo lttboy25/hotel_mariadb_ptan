@@ -11,7 +11,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
 @Builder
@@ -21,7 +20,7 @@ import lombok.ToString;
 @Table(name = "Phong")
 public class Phong {
     @Id
-    @Column(name = "maPhong")
+    @Column(name = "maPhong", nullable = false, length = 20)
     @EqualsAndHashCode.Include
     private String maPhong;
 
@@ -29,7 +28,7 @@ public class Phong {
     private String soPhong;
 
     @ManyToOne
-    @JoinColumn(name = "maLoaiPhong")
+    @JoinColumn(name = "maLoaiPhong", nullable = false)
     private LoaiPhong loaiPhong;
 
     @Column(name = "trangThai")

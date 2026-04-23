@@ -128,14 +128,4 @@ public class PhongDao extends AbstractGenericDaoImpl<Phong, String> {
         }
     }
 
-    //lây phòng troongs
-    public List<Phong> getAvailableRooms(){
-        return doInTransaction(em ->
-            em.createQuery("""
-                SELECT p FROM Phong p
-                WHERE p.tinhTrang = "Trống"
-            """, Phong.class).getResultList()
-        );
-    }
-
 }

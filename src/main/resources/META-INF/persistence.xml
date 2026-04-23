@@ -19,7 +19,6 @@
         <class>iuh.entity.TaiKhoan</class>
         <class>iuh.entity.ChiTietPhieuDatPhong</class>
         <class>iuh.entity.PhieuDatPhong</class>
-        <class>iuh.entity.HoaDon</class>
         <class>iuh.entity.ChiTietHoaDon</class>
 
         <properties>
@@ -36,7 +35,7 @@
             <property name="hibernate.show_sql" value="true" />
             <property name="hibernate.format_sql" value="true" />
 
-            <property name="hibernate.hbm2ddl.auto" value="update" />
+            <property name="hibernate.hbm2ddl.auto" value="validate" />
         </properties>
     </persistence-unit>
 </persistence>
