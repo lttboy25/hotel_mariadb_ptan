@@ -1,5 +1,6 @@
 package iuh.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -64,5 +65,17 @@ public class PhongService {
                 .map(p -> p.getTrangThai())
                 .distinct()
                 .toList();
+    }
+    public List<Phong> getPhongByDate(LocalDateTime ngayNhan, LocalDateTime ngayTra) {
+
+        if (ngayNhan == null || ngayTra == null) {
+            throw new IllegalArgumentException("Ngày nhận/trả không được null");
+        }
+
+        if (!ngayNhan.isBefore(ngayTra)) {
+            throw new IllegalArgumentException("Ngày nhận phải trước ngày trả");
+        }
+
+        return phongDao.findPhongByDate(ngayNhan, ngayTra);
     }
 }

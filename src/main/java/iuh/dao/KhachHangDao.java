@@ -29,4 +29,19 @@ public class KhachHangDao extends AbstractGenericDaoImpl<KhachHang, String> {
                 .setParameter("kw", "%" + kw + "%")
                 .getResultList());
     }
+    public KhachHang findByCCCD(String cccd) {
+        String value = cccd == null ? "" : cccd.trim();
+        if (value.isEmpty()) return null;
+
+        return doInTransaction(em -> em.createQuery(
+                        "SELECT k FROM KhachHang k WHERE k.CCCD = :cccd",
+                        KhachHang.class)
+                .setParameter("cccd", value)
+                .getResultList()
+                .stream()
+                .findFirst()
+                .orElse(null));
+    }
+
+
 }

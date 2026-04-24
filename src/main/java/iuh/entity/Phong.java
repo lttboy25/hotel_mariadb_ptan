@@ -1,11 +1,6 @@
 package iuh.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,6 +27,7 @@ public class Phong {
     private LoaiPhong loaiPhong;
 
     @Column(name = "trangThai")
+
     private String trangThai;
 
     @Column(name = "tang")

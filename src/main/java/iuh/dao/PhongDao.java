@@ -1,10 +1,10 @@
 package iuh.dao;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import iuh.db.JPAUtil;
-import iuh.entity.Phong;
 import iuh.entity.Phong;
 import jakarta.persistence.EntityManager;
 
@@ -35,15 +35,13 @@ public class PhongDao extends AbstractGenericDaoImpl<Phong, String> {
                     OR LOWER(p.soPhong) LIKE LOWER(CONCAT('%', :keyword, '%'))
                     OR LOWER(p.loaiPhong.tenLoaiPhong) LIKE LOWER(CONCAT('%', :keyword, '%'))
                     ORDER BY p.maPhong
-                                """;
+                    """;
 
-            List<Phong> result = em.createQuery(query, Phong.class)
+            return em.createQuery(query, Phong.class)
                     .setParameter("keyword", keyword)
                     .getResultList();
-
-            return result;
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Lỗi tìm phòng theo từ khóa: " + e.getMessage());
             return List.of();
         }
     }
@@ -74,7 +72,7 @@ public class PhongDao extends AbstractGenericDaoImpl<Phong, String> {
             return String.format("P%d%02d", tang, nextNumber);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Lỗi sinh mã phòng: " + e.getMessage());
             return null;
         }
     }
@@ -128,4 +126,38 @@ public class PhongDao extends AbstractGenericDaoImpl<Phong, String> {
         }
     }
 
+    //lây phòng troongs
+    public List<Phong> getAvailableRooms(){
+        return doInTransaction(em ->
+                em.createQuery("""
+                SELECT p FROM Phong p
+                WHERE p.tinhTrang = "Trống"
+            """, Phong.class).getResultList()
+        );
+    }
+    public List<Phong> findPhongByDate(LocalDateTime ngayNhanPhong, LocalDateTime ngayTraPhong) {
+        try (EntityManager em = JPAUtil.getEntityManager()) {
+
+            String query = """
+            SELECT p FROM Phong p
+            WHERE (p.tinhTrang = 'Trống' OR p.trangThai = 'Sẵn sàng')
+            AND NOT EXISTS (
+                SELECT 1 FROM ChiTietPhieuDatPhong ct
+                WHERE ct.phong.maPhong = p.maPhong
+                AND ct.thoiGianNhanPhong < :ngayTraPhong
+                AND ct.thoiGianTraPhong > :ngayNhanPhong
+            )
+            ORDER BY p.maPhong
+        """;
+
+            return em.createQuery(query, Phong.class)
+                    .setParameter("ngayNhanPhong", ngayNhanPhong)
+                    .setParameter("ngayTraPhong", ngayTraPhong)
+                    .getResultList();
+
+        } catch (Exception e) {
+            System.err.println("Lỗi tìm phòng trống: " + e.getMessage());
+            return List.of();
+        }
+    }
 }

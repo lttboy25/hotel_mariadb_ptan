@@ -1,6 +1,6 @@
 package iuh.view;
 
-import iuh.entity.KhachHang;
+import iuh.dto.KhachHangDTO;
 import iuh.service.KhachHangService;
 
 import javax.swing.*;
@@ -62,10 +62,10 @@ public class QuanLyKhachHangPanel extends JPanel {
 
     public void loadDatabase() {
         try {
-            java.util.List<KhachHang> list = service.loadAll();
+            java.util.List<KhachHangDTO> list = service.loadAll();
             tableModel.setRowCount(0);
 
-            for (KhachHang kh : list) {
+            for (KhachHangDTO kh : list) {
                 tableModel.addRow(new Object[] {
                         kh.getMaKhachHang(),
                         kh.getTenKhachHang(),
@@ -99,9 +99,9 @@ public class QuanLyKhachHangPanel extends JPanel {
         JButton btnSearch = QuanLyNhanVienPanel.createButton("Tìm kiếm", BLUE, new Color(0x2D5FD8), Color.WHITE, 100, 38);
         btnSearch.addActionListener(e -> {
             String kw = tfSearch.getText().equals("Tìm theo tên, SĐT, email...") ? "" : tfSearch.getText();
-            java.util.List<KhachHang> list = service.timKiem(kw);
+            java.util.List<KhachHangDTO> list = service.timKiem(kw);
             tableModel.setRowCount(0);
-            for (KhachHang kh : list) {
+            for (KhachHangDTO kh : list) {
                 tableModel.addRow(new Object[]{kh.getMaKhachHang(), kh.getTenKhachHang(), kh.getSoDienThoai(), kh.getEmail(), kh.getNgayTao()});
             }
         });
@@ -354,7 +354,7 @@ public class QuanLyKhachHangPanel extends JPanel {
                 JButton save = QuanLyNhanVienPanel.createButton("Lưu", BLUE, new Color(0x2D5FD8), Color.WHITE, 100, 38);
                 save.addActionListener(e -> {
                     try {
-                        KhachHang kh = KhachHang.builder()
+                        KhachHangDTO kh = KhachHangDTO.builder()
                                 .maKhachHang(tfMa.getText())
                                 .CCCD(tfCccd.getText().trim())
                                 .tenKhachHang(tfTen.getText().trim())
@@ -394,7 +394,7 @@ public class QuanLyKhachHangPanel extends JPanel {
                 JButton upd = QuanLyNhanVienPanel.createButton("Cập nhật", BLUE, new Color(0x2D5FD8), Color.WHITE, 110, 38);
                 upd.addActionListener(e -> {
                     try {
-                        KhachHang kh = KhachHang.builder()
+                        KhachHangDTO kh = KhachHangDTO.builder()
                                 .maKhachHang(tfMa.getText())
                                 .CCCD(tfCccd.getText().trim())
                                 .tenKhachHang(tfTen.getText().trim())
