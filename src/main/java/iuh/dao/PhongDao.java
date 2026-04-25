@@ -126,29 +126,28 @@ public class PhongDao extends AbstractGenericDaoImpl<Phong, String> {
         }
     }
 
-    //lây phòng troongs
-    public List<Phong> getAvailableRooms(){
-        return doInTransaction(em ->
-                em.createQuery("""
-                SELECT p FROM Phong p
-                WHERE p.tinhTrang = "Trống"
-            """, Phong.class).getResultList()
-        );
+    // lây phòng troongs
+    public List<Phong> getAvailableRooms() {
+        return doInTransaction(em -> em.createQuery("""
+                    SELECT p FROM Phong p
+                    WHERE p.tinhTrang = "Trống"
+                """, Phong.class).getResultList());
     }
+
     public List<Phong> findPhongByDate(LocalDateTime ngayNhanPhong, LocalDateTime ngayTraPhong) {
         try (EntityManager em = JPAUtil.getEntityManager()) {
 
             String query = """
-            SELECT p FROM Phong p
-            WHERE (p.tinhTrang = 'Trống' OR p.trangThai = 'Sẵn sàng')
-            AND NOT EXISTS (
-                SELECT 1 FROM ChiTietPhieuDatPhong ct
-                WHERE ct.phong.maPhong = p.maPhong
-                AND ct.thoiGianNhanPhong < :ngayTraPhong
-                AND ct.thoiGianTraPhong > :ngayNhanPhong
-            )
-            ORDER BY p.maPhong
-        """;
+                        SELECT p FROM Phong p
+                        WHERE (p.tinhTrang = 'Trống' OR p.trangThai = 'Sẵn sàng')
+                        AND NOT EXISTS (
+                            SELECT 1 FROM ChiTietPhieuDatPhong ct
+                            WHERE ct.phong.maPhong = p.maPhong
+                            AND ct.thoiGianNhanPhong < :ngayTraPhong
+                            AND ct.thoiGianTraPhong > :ngayNhanPhong
+                        )
+                        ORDER BY p.maPhong
+                    """;
 
             return em.createQuery(query, Phong.class)
                     .setParameter("ngayNhanPhong", ngayNhanPhong)
@@ -159,5 +158,11 @@ public class PhongDao extends AbstractGenericDaoImpl<Phong, String> {
             System.err.println("Lỗi tìm phòng trống: " + e.getMessage());
             return List.of();
         }
+    }
+
+    public List<Phong> getRoomsByStatus(String status) {
+        return doInTransaction(em -> em.createQuery("""
+                SELECT p FROM Phong p
+                WHERE p.tinhTrang = """ + status, Phong.class).getResultList());
     }
 }

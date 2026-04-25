@@ -3,6 +3,9 @@ package iuh.view;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
+
+import iuh.service.ThanhToanService;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -48,12 +51,12 @@ public class ThanhToanPanel extends JPanel {
     // DỮ LIỆU MẪU
     // ═══════════════════════════════════════════════════════════════════
     private static final String[] COT_BANG = {
-            "Phòng", "Loại Phòng", "Dịch vụ", "Thời gian lưu trú", "Tổng tiền"
+            "Phòng", "Loại Phòng", "Thời gian lưu trú", "Tổng tiền"
     };
     private static final Object[][] DU_LIEU_PHONG = {
-            { "101", "Thường", "Ăn sáng", "36 giờ", "1.000.000" },
-            { "201", "VIP", "Tất cả dịch vụ", "36 giờ", "1.000.000" },
-            { "301", "VIP", "Tất cả dịch vụ", "8 giờ", "300.000" },
+            { "101", "Thường", "36 giờ", "1.000.000" },
+            { "201", "VIP", "36 giờ", "1.000.000" },
+            { "301", "VIP", "8 giờ", "300.000" },
     };
 
     private static final long[] MENH_GIA_NHANH = {
@@ -77,6 +80,7 @@ public class ThanhToanPanel extends JPanel {
     private JLabel lblTienThua;
     private QRCodePanel qrCodePanel;
     private JButton btnThanhToan;
+    private ThanhToanService thanhToanService;
 
     // ═══════════════════════════════════════════════════════════════════
     // KHỞI TẠO
@@ -158,7 +162,7 @@ public class ThanhToanPanel extends JPanel {
         JPanel card = new RoundedPanel(12, BG_WHITE);
         card.setLayout(new BorderLayout());
 
-        modelBang = new DefaultTableModel(DU_LIEU_PHONG, COT_BANG) {
+        modelBang = new DefaultTableModel(thanhToanService.getRoomsByStatus("Đang thuê"), COT_BANG) {
             @Override
             public boolean isCellEditable(int row, int col) {
                 return false;

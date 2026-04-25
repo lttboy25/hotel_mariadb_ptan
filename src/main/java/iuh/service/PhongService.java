@@ -66,6 +66,7 @@ public class PhongService {
                 .distinct()
                 .toList();
     }
+
     public List<Phong> getPhongByDate(LocalDateTime ngayNhan, LocalDateTime ngayTra) {
 
         if (ngayNhan == null || ngayTra == null) {
@@ -77,5 +78,15 @@ public class PhongService {
         }
 
         return phongDao.findPhongByDate(ngayNhan, ngayTra);
+    }
+
+    public List<Phong> getRoomsByStatus(String status) {
+        List<Phong> ketqua = phongDao.getRoomsByStatus(status);
+
+        if (ketqua == null || ketqua.isEmpty()) {
+            throw new RuntimeException("Không tìm thấy phòng ứng với tình trạng trên");
+        }
+
+        return ketqua;
     }
 }
