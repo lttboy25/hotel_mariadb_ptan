@@ -3,6 +3,7 @@ package iuh.dto;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.HoaDon;
 import iuh.entity.PhieuDatPhong;
 import iuh.entity.Phong;
@@ -22,7 +23,7 @@ public class ChiTietHoaDonDTO implements Serializable {
 
     private HoaDon hoaDon;
 
-    private PhieuDatPhong phieuDatPhong;
+    private ChiTietPhieuDatPhong chiTietPhieuDatPhong;
 
     private Phong phong;
 

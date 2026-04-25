@@ -1,12 +1,7 @@
 package iuh.mapper;
 
-import iuh.dto.DatPhongRequestDTO;
-import iuh.dto.DatPhongResultDTO;
-import iuh.dto.KhachHangDTO;
-import iuh.dto.KhuyenMaiDTO;
-import iuh.entity.KhachHang;
-import iuh.entity.PhieuDatPhong;
-import iuh.entity.KhuyenMai;
+import iuh.dto.*;
+import iuh.entity.*;
 
 public class Mapper {
 
@@ -73,6 +68,88 @@ public class Mapper {
                 .heSo(entity.getHeSo())
                 .tongTienToiThieu(entity.getTongTienToiThieu())
                 .tongKhuyenMaiToiDa(entity.getTongKhuyenMaiToiDa())
+                .build();
+    }
+
+    public static HoaDon map(HoaDonDTO hoaDonDTO) {
+        if (hoaDonDTO == null) return null;
+        return HoaDon
+                .builder()
+                .ngayDat(hoaDonDTO.getNgayDat())
+                .khachHang(hoaDonDTO.getKhachHang())
+                .nhanVien(hoaDonDTO.getNhanVien())
+                .khuyenMai(hoaDonDTO.getKhuyenMai())
+                .khuyenMai(hoaDonDTO.getKhuyenMai())
+                .ngayTao(hoaDonDTO.getNgayTao())
+                .trangThai(hoaDonDTO.getTrangThai())
+                .tongTien(hoaDonDTO.getTongTien())
+                .chiTietHoaDon(hoaDonDTO.getChiTietHoaDon())
+                .chiTietHoaDon(hoaDonDTO.getChiTietHoaDon())
+                .build();
+    }
+
+    public static HoaDonDTO map(HoaDon hoaDon) {
+        if (hoaDon == null) return null;
+        return HoaDonDTO
+                .builder()
+                .ngayDat(hoaDon.getNgayDat())
+                .khachHang(hoaDon.getKhachHang())
+                .nhanVien(hoaDon.getNhanVien())
+                .khuyenMai(hoaDon.getKhuyenMai())
+                .khuyenMai(hoaDon.getKhuyenMai())
+                .ngayTao(hoaDon.getNgayTao())
+                .trangThai(hoaDon.getTrangThai())
+                .tongTien(hoaDon.getTongTien())
+                .chiTietHoaDon(hoaDon.getChiTietHoaDon())
+                .chiTietHoaDon(hoaDon.getChiTietHoaDon())
+                .build();
+    }
+
+    public static ChiTietHoaDonDTO map(ChiTietHoaDon entity) {
+        if (entity == null) return null;
+        return ChiTietHoaDonDTO.builder()
+                .ngayTao(entity.getNgayTao())
+                .tongTien(entity.getTongTien())
+                .hoaDon(entity.getHoaDon())
+                .chiTietPhieuDatPhong(entity.getChiTietPhieuDatPhong())
+                .phong(entity.getPhong())
+                .build();
+    }
+
+    public static ChiTietHoaDon map(ChiTietHoaDonDTO entity) {
+        if (entity == null) return null;
+        return ChiTietHoaDon.builder()
+                .ngayTao(entity.getNgayTao())
+                .tongTien(entity.getTongTien())
+                .hoaDon(entity.getHoaDon())
+                .chiTietPhieuDatPhong(entity.getChiTietPhieuDatPhong())
+                .phong(entity.getPhong())
+                .build();
+    }
+
+    public static ChiTietPhieuDatPhong map(ChiTietPhieuDatPhongDTO entity) {
+        if (entity == null) return null;
+        return ChiTietPhieuDatPhong.builder()
+                .soGioLuuTru(entity.getSoGioLuuTru())
+                .soNguoi(entity.getSoNguoi())
+                .thoiGianNhanPhong(entity.getThoiGianNhanPhong())
+                .thoiGianTraPhong(entity.getThoiGianTraPhong())
+                .trangThai(entity.getTrangThai())
+                .phieuDatPhong(entity.getPhieuDatPhong())
+                .phong(entity.getPhong())
+                .build();
+    }
+
+    public static ChiTietPhieuDatPhongDTO map(ChiTietPhieuDatPhong entity) {
+        if (entity == null) return null;
+        return ChiTietPhieuDatPhongDTO.builder()
+                .soGioLuuTru(entity.getSoGioLuuTru())
+                .soNguoi(entity.getSoNguoi())
+                .thoiGianNhanPhong(entity.getThoiGianNhanPhong())
+                .thoiGianTraPhong(entity.getThoiGianTraPhong())
+                .trangThai(entity.getTrangThai())
+                .phieuDatPhong(entity.getPhieuDatPhong())
+                .phong(entity.getPhong())
                 .build();
     }
 }

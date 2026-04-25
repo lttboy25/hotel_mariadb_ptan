@@ -6,7 +6,9 @@
 package iuh.dao;
 
 
+import iuh.db.JPAUtil;
 import iuh.entity.ChiTietPhieuDatPhong;
+import jakarta.persistence.EntityManager;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -57,4 +59,13 @@ public class ChitietPhieuDatPhongDao extends AbstractGenericDaoImpl<ChiTietPhieu
                         .getResultList()
         );
     }
+
+//    public boolean updateStatusByBookingTicket(String ma, String status) {
+//        EntityManager em = JPAUtil.getEntityManager();
+//
+//        try {
+//            em.getTransaction().begin();
+//
+//        }
+//    }
 }

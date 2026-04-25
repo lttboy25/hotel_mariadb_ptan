@@ -406,7 +406,7 @@ public class ThanhToanPanel extends JPanel {
         lblTotal.setHorizontalAlignment(JLabel.RIGHT);
 
         totalRow.add(lblNhanTotal, BorderLayout.WEST);
-        totalRow.add(lblTotal,     BorderLayout.EAST);
+        totalRow.add(lblTotal, BorderLayout.EAST);
         body.add(totalRow);
 
         card.add(body, BorderLayout.CENTER);
