@@ -3,6 +3,7 @@ package iuh.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
-public class HoaDon {
+public class HoaDon implements Serializable {
     @Id
     @Column(name = "maHoaDon", nullable = false, length = 20)
     private String maHoaDon;

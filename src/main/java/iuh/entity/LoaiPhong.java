@@ -1,5 +1,6 @@
 package iuh.entity;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -22,7 +23,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "LoaiPhong")
-public class LoaiPhong {
+public class LoaiPhong implements Serializable {
 
     @Id
 

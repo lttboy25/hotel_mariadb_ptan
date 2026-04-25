@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DatPhongRequestDTO {
+public class DatPhongRequestDTO implements Serializable {
     private String maKhachHang;
     private LocalDateTime checkIn;
     private LocalDateTime checkOut;
@@ -23,4 +24,3 @@ public class DatPhongRequestDTO {
     private String trangThai;
     private List<String> maPhongs;
 }
-

@@ -3,8 +3,10 @@ package iuh.mapper;
 import iuh.dto.DatPhongRequestDTO;
 import iuh.dto.DatPhongResultDTO;
 import iuh.dto.KhachHangDTO;
+import iuh.dto.KhuyenMaiDTO;
 import iuh.entity.KhachHang;
 import iuh.entity.PhieuDatPhong;
+import iuh.entity.KhuyenMai;
 
 public class Mapper {
 
@@ -43,6 +45,34 @@ public class Mapper {
                 .checkIn(request != null ? request.getCheckIn() : null)
                 .checkOut(request != null ? request.getCheckOut() : null)
                 .maPhongs(request != null ? request.getMaPhongs() : null)
+                .build();
+    }
+
+    public static KhuyenMai map(KhuyenMaiDTO dto) {
+        if (dto == null) return null;
+        return KhuyenMai.builder()
+                .maKhuyenMai(dto.getMaKhuyenMai())
+                .tenKhuyenMai(dto.getTenKhuyenMai())
+                .ngayBatDau(dto.getNgayBatDau())
+                .ngayKetThuc(dto.getNgayKetThuc())
+                .trangThai(dto.getTrangThai())
+                .heSo(dto.getHeSo())
+                .tongTienToiThieu(dto.getTongTienToiThieu())
+                .tongKhuyenMaiToiDa(dto.getTongKhuyenMaiToiDa())
+                .build();
+    }
+
+    public static KhuyenMaiDTO map(KhuyenMai entity) {
+        if (entity == null) return null;
+        return KhuyenMaiDTO.builder()
+                .maKhuyenMai(entity.getMaKhuyenMai())
+                .tenKhuyenMai(entity.getTenKhuyenMai())
+                .ngayBatDau(entity.getNgayBatDau())
+                .ngayKetThuc(entity.getNgayKetThuc())
+                .trangThai(entity.getTrangThai())
+                .heSo(entity.getHeSo())
+                .tongTienToiThieu(entity.getTongTienToiThieu())
+                .tongKhuyenMaiToiDa(entity.getTongKhuyenMaiToiDa())
                 .build();
     }
 }

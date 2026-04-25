@@ -2,6 +2,7 @@ package iuh.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
 @ToString(exclude = { "khachHang", "dsachPhieuDatPhong" }) // Chỉ thêm exclude
 @Entity
 @Table(name = "PhieuDatPhong")
-public class PhieuDatPhong {
+public class PhieuDatPhong implements Serializable {
 
     @Id
     @Column(name = "maPhieuDatPhong", nullable = false, length = 20)

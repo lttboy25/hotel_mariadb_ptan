@@ -2,6 +2,7 @@ package iuh.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 @ToString(exclude = { "phieuDatPhong", "phong" })
 @Entity
 @Table(name = "ChiTietPhieuDatPhong")
-public class ChiTietPhieuDatPhong {
+public class ChiTietPhieuDatPhong implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

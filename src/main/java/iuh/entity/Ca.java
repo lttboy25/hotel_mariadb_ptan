@@ -7,6 +7,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -20,7 +21,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "cas")
-public class Ca {
+public class Ca implements Serializable {
     @Id
     @EqualsAndHashCode.Include
     @jakarta.persistence.Column(name = "maCa", nullable = false, length = 20)

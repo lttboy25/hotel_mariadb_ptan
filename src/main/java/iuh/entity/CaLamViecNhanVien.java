@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @AllArgsConstructor
@@ -26,7 +27,7 @@ import java.time.LocalDate;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "CaLamViecNhanVien")
-public class CaLamViecNhanVien {
+public class CaLamViecNhanVien implements Serializable {
     @Id
     @EqualsAndHashCode.Include
     @Column(name = "maCaLamViec", nullable = false, length = 20)

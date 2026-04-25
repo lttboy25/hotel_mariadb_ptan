@@ -1,6 +1,7 @@
 package iuh.entity;
 
 import java.time.LocalDateTime;
+import java.io.Serializable;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "PhieuHuyPhong")
-public class PhieuHuyPhong {
+public class PhieuHuyPhong implements Serializable {
     @Id
     @EqualsAndHashCode.Include
     private Long maHuyPhong;

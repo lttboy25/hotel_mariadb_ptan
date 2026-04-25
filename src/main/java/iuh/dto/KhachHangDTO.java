@@ -6,6 +6,7 @@
 package iuh.dto;
 
 import lombok.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /*
@@ -21,7 +22,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @ToString
-public class KhachHangDTO {
+public class KhachHangDTO implements Serializable {
     private String maKhachHang;
     private String CCCD;
     private String tenKhachHang;

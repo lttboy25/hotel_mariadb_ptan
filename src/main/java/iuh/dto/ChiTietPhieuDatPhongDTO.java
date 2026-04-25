@@ -1,12 +1,13 @@
 package iuh.dto;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import iuh.entity.PhieuDatPhong;
 import iuh.entity.PhieuHuyPhong;
 import iuh.entity.Phong;
 
-public class ChiTietPhieuDatPhongDTO {
+public class ChiTietPhieuDatPhongDTO implements Serializable {
 
     private Long id;
     private PhieuDatPhong phieuDatPhong;

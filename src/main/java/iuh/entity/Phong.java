@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import java.io.Serializable;
 
 @Data
 @Builder
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "Phong")
-public class Phong {
+public class Phong implements Serializable {
     @Id
     @Column(name = "maPhong", nullable = false, length = 20)
     @EqualsAndHashCode.Include

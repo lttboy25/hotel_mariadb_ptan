@@ -1,5 +1,6 @@
 package iuh.dto;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Setter
 @Getter
-public class HoaDonDTO {
+public class HoaDonDTO implements Serializable {
     private String maHoaDon;
     private LocalDateTime ngayDat;
 

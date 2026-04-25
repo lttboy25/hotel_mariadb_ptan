@@ -1,5 +1,6 @@
 package iuh.dto;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.KhachHang;
 
-public class PhieuDatPhongDTO {
+public class PhieuDatPhongDTO implements Serializable {
     private String maPhieuDatPhong;
 
     private LocalDate ngayTao;

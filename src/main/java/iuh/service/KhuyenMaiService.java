@@ -6,57 +6,67 @@
 package iuh.service;
 
 import iuh.dao.KhuyenMaiDao;
+import iuh.dto.KhuyenMaiDTO;
 import iuh.entity.KhuyenMai;
 import iuh.entity.TrangThai;
+import iuh.mapper.Mapper;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class KhuyenMaiService {
 
 	private final KhuyenMaiDao khuyenMaiDao = new KhuyenMaiDao();
 
-	public List<KhuyenMai> getAllKhuyenMai() {
-		return khuyenMaiDao.findAll();
+	public List<KhuyenMaiDTO> getAllKhuyenMai() {
+		return khuyenMaiDao.findAll().stream()
+				.map(Mapper::map)
+				.collect(Collectors.toList());
 	}
 
-	public List<KhuyenMai> searchKhuyenMai(String keyword) {
-		if (keyword == null || keyword.isBlank()) {
-			return khuyenMaiDao.findAll();
-		}
-		return khuyenMaiDao.findByKeyword(keyword);
+	public List<KhuyenMaiDTO> searchKhuyenMai(String keyword) {
+		List<KhuyenMai> list = (keyword == null || keyword.isBlank())
+				? khuyenMaiDao.findAll()
+				: khuyenMaiDao.findByKeyword(keyword);
+		return list.stream().map(Mapper::map).collect(Collectors.toList());
 	}
 
-	public Optional<KhuyenMai> getKhuyenMaiById(String maKhuyenMai) {
-		return khuyenMaiDao.findById(maKhuyenMai);
+	public Optional<KhuyenMaiDTO> getKhuyenMaiById(String maKhuyenMai) {
+		return khuyenMaiDao.findById(maKhuyenMai).map(Mapper::map);
 	}
 
-	public List<KhuyenMai> getKhuyenMaiByTrangThai(TrangThai trangThai) {
-		return khuyenMaiDao.findByTrangThai(trangThai);
+	public List<KhuyenMaiDTO> getKhuyenMaiByTrangThai(TrangThai trangThai) {
+		return khuyenMaiDao.findByTrangThai(trangThai).stream()
+				.map(Mapper::map)
+				.collect(Collectors.toList());
 	}
 
 	public String generateNextMaKhuyenMai() {
 		return khuyenMaiDao.generateNextMaKhuyenMai();
 	}
 
-	public KhuyenMai addKhuyenMai(KhuyenMai khuyenMai) {
-		return khuyenMaiDao.save(khuyenMai);
+	public KhuyenMaiDTO addKhuyenMai(KhuyenMaiDTO dto) {
+		KhuyenMai khuyenMai = Mapper.map(dto);
+		return Mapper.map(khuyenMaiDao.save(khuyenMai));
 	}
 
-	public KhuyenMai addKhuyenMaiAutoCode(KhuyenMai khuyenMai) {
+	public KhuyenMaiDTO addKhuyenMaiAutoCode(KhuyenMaiDTO dto) {
+		KhuyenMai khuyenMai = Mapper.map(dto);
 		for (int i = 0; i < 10; i++) {
 			String maKhuyenMai = khuyenMaiDao.generateNextMaKhuyenMai();
 			if (khuyenMaiDao.existsById(maKhuyenMai)) {
 				continue;
 			}
 			khuyenMai.setMaKhuyenMai(maKhuyenMai);
-			return khuyenMaiDao.save(khuyenMai);
+			return Mapper.map(khuyenMaiDao.save(khuyenMai));
 		}
 		throw new IllegalStateException("Không thể tạo mã khuyến mãi duy nhất. Vui lòng thử lại.");
 	}
 
-	public KhuyenMai updateKhuyenMai(KhuyenMai khuyenMai) {
-		return khuyenMaiDao.update(khuyenMai);
+	public KhuyenMaiDTO updateKhuyenMai(KhuyenMaiDTO dto) {
+		KhuyenMai khuyenMai = Mapper.map(dto);
+		return Mapper.map(khuyenMaiDao.update(khuyenMai));
 	}
 
 	public boolean deleteKhuyenMai(String maKhuyenMai) {

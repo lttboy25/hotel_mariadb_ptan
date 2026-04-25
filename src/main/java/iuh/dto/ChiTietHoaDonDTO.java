@@ -1,5 +1,6 @@
 package iuh.dto;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import iuh.entity.HoaDon;
@@ -16,7 +17,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Setter
 @Getter
-public class ChiTietHoaDonDTO {
+public class ChiTietHoaDonDTO implements Serializable {
     private Long id;
 
     private HoaDon hoaDon;
