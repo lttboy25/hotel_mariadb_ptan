@@ -1,5 +1,6 @@
 package iuh.service;
 
+import iuh.dao.PhieuDatPhongDao;
 import iuh.entity.KhachHang;
 import iuh.entity.PhieuDatPhong;
 
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PhieuDatPhongService {
+    PhieuDatPhongDao phieuDatPhongDao = new PhieuDatPhongDao();
 
     public List<PhieuDatPhong> getAll() {
         List<PhieuDatPhong> list = new ArrayList<>();
@@ -34,5 +36,13 @@ public class PhieuDatPhongService {
         ));
 
         return list;
+    }
+
+    public List<PhieuDatPhong> getByTrangThai(String trangThai) {
+        List<PhieuDatPhong> list = new ArrayList<>();
+        if (trangThai == null) {
+            return list;
+        }
+        return phieuDatPhongDao.getPhieuDatPhongByStatus(trangThai);
     }
 }

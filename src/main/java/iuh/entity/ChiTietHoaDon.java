@@ -21,9 +21,9 @@ public class ChiTietHoaDon {
     @JoinColumn(name = "maHoaDon")
     private HoaDon hoaDon;
 
-    @ManyToOne
-    @JoinColumn(name = "maPhieuDatPhong")
-    private PhieuDatPhong phieuDatPhong;
+    @OneToOne
+    @JoinColumn(name = "id")
+    private ChiTietPhieuDatPhong chiTietPhieuDatPhong;
 
     @ManyToOne
     @JoinColumn(name = "maPhong")

@@ -4,11 +4,22 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
 
+import iuh.entity.ChiTietPhieuDatPhong;
+import iuh.entity.LoaiPhong;
+import iuh.entity.PhieuDatPhong;
+import iuh.entity.Phong;
+import iuh.service.ChiTietPhieuDatPhongService;
+import iuh.service.PhieuDatPhongService;
 import iuh.service.ThanhToanService;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * ThanhToanPanel - Giao diện trang Thanh Toán
@@ -53,14 +64,10 @@ public class ThanhToanPanel extends JPanel {
     private static final String[] COT_BANG = {
             "Phòng", "Loại Phòng", "Thời gian lưu trú", "Tổng tiền"
     };
-    private static final Object[][] DU_LIEU_PHONG = {
-            { "101", "Thường", "36 giờ", "1.000.000" },
-            { "201", "VIP", "36 giờ", "1.000.000" },
-            { "301", "VIP", "8 giờ", "300.000" },
-    };
 
-    private static final long[] MENH_GIA_NHANH = {
-            500_000, 1_000_000, 2_000_000, 5_000_000
+
+    private static final double[] MENH_GIA_NHANH = {
+            10_000, 30_000, 50_000, 100_000,  200_000,300_000, 500_000
     };
 
     private static final long TONG_TIEN = 2_530_000;
@@ -81,6 +88,15 @@ public class ThanhToanPanel extends JPanel {
     private QRCodePanel qrCodePanel;
     private JButton btnThanhToan;
     private ThanhToanService thanhToanService;
+    private ChiTietPhieuDatPhongService chiTietPhieuDatPhongService = new ChiTietPhieuDatPhongService();
+    private PhieuDatPhongService phieuDatPhongService = new PhieuDatPhongService();
+    private double tongTienPhong = 0.0;
+    private double tienKhachDua = 0.0;
+    private ChiTietPhieuDatPhong chiTietPhieuDatPhongDangChon = null;
+    private NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
+
+
+
 
     // ═══════════════════════════════════════════════════════════════════
     // KHỞI TẠO
@@ -162,7 +178,21 @@ public class ThanhToanPanel extends JPanel {
         JPanel card = new RoundedPanel(12, BG_WHITE);
         card.setLayout(new BorderLayout());
 
-        modelBang = new DefaultTableModel(thanhToanService.getRoomsByStatus("Đang thuê"), COT_BANG) {
+        List<ChiTietPhieuDatPhong> ds = getDanhSachPhieuDatPhongDeThanhToan();
+
+
+        Object[][] data = new Object[ds.size()][4];
+
+        for (int i = 0; i < ds.size(); i++) {
+            ChiTietPhieuDatPhong ctpdp = ds.get(i);
+            data[i][0] = ctpdp.getPhong().getSoPhong();
+            data[i][1] = ctpdp.getPhong().getLoaiPhong();
+            data[i][2] = ctpdp.getSoGioLuuTru();
+            data[i][3] = ctpdp.tinhThanhTien();
+
+        }
+
+        modelBang = new DefaultTableModel(data, COT_BANG) {
             @Override
             public boolean isCellEditable(int row, int col) {
                 return false;
@@ -212,6 +242,33 @@ public class ThanhToanPanel extends JPanel {
             }
         });
 
+        bangPhong.getColumnModel().getColumn(3).setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            protected void setValue(Object value) {
+                if (value instanceof Number) {
+                    setText(formatter.format(value) + " đ");
+                } else {
+                    setText("");
+                }
+            }
+        });
+
+        bangPhong.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = bangPhong.getSelectedRow();
+                // "Phòng", "Loại Phòng", "Thời gian lưu trú", "Tổng tiền"
+
+                if(row != -1) {
+                    tongTienPhong = (double) bangPhong.getValueAt(row, 3);
+                    updateSummaryCard();
+
+                }
+
+            }
+        });
+
         JScrollPane scroll = new JScrollPane(bangPhong);
         scroll.setBorder(BorderFactory.createEmptyBorder());
         scroll.getViewport().setBackground(BG_WHITE);
@@ -230,7 +287,8 @@ public class ThanhToanPanel extends JPanel {
         body.setLayout(new BoxLayout(body, BoxLayout.Y_AXIS));
         body.setBorder(new EmptyBorder(18, 28, 18, 28));
 
-        lblTongTien = new JLabel("2.300.000 đ");
+
+        lblTongTien = new JLabel(formatter.format(tongTienPhong) + " đ");
         lblKhuyenMai = new JLabel("0%");
         lblVAT = new JLabel("10%");
         lblTotal = new JLabel("2.530.000 đ");
@@ -244,11 +302,11 @@ public class ThanhToanPanel extends JPanel {
         lblTotal.setFont(F_BOLD16);
         lblTotal.setForeground(BLUE);
 
-        body.add(buildSummaryRow("Tổng tiền phòng", "💰", lblTongTien));
+        body.add(buildSummaryRow("Tổng tiền phòng", lblTongTien));
         body.add(Box.createVerticalStrut(10));
-        body.add(buildSummaryRow("Khuyến mãi", "🎁", lblKhuyenMai));
+        body.add(buildSummaryRow("Khuyến mãi", lblKhuyenMai));
         body.add(Box.createVerticalStrut(10));
-        body.add(buildSummaryRow("VAT", "📋", lblVAT));
+        body.add(buildSummaryRow("VAT", lblVAT));
         body.add(Box.createVerticalStrut(12));
 
         JSeparator sep = new JSeparator();
@@ -278,12 +336,12 @@ public class ThanhToanPanel extends JPanel {
         return card;
     }
 
-    private JPanel buildSummaryRow(String nhan, String icon, JLabel lblGiaTri) {
+    private JPanel buildSummaryRow(String nhan, JLabel lblGiaTri) {
         JPanel row = new JPanel(new BorderLayout(8, 0));
         row.setOpaque(false);
         row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 28));
 
-        JLabel lblNhan = new JLabel(icon + "  " + nhan);
+        JLabel lblNhan = new JLabel(nhan);
         lblNhan.setFont(F_LABEL);
         lblNhan.setForeground(TEXT_MID);
         lblGiaTri.setHorizontalAlignment(JLabel.RIGHT);
@@ -406,16 +464,20 @@ public class ThanhToanPanel extends JPanel {
         panel.add(Box.createVerticalStrut(8));
 
         // Grid mệnh giá 2×2
-        JPanel gridMenhGia = new JPanel(new GridLayout(2, 2, 8, 8));
+        JPanel gridMenhGia = new JPanel(new GridLayout(3, 2, 8, 8));
         gridMenhGia.setOpaque(false);
         gridMenhGia.setMaximumSize(new Dimension(Integer.MAX_VALUE, 96));
         gridMenhGia.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         btnMenhGia = new JButton[MENH_GIA_NHANH.length];
         for (int i = 0; i < MENH_GIA_NHANH.length; i++) {
-            final long soTien = MENH_GIA_NHANH[i];
-            JButton btn = buildOutlineButton(formatTien(soTien) + " đ");
-            btn.addActionListener(e -> capNhatKhachDua(soTien));
+            final double soTien = MENH_GIA_NHANH[i];
+            JButton btn = buildOutlineButton(formatter.format(soTien) + " đ");
+            btn.addActionListener(e -> {
+                if (tongTienPhong>0) {
+                    capNhatKhachDua(soTien);
+                }
+                });
             btnMenhGia[i] = btn;
             gridMenhGia.add(btn);
         }
@@ -497,7 +559,7 @@ public class ThanhToanPanel extends JPanel {
 
         panel.add(Box.createVerticalStrut(8));
 
-        JLabel lblSoTien = new JLabel("Số tiền: " + formatTien(TONG_TIEN) + " đ");
+        JLabel lblSoTien = new JLabel("Số tiền: " + formatter.format(tongTienPhong) + " đ");
         lblSoTien.setFont(F_BOLD14);
         lblSoTien.setForeground(BLUE);
         lblSoTien.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -511,36 +573,40 @@ public class ThanhToanPanel extends JPanel {
     // ═══════════════════════════════════════════════════════════════════
 
     /** Điền số tiền từ nút mệnh giá nhanh vào ô nhập */
-    private void capNhatKhachDua(long soTien) {
-        tfKhachDua.setText(String.format("%,d", soTien).replace(',', '.'));
+    private void capNhatKhachDua(double soTien) {
+        tienKhachDua+=soTien;
+        tfKhachDua.setText(formatter.format(tienKhachDua));
         tinhTienThua();
     }
 
     /** Tính và hiển thị tiền thừa = khách đưa − tổng tiền */
     private void tinhTienThua() {
         try {
-            String raw = tfKhachDua.getText().replaceAll("[^\\d]", "");
-            if (raw.isEmpty()) {
+            if (tongTienPhong <= 0) {
                 lblTienThua.setText("—");
                 return;
             }
-            long khachDua = Long.parseLong(raw);
-            long thua = khachDua - TONG_TIEN;
-            if (thua >= 0) {
-                lblTienThua.setText(formatTien(thua) + " đ");
+
+            String text = tfKhachDua.getText().replace("đ", "").trim();
+            Number number = formatter.parse(text);
+            tienKhachDua = number.doubleValue();
+
+            double vat = tongTienPhong * 0.1;
+            double total = tongTienPhong + vat;
+
+            double tienThua = tienKhachDua - total;
+
+            if (tienThua >= 0) {
+                lblTienThua.setText(formatter.format(tienThua) + " đ");
                 lblTienThua.setForeground(GREEN);
             } else {
-                lblTienThua.setText("Thiếu " + formatTien(-thua) + " đ");
+                lblTienThua.setText("Thiếu " + formatter.format(-tienThua) + " đ");
                 lblTienThua.setForeground(ORANGE);
             }
-        } catch (NumberFormatException ex) {
+
+        } catch (Exception e) {
             lblTienThua.setText("—");
         }
-    }
-
-    /** Định dạng tiền VNĐ: 1000000 → "1.000.000" */
-    private String formatTien(long soTien) {
-        return String.format("%,d", soTien).replace(',', '.');
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -691,6 +757,7 @@ public class ThanhToanPanel extends JPanel {
         private final int size;
         private final BufferedImage qrImage;
 
+
         QRCodePanel(int size) {
             this.size = size;
             setOpaque(false);
@@ -790,4 +857,36 @@ public class ThanhToanPanel extends JPanel {
             super.paintComponent(g);
         }
     }
+
+    public List<ChiTietPhieuDatPhong> getDanhSachPhieuDatPhongDeThanhToan() {
+        List<PhieuDatPhong> dsPhieuDatPhongDangThue = new ArrayList<>();
+        List<ChiTietPhieuDatPhong> dsPhongDangThue = new ArrayList<>();
+
+        if (phieuDatPhongService.getByTrangThai("Đã nhận phòng").size() > 0) {
+            dsPhieuDatPhongDangThue = phieuDatPhongService.getByTrangThai("Đã nhận phòng");
+        }
+        else {
+            return dsPhongDangThue;
+        }
+
+        dsPhieuDatPhongDangThue.forEach(d -> {
+            List<ChiTietPhieuDatPhong> dsChiTietTuongUng = chiTietPhieuDatPhongService.getChiTietPhieuDatPhongByMaPDP(d.getMaPhieuDatPhong());
+            dsChiTietTuongUng.forEach(ctpdp -> {
+                dsPhongDangThue.add(ctpdp);
+            });
+        });
+        return dsPhongDangThue;
+    }
+
+    private void updateSummaryCard() {
+
+        lblTongTien.setText(formatter.format(tongTienPhong) + " đ");
+
+        double vat = tongTienPhong * 0.1;
+        double total = tongTienPhong + vat;
+
+        lblVAT.setText("10%");
+        lblTotal.setText(formatter.format(total) + " đ");
+    }
+
 }

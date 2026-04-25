@@ -42,4 +42,7 @@ public class ChiTietPhieuDatPhong {
 
     @OneToOne(mappedBy = "chiTietPhieuDatPhong", cascade = CascadeType.ALL, orphanRemoval = true)
     private PhieuHuyPhong phieuHuyPhong;
+
+    @OneToOne(mappedBy = "chiTietPhieuDatPhong")
+    private ChiTietHoaDon chiTietHoaDon;
 }

@@ -22,7 +22,7 @@ public class PhieuDatPhong {
     @Column(name = "ngayTao")
     private LocalDate ngayTao;
     @Column(name = "trangThai", length = 20)
-    private String trangThai;
+    private String trangThai; //Đã đặt, Đã nhận phòng, Đã trả phòng, Đã hủy
     @Column(name = "tienDatCoc")
     private long tienDatCoc;
 
