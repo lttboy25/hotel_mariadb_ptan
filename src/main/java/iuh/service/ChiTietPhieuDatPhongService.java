@@ -16,4 +16,11 @@ public class ChiTietPhieuDatPhongService {
         }
         return  chitietPhieuDatPhongDao.getByMaPhieuDatPhong(maPDP);
     }
+
+    public boolean updateTrangThaiByMaPhong(String maPhong, String trangThai){
+        if (maPhong == null || trangThai == null){return false;}
+        if (chitietPhieuDatPhongDao.findChiTietPhieuDatPhongByMaPhong(maPhong) == null){return false;}
+
+        return  chitietPhieuDatPhongDao.updateStatusDetailTicketByRoomCode(maPhong, trangThai);
+    }
 }

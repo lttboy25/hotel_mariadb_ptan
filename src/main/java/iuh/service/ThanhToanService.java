@@ -1,20 +1,23 @@
 package iuh.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import iuh.dao.ChiTietHoaDonDao;
+import iuh.dao.HoaDonDao;
 import iuh.dto.ChiTietHoaDonDTO;
 import iuh.dto.HoaDonDTO;
-import iuh.entity.ChiTietHoaDon;
-import iuh.entity.ChiTietPhieuDatPhong;
-import iuh.entity.PhieuDatPhong;
-import iuh.entity.Phong;
+import iuh.entity.*;
 import iuh.mapper.Mapper;
 
 public class ThanhToanService {
     private PhongService phongService = new PhongService();
-    private ChiTietPhieuDatPhongService  chiTietPhieuDatPhongService = new ChiTietPhieuDatPhongService();
+    private ChiTietPhieuDatPhongService chiTietPhieuDatPhongService = new ChiTietPhieuDatPhongService();
+    private HoaDonDao hoaDonDao = new HoaDonDao();
+    private ChiTietHoaDonDao chiTietHoaDonDao = new ChiTietHoaDonDao();
     private PhieuDatPhongService phieuDatPhongService = new PhieuDatPhongService();
+
     private Mapper mapper = new Mapper();
     // Quy trình thực hiện thanh toán:
     // B1: Nhập CCCD tìm Phòng cần thanh toán
@@ -37,69 +40,101 @@ public class ThanhToanService {
         List<ChiTietPhieuDatPhong> dsPhongDangThue = new ArrayList<>();
         List<PhieuDatPhong> dsPhieuDatPhong = phieuDatPhongService.getByTrangThai("Đã nhận phòng");
 
-        if (dsPhieuDatPhong == null || dsPhieuDatPhong.isEmpty()) return dsPhongDangThue;
+        if (dsPhieuDatPhong == null || dsPhieuDatPhong.isEmpty())
+            return dsPhongDangThue;
 
         dsPhieuDatPhong.forEach(pdp -> {
             List<ChiTietPhieuDatPhong> ds = chiTietPhieuDatPhongService
                     .getChiTietPhieuDatPhongByMaPDP(pdp.getMaPhieuDatPhong());
-            if (ds != null) dsPhongDangThue.addAll(ds);
+            if (ds != null)
+                dsPhongDangThue.addAll(ds);
         });
 
         return dsPhongDangThue;
     }
 
-    //Thanh toán 1 chi tiết phiếu đặt phon -> tạo 1 chi tiết hóa đơn
-    // Kiểm tra nếu có phiểu đặt phòng
+    public boolean thanhToan(List<ChiTietPhieuDatPhong> listThanhToan) {
 
-    public boolean thanhToan( List<ChiTietPhieuDatPhong> listThanhToan) {
-//        Click Thanh Toán
-//→ Lấy danh sách phòng được chọn
-//→ Validate cùng phiếu
-//→ Tính tổng tiền
-//
-//→ INSERT hoadon (1 dòng)
-        double tongtien = 0.0;
-        List<ChiTietHoaDonDTO> dsChiTietHoaDonDTO = new ArrayList<>();
+        if (listThanhToan == null || listThanhToan.isEmpty()) {
+            return false;
+        }
+
+        double tongTien = 0.0;
         List<ChiTietHoaDon> dsChiTietHoaDon = new ArrayList<>();
 
-        for (ChiTietPhieuDatPhong ctpdp : listThanhToan) {
-            ChiTietHoaDonDTO chiTietHoaDonDTO = ChiTietHoaDonDTO
-                            .builder()
-                            .chiTietPhieuDatPhong(ctpdp)
-                            .phong(ctpdp.getPhong())
-                            .ngayTao(ctpdp.getThoiGianTraPhong())
-                            .tongTien(ctpdp.tinhThanhTien())
-                            .build();
-            dsChiTietHoaDonDTO.add(chiTietHoaDonDTO);
-            dsChiTietHoaDon.add(mapper.map(chiTietHoaDonDTO));
-            tongtien += ctpdp.tinhThanhTien();
-        }
-            HoaDonDTO hoaDonDTO = HoaDonDTO.builder()
-                    .ngayDat(listThanhToan.get(0).getThoiGianNhanPhong())
-                    .khachHang(listThanhToan.get(0).getPhieuDatPhong().getKhachHang())
-//                    .khuyenMai()
-//                    .nhanVien()
-                    .trangThai("Đã thanh toán")
-                    .tongTien(tongtien)
-                    .chiTietHoaDon(dsChiTietHoaDon)
-                    .build();
+        PhieuDatPhong phieuDatPhong = listThanhToan.get(0).getPhieuDatPhong();
 
-            for (ChiTietHoaDonDTO ct: dsChiTietHoaDonDTO) {
-                ct.setHoaDon(mapper.map(hoaDonDTO));
+        for (ChiTietPhieuDatPhong ctpdp : listThanhToan) {
+
+            if ("Đã thanh toán".equalsIgnoreCase(ctpdp.getTrangThai())) {
+                throw new RuntimeException("Phòng " + ctpdp.getPhong().getMaPhong() + " đã thanh toán!");
             }
 
+            double tien = ctpdp.tinhThanhTien();
+            tongTien += tien;
 
+            ChiTietHoaDon cthd = new ChiTietHoaDon();
+            cthd.setChiTietPhieuDatPhong(ctpdp);
+            cthd.setPhong(ctpdp.getPhong());
+            cthd.setNgayTao(ctpdp.getThoiGianTraPhong());
+            cthd.setTongTien(tien);
 
-//
-//→ FOR mỗi phòng:
-//        INSERT chitiethoadon
-//        UPDATE chitietphieudatphong
-//        UPDATE phong
-//
-//→ Nếu tất cả phòng của phiếu đã xong:
-//        UPDATE phieudatphong
-//
-//→ UPDATE calamviecnhanvien
+            dsChiTietHoaDon.add(cthd);
+        }
+
+        HoaDon hoaDon = new HoaDon();
+        hoaDon.setNgayDat(LocalDateTime.now());
+        hoaDon.setKhachHang(phieuDatPhong.getKhachHang());
+        // hoaDon.setNhanVien(nhanVienThanhToan);
+        hoaDon.setTrangThai("Đã thanh toán");
+        hoaDon.setTongTien(tongTien);
+
+        hoaDon = hoaDonDao.save(mapper.map(hoaDon));
+        if (hoaDon == null) {
+            throw new RuntimeException("Không thể tạo hóa đơn");
+        }
+
+        for (ChiTietHoaDon cthd : dsChiTietHoaDon) {
+
+            cthd.setHoaDon(hoaDon);
+
+            ChiTietHoaDon saved = chiTietHoaDonDao.save(mapper.map(cthd));
+            if (saved == null) {
+                throw new RuntimeException("Lỗi lưu chi tiết hóa đơn");
+            }
+
+            boolean ktraChiTietPhieu = chiTietPhieuDatPhongService
+                    .updateTrangThaiByMaPhong(cthd.getPhong().getMaPhong(), "Đã thanh toán");
+
+            if (!ktraChiTietPhieu) {
+                throw new RuntimeException("Lỗi cập nhật chi tiết phiếu");
+            }
+
+            boolean ktraPhong = phongService
+                    .updateStatusRoom(cthd.getPhong().getMaPhong(), "Trống");
+
+            if (!ktraPhong) {
+                throw new RuntimeException("Lỗi cập nhật phòng");
+            }
+        }
+
+        List<ChiTietPhieuDatPhong> dsAll = chiTietPhieuDatPhongService
+                .getChiTietPhieuDatPhongByMaPDP(phieuDatPhong.getMaPhieuDatPhong());
+
+        boolean thanhToanToanBoPhieu = true;
+        for (ChiTietPhieuDatPhong ct : dsAll) {
+            if (!"Đã thanh toán".equalsIgnoreCase(ct.getTrangThai())) {
+                thanhToanToanBoPhieu = false;
+                break;
+            }
+        }
+
+        if (thanhToanToanBoPhieu) {
+            phieuDatPhongService.updateTrangThai(
+                    phieuDatPhong.getMaPhieuDatPhong(),
+                    "Đã thanh toán");
+        }
+
         return true;
     }
 }

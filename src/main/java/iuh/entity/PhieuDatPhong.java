@@ -23,7 +23,7 @@ public class PhieuDatPhong implements Serializable {
     @Column(name = "ngayTao")
     private LocalDate ngayTao;
     @Column(name = "trangThai", length = 20)
-    private String trangThai; //Đã đặt, Đã nhận phòng, Đã trả phòng, Đã hủy
+    private String trangThai; //Đã đặt, Đã nhận phòng, Đã thanh toán, Đã hủy
     @Column(name = "tienDatCoc")
     private long tienDatCoc;
 

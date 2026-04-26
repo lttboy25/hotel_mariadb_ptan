@@ -89,4 +89,8 @@ public class PhongService {
 
         return ketqua;
     }
+
+    public boolean updateStatusRoom(String maPhong, String trangThai) {
+        return phongDao.updateStatusRoom(maPhong, trangThai);
+    }
 }

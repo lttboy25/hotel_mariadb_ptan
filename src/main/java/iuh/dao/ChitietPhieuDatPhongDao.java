@@ -60,12 +60,56 @@ public class ChitietPhieuDatPhongDao extends AbstractGenericDaoImpl<ChiTietPhieu
         );
     }
 
-//    public boolean updateStatusByBookingTicket(String ma, String status) {
-//        EntityManager em = JPAUtil.getEntityManager();
-//
-//        try {
-//            em.getTransaction().begin();
-//
-//        }
-//    }
+    public ChiTietPhieuDatPhong findChiTietPhieuDatPhongByMaPhong(String maPhong){
+        EntityManager em = JPAUtil.getEntityManager();
+            try {
+               String query = """
+                       SELECT ctpdp 
+                       FROM ChiTietPhieuDatPhong ctpdp
+                       WHERE ctpdp.phong.maPhong = :maPhong
+                       """;
+
+               return(
+                       doInTransaction(entityManager ->
+                               em.createQuery(query,  ChiTietPhieuDatPhong.class)
+                                       .setParameter("maPhong", maPhong)
+                                       .getSingleResultOrNull()
+                               )
+                       );
+           } catch (Exception e) {
+               throw new RuntimeException(e);
+           }
+
+
+    }
+
+    public boolean updateStatusDetailTicketByRoomCode(String maPhong, String status) {
+        EntityManager em = JPAUtil.getEntityManager();
+
+        try {
+            em.getTransaction().begin();
+
+            String query = """
+                UPDATE ChiTietPhieuDatPhong ctpdp
+                SET ctpdp.trangThai = :status
+                WHERE ctpdp.phong.maPhong = :maPhong
+        """;
+
+            int updatedRows = em.createQuery(query)
+                    .setParameter("status", status)
+                    .setParameter("maPhong", maPhong)
+                    .executeUpdate();
+
+            em.getTransaction().commit();
+
+            return updatedRows > 0;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RuntimeException(e);
+        } finally {
+            em.close();
+        }
+    }
 }

@@ -520,6 +520,7 @@ public class ThanhToanPanel extends JPanel {
         btnThanhToan.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnThanhToan.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
         btnThanhToan.setPreferredSize(new Dimension(Integer.MAX_VALUE, 48));
+        btnThanhToan.addActionListener(e -> {thanhToanService.thanhToan(listThanhToan);});
         panel.add(btnThanhToan);
 
         return panel;

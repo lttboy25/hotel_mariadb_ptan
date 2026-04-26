@@ -45,4 +45,16 @@ public class PhieuDatPhongService {
         }
         return phieuDatPhongDao.getPhieuDatPhongByStatus(trangThai);
     }
+
+    public PhieuDatPhong getByMaPhieu(String maPhieu) {
+        if (maPhieu == null) {
+            return null;
+        }
+        return phieuDatPhongDao.getPhieuDatPhongByCode(maPhieu);
+    }
+
+    public boolean updateTrangThai(String maPhieu, String trangThai) {
+        if (trangThai == null || trangThai.isEmpty() || maPhieu == null || maPhieu.isEmpty()) {return false;}
+        return phieuDatPhongDao.updateStatusBookingTicket(maPhieu, trangThai);
+    }
 }

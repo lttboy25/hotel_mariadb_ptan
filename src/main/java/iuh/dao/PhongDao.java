@@ -163,6 +163,36 @@ public class PhongDao extends AbstractGenericDaoImpl<Phong, String> {
     public List<Phong> getRoomsByStatus(String status) {
         return doInTransaction(em -> em.createQuery("""
                 SELECT p FROM Phong p
-                WHERE p.tinhTrang = """ + status, Phong.class).getResultList());
+                WHERE p.tinhTrang = :status """ , Phong.class).setParameter("status", status).getResultList());
+    }
+
+    public boolean updateStatusRoom(String maPhong, String trangThai) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+
+            String query = """
+                UPDATE Phong p
+                SET p.trangThai = :status
+                WHERE p.maPhong = :maPhong
+        """;
+
+            int updatedRows = em.createQuery(query)
+                    .setParameter("status", trangThai)
+                    .setParameter("maPhong", maPhong)
+                    .executeUpdate();
+
+            em.getTransaction().commit();
+
+            return updatedRows > 0;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RuntimeException(e);
+        } finally {
+            em.close();
+        }
+
     }
 }

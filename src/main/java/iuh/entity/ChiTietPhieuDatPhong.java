@@ -26,7 +26,7 @@ public class ChiTietPhieuDatPhong implements Serializable {
     @JoinColumn(name = "maPhong")
     private Phong phong;
 
-    private String trangThai;
+    private String trangThai; //Đã thanh toán, Chưa thanh toán
 
     @Column(name = "soGioLuuTru")
     private int soGioLuuTru;
