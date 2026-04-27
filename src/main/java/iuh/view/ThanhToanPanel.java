@@ -108,6 +108,7 @@ public class ThanhToanPanel extends JPanel {
     private double       tienKhachDua  = 0.0;
     private NumberFormat formatter     = NumberFormat.getInstance(new Locale("vi", "VN"));
     private double tienThua = 0.0;
+    private double tongTien = 0.0;
 
     // ═══════════════════════════════════════════════════════════════════
     // KHỞI TẠO
@@ -621,7 +622,7 @@ public class ThanhToanPanel extends JPanel {
         btnThanhToan.setPreferredSize(new Dimension(Integer.MAX_VALUE, 48));
         btnThanhToan.addActionListener(e -> {
 
-            boolean isThanhToan = thanhToanService.coTheThanhToan(tienKhachDua, tongTienPhong);
+            boolean isThanhToan = thanhToanService.coTheThanhToan(tienKhachDua, tongTien);
             if (isThanhToan) {
                 HoaDon hoaDon = thanhToanService.thanhToan(listThanhToan, tienKhachDua, tienThua);
                 if (hoaDon != null) {
@@ -785,8 +786,8 @@ public class ThanhToanPanel extends JPanel {
             tienKhachDua = number.doubleValue();
 
             double vat      = tongTienPhong * 0.1;
-            tongTienPhong   = tongTienPhong + vat;
-            tienThua = tienKhachDua - tongTienPhong;
+            tongTien   = tongTienPhong + vat;
+            tienThua = tienKhachDua - tongTien;
 
             if (tienThua >= 0) {
                 lblTienThua.setText(formatter.format(tienThua) + " đ");

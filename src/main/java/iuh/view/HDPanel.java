@@ -53,7 +53,7 @@ public class HDPanel extends JPanel {
         JLabel lbl = new JLabel(text);
         lbl.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         lbl.setForeground(new Color(0x1A1A2E));
-        lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
         lbl.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
         panel.add(lbl);
     }
