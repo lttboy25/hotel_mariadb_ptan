@@ -17,6 +17,7 @@ public class ThanhToanService {
     private HoaDonDao hoaDonDao = new HoaDonDao();
     private ChiTietHoaDonDao chiTietHoaDonDao = new ChiTietHoaDonDao();
     private PhieuDatPhongService phieuDatPhongService = new PhieuDatPhongService();
+    private  NhanVienService nhanVienService = new NhanVienService();
 
     private Mapper mapper = new Mapper();
     // Quy trình thực hiện thanh toán:
@@ -36,9 +37,10 @@ public class ThanhToanService {
         return phongService.getRoomsByStatus(status);
     }
 
-    public List<ChiTietPhieuDatPhong> getDanhSachPhieuDatPhongDeThanhToan() {
+    public List<ChiTietPhieuDatPhong> getDanhSachPhieuDatPhongDeThanhToan(String cccd) {
         List<ChiTietPhieuDatPhong> dsPhongDangThue = new ArrayList<>();
-        List<PhieuDatPhong> dsPhieuDatPhong = phieuDatPhongService.getByTrangThai("Đã nhận phòng");
+        List<PhieuDatPhong> dsPhieuDatPhongChuaLoc = phieuDatPhongService.getByTrangThai("Đã nhận phòng");
+        List<PhieuDatPhong> dsPhieuDatPhong = phieuDatPhongService.filteredListByCCCD(dsPhieuDatPhongChuaLoc, cccd);
 
         if (dsPhieuDatPhong == null || dsPhieuDatPhong.isEmpty())
             return dsPhongDangThue;
@@ -82,10 +84,12 @@ public class ThanhToanService {
             dsChiTietHoaDon.add(cthd);
         }
 
+        NhanVien nv = nhanVienService.getNhanVienById("NV001").orElse(null);
+
         HoaDon hoaDon = new HoaDon();
         hoaDon.setNgayDat(LocalDateTime.now());
         hoaDon.setKhachHang(phieuDatPhong.getKhachHang());
-        // hoaDon.setNhanVien(nhanVienThanhToan);
+         hoaDon.setNhanVien(nv);
         hoaDon.setTrangThai("Đã thanh toán");
         hoaDon.setTongTien(tongTien);
 

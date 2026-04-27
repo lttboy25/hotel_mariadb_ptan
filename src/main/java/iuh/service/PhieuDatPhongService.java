@@ -57,4 +57,15 @@ public class PhieuDatPhongService {
         if (trangThai == null || trangThai.isEmpty() || maPhieu == null || maPhieu.isEmpty()) {return false;}
         return phieuDatPhongDao.updateStatusBookingTicket(maPhieu, trangThai);
     }
+
+    public List<PhieuDatPhong> filteredListByCCCD(List<PhieuDatPhong> dsGoc, String CCCD) {
+        List<PhieuDatPhong> dsTraVe = new ArrayList<>();
+
+        for (PhieuDatPhong ph : dsGoc) {
+            if (ph.getKhachHang().getCCCD().equalsIgnoreCase(CCCD)) {
+                dsTraVe.add(ph);
+            }
+        }
+        return dsTraVe;
+    }
 }

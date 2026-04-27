@@ -5,6 +5,9 @@ import javax.swing.border.*;
 import javax.swing.table.*;
 
 import iuh.entity.ChiTietPhieuDatPhong;
+import iuh.entity.PhieuDatPhong;
+import iuh.service.ChiTietPhieuDatPhongService;
+import iuh.service.PhieuDatPhongService;
 import iuh.service.ThanhToanService;
 
 import java.awt.*;
@@ -43,6 +46,11 @@ public class ThanhToanPanel extends JPanel {
     private static final Font F_TABLE   = new Font("Segoe UI", Font.PLAIN, 13);
     private static final Font F_TABLE_H = new Font("Segoe UI", Font.BOLD,  13);
 
+    // ═══════════════════════════════════════════════════════════════════
+    // DỮ LIỆU / CẤU HÌNH BẢNG
+    // Cột 0: Checkbox (Boolean) | Cột 1-4: thông tin phòng
+    // ═══════════════════════════════════════════════════════════════════
+    // Header cột 0 để trống — sẽ thay bằng JCheckBox "chọn tất cả"
     private static final String[] COT_BANG = {
             "", "Phòng", "Loại Phòng", "Thời gian lưu trú", "Tổng tiền"
     };
@@ -76,8 +84,9 @@ public class ThanhToanPanel extends JPanel {
     private JButton      btnThanhToan;
 
     // ── Services & dữ liệu nghiệp vụ
-    private ThanhToanService thanhToanService = new ThanhToanService();
-
+    private ThanhToanService             thanhToanService = new  ThanhToanService();
+    private ChiTietPhieuDatPhongService  chiTietPhieuDatPhongService = new ChiTietPhieuDatPhongService();
+    private PhieuDatPhongService         phieuDatPhongService        = new PhieuDatPhongService();
 
     // Danh sách song song với bảng (index i <=> row i)
     private List<ChiTietPhieuDatPhong> danhSachPhong = new ArrayList<>();
@@ -155,37 +164,91 @@ public class ThanhToanPanel extends JPanel {
                 }
             }
         });
+        // Nhấn Enter trong ô CCCD = nhấn nút Tìm kiếm
+        tfCCCD.addActionListener(e -> timKiem());
 
         btnTimKiem = buildBlueButton("Tìm kiếm", 100, 36);
+        btnTimKiem.addActionListener(e -> timKiem());
+
+        // Nút Làm mới: xoá ô CCCD và reset toàn bộ bảng
+        JButton btnLamMoi = buildOutlineIconButton("↺ Làm mới", 100, 36);
+        btnLamMoi.addActionListener(e -> refresh());
+
         card.add(tfCCCD);
         card.add(btnTimKiem);
+        card.add(btnLamMoi);
         return card;
+    }
+
+    private void timKiem() {
+        String cccd = tfCCCD.getText().trim();
+
+        // Không tìm nếu ô trống hoặc còn placeholder
+        if (cccd.isEmpty() || cccd.equals("Nhập CCCD")) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Vui lòng nhập CCCD khách hàng trước khi tìm kiếm.",
+                    "Thông báo",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        listThanhToan.clear();
+        tongTienPhong = 0.0;
+        tienKhachDua  = 0.0;
+
+        danhSachPhong = thanhToanService.getDanhSachPhieuDatPhongDeThanhToan(cccd);
+
+        modelBang.setRowCount(0);
+        for (ChiTietPhieuDatPhong ct : danhSachPhong) {
+            modelBang.addRow(new Object[]{
+                    false,
+                    ct.getPhong().getSoPhong(),
+                    ct.getPhong().getLoaiPhong(),
+                    ct.getSoGioLuuTru(),
+                    ct.tinhThanhTien()
+            });
+        }
+
+        // Reset checkbox header
+        chkTatCa.setSelected(false);
+        bangPhong.getTableHeader().repaint();
+
+        // Cập nhật summary về trạng thái rỗng
+        lblSoPhongChon.setText("Chưa chọn phòng nào");
+        lblSoPhongChon.setForeground(TEXT_GRAY);
+        lblTongTien.setText("0 đ");
+        lblVAT.setText("10%");
+        lblTotal.setText("0 đ");
+        tfKhachDua.setText("");
+        lblTienThua.setText("—");
+        lblTienThua.setForeground(GREEN);
+
+        // Thông báo nếu không tìm thấy kết quả
+        if (danhSachPhong.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Không tìm thấy phòng nào đang thuê với CCCD: " + cccd,
+                    "Không có kết quả",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+        }
     }
 
     private JPanel buildTableCard() {
         JPanel card = new RoundedPanel(12, BG_WHITE);
         card.setLayout(new BorderLayout());
 
-        danhSachPhong = thanhToanService.getDanhSachPhieuDatPhongDeThanhToan();
-
-        Object[][] data = new Object[danhSachPhong.size()][5];
-        for (int i = 0; i < danhSachPhong.size(); i++) {
-            ChiTietPhieuDatPhong ct = danhSachPhong.get(i);
-            data[i][0] = false;
-            data[i][1] = ct.getPhong().getSoPhong();
-            data[i][2] = ct.getPhong().getLoaiPhong();
-            data[i][3] = ct.getSoGioLuuTru();
-            data[i][4] = ct.tinhThanhTien();
-        }
-
-        modelBang = new DefaultTableModel(data, COT_BANG) {
+        // Bảng khởi tạo RỖNG — chỉ load data khi nhấn Tìm kiếm
+        modelBang = new DefaultTableModel(new Object[0][5], COT_BANG) {
             @Override
             public Class<?> getColumnClass(int col) {
                 return col == 0 ? Boolean.class : Object.class;
             }
             @Override
             public boolean isCellEditable(int row, int col) {
-                return col == 0;
+                return col == 0; // chỉ cột checkbox được click
             }
         };
 
@@ -203,6 +266,7 @@ public class ThanhToanPanel extends JPanel {
         bangPhong.setIntercellSpacing(new Dimension(0, 0));
         bangPhong.setFocusable(false);
 
+        // ── Header: cột 0 thay bằng JCheckBox "chọn tất cả" ──
         chkTatCa = new JCheckBox();
         chkTatCa.setOpaque(true);
         chkTatCa.setBackground(BG_WHITE);
@@ -235,6 +299,7 @@ public class ThanhToanPanel extends JPanel {
         header.setBorder(new MatteBorder(0, 0, 2, 0, BORDER_COL));
         header.setPreferredSize(new Dimension(0, 42));
 
+        // Click header cột 0 -> tick/untick tất cả
         header.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -244,10 +309,12 @@ public class ThanhToanPanel extends JPanel {
                     for (int r = 0; r < modelBang.getRowCount(); r++) {
                         modelBang.setValueAt(trangThaiMoi, r, 0);
                     }
+                    // capNhatListThanhToan() tự gọi qua TableModelListener bên dưới
                 }
             }
         });
 
+        // ── Renderer cột dữ liệu (cột 1-4): zebra stripe + cột tiền màu cam ──
         bangPhong.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(
@@ -268,6 +335,7 @@ public class ThanhToanPanel extends JPanel {
             }
         });
 
+        // Renderer cột 4 (Tổng tiền): format số + đ
         bangPhong.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(
@@ -283,6 +351,7 @@ public class ThanhToanPanel extends JPanel {
             }
         });
 
+        // Renderer cột 0 (Boolean): JCheckBox với màu zebra
         bangPhong.getColumnModel().getColumn(0).setCellRenderer(new TableCellRenderer() {
             private final JCheckBox chk = new JCheckBox();
             @Override
@@ -297,12 +366,14 @@ public class ThanhToanPanel extends JPanel {
             }
         });
 
+        // Khi checkbox thay đổi -> cập nhật listThanhToan + summary
         modelBang.addTableModelListener(e -> {
             if (e.getColumn() == 0) {
                 capNhatListThanhToan();
             }
         });
 
+        // Độ rộng cột
         bangPhong.getColumnModel().getColumn(0).setPreferredWidth(44);
         bangPhong.getColumnModel().getColumn(0).setMaxWidth(44);
         bangPhong.getColumnModel().getColumn(1).setPreferredWidth(70);
@@ -319,6 +390,10 @@ public class ThanhToanPanel extends JPanel {
         return card;
     }
 
+    /**
+     * Duyệt bảng, tổng hợp các dòng đang được tick vào listThanhToan.
+     * Cập nhật chkTatCa và Summary Card.
+     */
     private void capNhatListThanhToan() {
         listThanhToan.clear();
 
@@ -335,9 +410,11 @@ public class ThanhToanPanel extends JPanel {
             }
         }
 
+        // Đồng bộ checkbox header
         chkTatCa.setSelected(tongDong > 0 && soDongChon == tongDong);
         bangPhong.getTableHeader().repaint();
 
+        // Tính lại tổng tiền từ listThanhToan
         tongTienPhong = listThanhToan.stream()
                 .mapToDouble(ChiTietPhieuDatPhong::tinhThanhTien)
                 .sum();
@@ -346,6 +423,9 @@ public class ThanhToanPanel extends JPanel {
         if (tfKhachDua != null) tinhTienThua();
     }
 
+    // ─────────────────────────────────────────────────────────────────
+    // Summary Card
+    // ─────────────────────────────────────────────────────────────────
     private JPanel buildSummaryCard() {
         JPanel card = new RoundedPanel(12, BG_WHITE);
         card.setLayout(new BorderLayout());
@@ -406,7 +486,7 @@ public class ThanhToanPanel extends JPanel {
         lblTotal.setHorizontalAlignment(JLabel.RIGHT);
 
         totalRow.add(lblNhanTotal, BorderLayout.WEST);
-        totalRow.add(lblTotal, BorderLayout.EAST);
+        totalRow.add(lblTotal,     BorderLayout.EAST);
         body.add(totalRow);
 
         card.add(body, BorderLayout.CENTER);
@@ -520,7 +600,24 @@ public class ThanhToanPanel extends JPanel {
         btnThanhToan.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnThanhToan.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
         btnThanhToan.setPreferredSize(new Dimension(Integer.MAX_VALUE, 48));
-        btnThanhToan.addActionListener(e -> {thanhToanService.thanhToan(listThanhToan);});
+        btnThanhToan.addActionListener(e -> {
+            boolean isSuccessPayment = thanhToanService.thanhToan(listThanhToan);
+            if(isSuccessPayment){
+                JOptionPane.showMessageDialog(this,
+                        "Bạn đã thanh toán thành công",
+                        "Thành công",
+                        JOptionPane.INFORMATION_MESSAGE
+                        );
+                refresh();
+            }else{
+                JOptionPane.showMessageDialog(this,
+                        "Bạn đã thanh toán thất bại",
+                        "Thất bại",
+                            JOptionPane.ERROR_MESSAGE
+                );
+            }
+        });
+
         panel.add(btnThanhToan);
 
         return panel;
@@ -731,6 +828,14 @@ public class ThanhToanPanel extends JPanel {
         return btn;
     }
 
+    /** Nút viền có icon — dùng cho nút Làm mới (kích thước cố định) */
+    private JButton buildOutlineIconButton(String text, int w, int h) {
+        JButton btn = buildOutlineButton(text);
+        btn.setPreferredSize(new Dimension(w, h));
+        btn.setForeground(TEXT_MID);
+        return btn;
+    }
+
     private JButton buildOutlineButton(String text) {
         JButton btn = new JButton(text) {
             @Override protected void paintComponent(Graphics g) {
@@ -922,5 +1027,43 @@ public class ThanhToanPanel extends JPanel {
             super.paintComponent(g);
         }
     }
+    public void refresh() {
 
+        tfCCCD.setText("Nhập CCCD");
+        tfCCCD.setForeground(TEXT_GRAY);
+
+        listThanhToan.clear();
+        tongTienPhong = 0.0;
+        tienKhachDua  = 0.0;
+
+        danhSachPhong = thanhToanService.getDanhSachPhieuDatPhongDeThanhToan(tfCCCD.getText().trim());
+
+        modelBang.setRowCount(0);
+        for (ChiTietPhieuDatPhong ct : danhSachPhong) {
+            modelBang.addRow(new Object[]{
+                    false,
+                    ct.getPhong().getSoPhong(),
+                    ct.getPhong().getLoaiPhong(),
+                    ct.getSoGioLuuTru(),
+                    ct.tinhThanhTien()
+            });
+        }
+
+        chkTatCa.setSelected(false);
+        bangPhong.getTableHeader().repaint();
+
+        lblSoPhongChon.setText("Chưa chọn phòng nào");
+        lblSoPhongChon.setForeground(TEXT_GRAY);
+        lblTongTien.setText("0 đ");
+        lblVAT.setText("10%");
+        lblTotal.setText("0 đ");
+
+        tfKhachDua.setText("");
+        lblTienThua.setText("—");
+        lblTienThua.setForeground(GREEN);
+
+        rbTienMat.setSelected(true);
+        panelTienMat.setVisible(true);
+        panelQR.setVisible(false);
+    }
 }
