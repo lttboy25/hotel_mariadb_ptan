@@ -52,9 +52,17 @@ public class PhieuDatPhongService {
         }
         return phieuDatPhongDao.getPhieuDatPhongByCode(maPhieu);
     }
+    public List<PhieuDatPhong> getPhieuDatPhongByToPayment(String status, String cccd) {
+        if (status == null ||  cccd == null) {
+            return null;
+        }
+        return phieuDatPhongDao.getPhieuDatPhongByToPayment(status, cccd);
+    }
 
     public boolean updateTrangThai(String maPhieu, String trangThai) {
         if (trangThai == null || trangThai.isEmpty() || maPhieu == null || maPhieu.isEmpty()) {return false;}
         return phieuDatPhongDao.updateStatusBookingTicket(maPhieu, trangThai);
     }
+
+
 }

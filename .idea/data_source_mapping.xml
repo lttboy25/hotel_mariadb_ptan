@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourcePerFileMappings">
-    <file url="file://$PROJECT_DIR$/db/FIX_DU_LIEU_DANG_NHAP.sql" value="15ad062d-e410-4986-9f47-9d30f00ae928" />
-    <file url="file://$PROJECT_DIR$/db/LoaiPhong.sql" value="15ad062d-e410-4986-9f47-9d30f00ae928" />
-    <file url="file://$PROJECT_DIR$/db/NhanVien.sql" value="15ad062d-e410-4986-9f47-9d30f00ae928" />
     <file url="file://$PROJECT_DIR$/db/PhieuDatPhong.sql" value="15ad062d-e410-4986-9f47-9d30f00ae928" />
     <file url="file://$PROJECT_DIR$/db/Phong.sql" value="15ad062d-e410-4986-9f47-9d30f00ae928" />
-    <file url="file://$PROJECT_DIR$/db/TaiKhoan_DuLieuMau.sql" value="15ad062d-e410-4986-9f47-9d30f00ae928" />
     <file url="file://$PROJECT_DIR$/db/khuyenMai.sql" value="15ad062d-e410-4986-9f47-9d30f00ae928" />
   </component>
 </project>
