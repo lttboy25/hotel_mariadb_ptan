@@ -54,12 +54,20 @@ public class DatPhongService {
         if (checkIn == null || checkOut == null) {
             throw new IllegalArgumentException("Thiếu thời gian nhận/trả phòng.");
         }
+        if (checkIn.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Ngày nhận phòng không được trong quá khứ.");
+        }
         if (!checkOut.isAfter(checkIn)) {
             throw new IllegalArgumentException("Thời gian trả phòng phải sau thời gian nhận phòng.");
         }
-        if (request.getSoNguoi() <= 0) {
+        if (request.getSoNguoiLon() < 0 || request.getSoTreEm() < 0) {
+            throw new IllegalArgumentException("Số người lớn/trẻ em không hợp lệ.");
+        }
+        int tongNguoi = request.getSoNguoiLon() + request.getSoTreEm();
+        if (tongNguoi <= 0) {
             throw new IllegalArgumentException("Số người phải lớn hơn 0.");
         }
+        request.setSoNguoi(tongNguoi);
     }
     public List<Phong> getDsPhongTrong(LocalDateTime checkIn, LocalDateTime checkOut) {
         if (checkIn == null || checkOut == null) {

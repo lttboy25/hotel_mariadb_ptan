@@ -55,6 +55,10 @@
                 int soGioLuuTru = calculateHours(request.getCheckIn(), request.getCheckOut());
                 double tongTienPhong = 0.0;
 
+                int tongSucChuaNguoiLon = 0;
+                int tongSucChuaTreEm = 0;
+                List<Phong> phongDaChon = new java.util.ArrayList<>();
+
                 for (String maPhong : request.getMaPhongs()) {
                     if (!isRoomAvailable(em, maPhong, request.getCheckIn(), request.getCheckOut())) {
                         throw new IllegalStateException("Phòng " + maPhong + " đã có lịch trong khoảng thời gian này.");
@@ -65,16 +69,35 @@
                         throw new IllegalStateException("Không tìm thấy phòng " + maPhong + ".");
                     }
 
+                    if (phongRef.getLoaiPhong() != null) {
+                        tongSucChuaNguoiLon += phongRef.getLoaiPhong().getSoNguoiLonToiDa();
+                        tongSucChuaTreEm += phongRef.getLoaiPhong().getSoTreEmToiDa();
+                    }
+
+                    phongDaChon.add(phongRef);
+                }
+
+                if (request.getSoNguoiLon() > tongSucChuaNguoiLon || request.getSoTreEm() > tongSucChuaTreEm) {
+                    throw new IllegalStateException("Số người vượt quá sức chứa của các phòng đã chọn.");
+                }
+
+                List<Integer> soNguoiTheoPhong = allocatePeoplePerRoom(phongDaChon, request.getSoNguoiLon(), request.getSoTreEm());
+
+                for (int i = 0; i < phongDaChon.size(); i++) {
+                    Phong phongRef = phongDaChon.get(i);
+                    int soNguoiPhong = soNguoiTheoPhong.get(i);
+
                     ChiTietPhieuDatPhong chiTiet = ChiTietPhieuDatPhong.builder()
                             .phieuDatPhong(phieuDatPhong)
                             .phong(phongRef)
-                            .trangThai("Đã đặt")
+                            .trangThai("Chưa thanh toán")
                             .thoiGianNhanPhong(request.getCheckIn())
                             .thoiGianTraPhong(request.getCheckOut())
-                            .soNguoi(request.getSoNguoi())
+                            .soNguoi(soNguoiPhong)
                             .soGioLuuTru(soGioLuuTru)
                             .build();
                     em.persist(chiTiet);
+                    phieuDatPhong.getDsachPhieuDatPhong().add(chiTiet);
 
                     if (phongRef.getLoaiPhong() != null) {
                         tongTienPhong += soGioLuuTru * phongRef.getLoaiPhong().getGia();
@@ -98,6 +121,36 @@
             }
         }
 
+        private List<Integer> allocatePeoplePerRoom(List<Phong> rooms, int adults, int children) {
+            List<Integer> allocation = new java.util.ArrayList<>();
+            int remainingAdults = adults;
+            int remainingChildren = children;
+            for (Phong room : rooms) {
+                int maxAdults = room.getLoaiPhong() != null ? room.getLoaiPhong().getSoNguoiLonToiDa() : 0;
+                int maxChildren = room.getLoaiPhong() != null ? room.getLoaiPhong().getSoTreEmToiDa() : 0;
+
+                int adultsInRoom = Math.min(remainingAdults, maxAdults);
+                int childrenInRoom = Math.min(remainingChildren, maxChildren);
+                allocation.add(adultsInRoom + childrenInRoom);
+
+                remainingAdults -= adultsInRoom;
+                remainingChildren -= childrenInRoom;
+            }
+
+            if (remainingAdults > 0 || remainingChildren > 0) {
+                throw new IllegalStateException("Không đủ sức chứa để phân bổ số người theo phòng.");
+            }
+            return allocation;
+        }
+
+        private String generateNextMaPhieuDatPhong(EntityManager em) {
+            Number maxNumber = (Number) em.createNativeQuery(
+                            "SELECT MAX(CAST(SUBSTRING(maPhieuDatPhong, 4) AS UNSIGNED)) FROM PhieuDatPhong FOR UPDATE")
+                    .getSingleResult();
+            int nextNumber = (maxNumber == null) ? 1 : maxNumber.intValue() + 1;
+            return String.format("PDP%03d", nextNumber);
+        }
+
         private boolean isRoomAvailable(EntityManager em, String maPhong, LocalDateTime checkIn, LocalDateTime checkOut) {
             Long count = em.createQuery("""
                     SELECT COUNT(ct) FROM ChiTietPhieuDatPhong ct
@@ -115,18 +168,6 @@
         private int calculateHours(LocalDateTime checkIn, LocalDateTime checkOut) {
             long hours = ChronoUnit.HOURS.between(checkIn, checkOut);
             return (int) Math.max(1, hours);
-        }
-
-        private String generateNextMaPhieuDatPhong(EntityManager em) {
-            List<String> allCodes = em.createQuery(
-                            "select p.maPhieuDatPhong from PhieuDatPhong p", String.class)
-                    .getResultList();
-            int nextNumber = allCodes.stream()
-                    .filter(code -> code != null && code.matches(".*\\d+"))
-                    .map(code -> Integer.parseInt(code.replaceAll("\\D+", "")))
-                    .max(Integer::compareTo)
-                    .orElse(0) + 1;
-            return String.format("PDP%03d", nextNumber);
         }
         //public List<Phong> getDsPhongByTrangThai(){}
 

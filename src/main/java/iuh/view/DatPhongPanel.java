@@ -572,6 +572,14 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
                 .thenComparing(r -> r.id));
 
         refreshTable(filtered);
+
+        if (filtered.isEmpty()) {
+            suggestionLabel.setText("Không tìm thấy phòng phù hợp với tiêu chí đã chọn.");
+            suggestionLabel.setForeground(new Color(0xE04040));
+        } else {
+            suggestionLabel.setText("Tìm thấy " + filtered.size() + " phòng phù hợp. Hãy chọn phòng để đặt.");
+            suggestionLabel.setForeground(BLUE);
+        }
     }
 
 
@@ -620,11 +628,11 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
                 new EmptyBorder(0, 0, 0, 0)));
 
         // Header bảng tóm tắt
-        JPanel colHeader = new JPanel(new GridLayout(1, 4));
+        JPanel colHeader = new JPanel(new GridLayout(1, 5));
         colHeader.setBackground(new Color(0xF8F9FE));
         colHeader.setPreferredSize(new Dimension(0, 38));
         colHeader.setBorder(new MatteBorder(0, 0, 1, 0, BORDER));
-        for (String c : new String[]{"Số phòng", "Check-in", "Check-out", "Thời gian"}) {
+        for (String c : new String[]{"Số phòng", "Check-in", "Check-out", "Thời gian", "Số khách"}) {
             JLabel cl = lbl(c, F_BOLD12, GRAY);
             cl.setBorder(new EmptyBorder(0, 12, 0, 0));
             colHeader.add(cl);
@@ -714,8 +722,14 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
             String coStr = (checkOut != null) ? checkOut.format(FMT_DATETIME) : "--";
             String durStr = buildDurationText(checkIn, checkOut);
 
-            for (Room r : selectedRooms) {
-                bookingList.add(buildBookingRow("#" + r.id, ciStr, coStr, durStr));
+            int adults = (spAdults != null) ? (int) spAdults.getValue() : 0;
+            int children = (spChildren != null) ? (int) spChildren.getValue() : 0;
+            List<String> allocation = allocateGuestsForUI(selectedRooms, adults, children);
+
+            for (int i = 0; i < selectedRooms.size(); i++) {
+                Room r = selectedRooms.get(i);
+                String guestInfo = allocation.get(i);
+                bookingList.add(buildBookingRow("#" + r.id, ciStr, coStr, durStr, guestInfo));
             }
         }
 
@@ -737,8 +751,8 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
 
     /** Tạo một hàng trong panel tóm tắt đặt phòng */
     private JPanel buildBookingRow(String roomId,
-                                   String checkIn, String checkOut, String duration) {
-        JPanel row = new JPanel(new GridLayout(1, 4));
+                                   String checkIn, String checkOut, String duration, String guestInfo) {
+        JPanel row = new JPanel(new GridLayout(1, 5));
         row.setBackground(WHITE);
         row.setPreferredSize(new Dimension(0, 90));
         row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 90));
@@ -765,14 +779,19 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
         durCell.setOpaque(false);
         durCell.add(lbl(duration, F_PLAIN12, MID));
 
+        // Số khách (phân bổ theo phòng)
+        JPanel guestCell = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        guestCell.setOpaque(false);
+        guestCell.add(lbl(guestInfo, F_PLAIN12, MID));
+
         row.add(idCell);
         row.add(ciCell);
         row.add(coCell);
         row.add(durCell);
+        row.add(guestCell);
         return row;
     }
 
-    /** Vòng tròn xanh có dấu tick (✓) */
     private JPanel buildCheckCircle() {
         JPanel c = new JPanel() {
             @Override
@@ -795,7 +814,6 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
         return c;
     }
 
-    /** Badge ngày check-in / check-out có icon lịch nhỏ */
     private JPanel buildDateBadge(String label, String date, Color bg, Color fg) {
         JPanel badge = new JPanel() {
             @Override
@@ -815,7 +833,6 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
         JPanel topRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         topRow.setOpaque(false);
 
-        // Icon lịch mini
         JLabel calIcon = new JLabel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -845,13 +862,20 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
         return badge;
     }
 
-//     * <p>
-//     * Luồng:
-//     *   1. Nhân viên nhập CCCD → nhấn "Tra cứu".
-//     *   2. Nếu tìm thấy trong DB: điền sẵn form, nhãn hiển thị "Cập nhật".
-//     *   3. Nếu không tìm thấy: form trắng, nhãn hiển thị "Thêm mới".
-//     *   4. Nhấn "Hoàn tất đặt phòng" → lưu / cập nhật khách hàng rồi lưu booking.
-//     */
+    private List<String> allocateGuestsForUI(List<Room> rooms, int adults, int children) {
+        List<String> result = new ArrayList<>();
+        int remainingAdults = adults;
+        int remainingChildren = children;
+        for (Room room : rooms) {
+            int adultsInRoom = Math.min(remainingAdults, Math.max(0, room.maxAdults));
+            int childrenInRoom = Math.min(remainingChildren, Math.max(0, room.maxChildren));
+            remainingAdults -= adultsInRoom;
+            remainingChildren -= childrenInRoom;
+            result.add(adultsInRoom + " NL, " + childrenInRoom + " TE");
+        }
+        return result;
+    }
+
     private void openKhachHangDialog(LocalDateTime checkIn, LocalDateTime checkOut) {
 
         Window parent = SwingUtilities.getWindowAncestor(this);
@@ -1053,6 +1077,8 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
                     .checkIn(checkIn)
                     .checkOut(checkOut)
                     .soNguoi(Math.max(1, soNguoi))
+                    .soNguoiLon(Math.max(0, adults))
+                    .soTreEm(Math.max(0, children))
                     .trangThai("Đã đặt")
                     .maPhongs(selectedRooms.stream().map(r -> r.id).toList())
                     .build();

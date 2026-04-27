@@ -20,6 +20,8 @@ public class DatPhongRequestDTO implements Serializable {
     private LocalDateTime checkIn;
     private LocalDateTime checkOut;
     private int soNguoi;
+    private int soNguoiLon;
+    private int soTreEm;
     private long tienDatCoc;
     private String trangThai;
     private List<String> maPhongs;
