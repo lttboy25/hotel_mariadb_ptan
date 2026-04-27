@@ -1,12 +1,7 @@
 package iuh.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -19,24 +14,20 @@ import java.util.Set;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Table(name = "NhanVien")
 @Entity
+@Table(name = "NhanVien")
 public class NhanVien implements Serializable {
 
     @Id
     @EqualsAndHashCode.Include
-    @Column(name = "maNhanVien", nullable = false, length = 20)
+    @Column(name = "maNhanVien", nullable = false)
     private String maNhanVien;
 
-    @Column(name = "CCCD", length = 12)
-    private String CCCD;
-
-    @Column(name = "tenNhanVien", nullable = false, length = 100)
+    @Column(name = "tenNhanVien", nullable = false)
     private String tenNhanVien;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "tenDangNhap", unique = true)
-    private TaiKhoan taiKhoan;
+    @Column(name = "CCCD")
+    private String CCCD;
 
     @Column(name = "gioiTinh")
     private boolean gioiTinh;
@@ -44,25 +35,25 @@ public class NhanVien implements Serializable {
     @Column(name = "ngaySinh")
     private LocalDate ngaySinh;
 
-    @Column(name = "email", length = 100)
+    @Column(name = "email")
     private String email;
 
-    @Column(name = "soDienThoai", length = 20)
+    @Column(name = "soDienThoai")
     private String soDienThoai;
 
     @Column(name = "ngayBatDau")
     private LocalDate ngayBatDau;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private TrangThaiNhanVien trangThai;
-
-    @Column(name = "diaChi", length = 255)
+    @Column(name = "diaChi")
     private String diaChi;
 
-    @OneToMany(mappedBy = "nhanVien")
-    private Set<CaLamViecNhanVien> caLamViecNhanViens = new HashSet<>();
+    @Enumerated(EnumType.STRING)
+    private TrangThaiNhanVien trangThai;
 
-    @OneToMany(mappedBy = "nhanVien", cascade = CascadeType.ALL, orphanRemoval = true)
+    // Quan hệ 1-1
+    @OneToOne(mappedBy = "nhanVien", cascade = CascadeType.ALL)
+    private TaiKhoan taiKhoan;
+
+    @OneToMany(mappedBy = "nhanVien")
     private Set<HoaDon> hoaDons = new HashSet<>();
 }

@@ -10,6 +10,7 @@ import iuh.db.JPAUtil;
 import iuh.entity.KhuyenMai;
 import iuh.entity.NhanVien;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 
 import java.util.List;
 import java.util.Optional;
@@ -149,4 +150,19 @@ public class NhanVienDao extends AbstractGenericDaoImpl<NhanVien, String>{
         return findById(maNhanVien).isPresent();
     }
 
+
+    public NhanVien login(String maNV, String matKhau) {
+        try (EntityManager em = JPAUtil.getEntityManager()) {
+            return em.createQuery(
+                            "SELECT nv FROM NhanVien nv JOIN nv.taiKhoan tk " +
+                                    "WHERE nv.maNhanVien = :maNV AND tk.matKhau = :mk",
+                            NhanVien.class)
+                    .setParameter("maNV", maNV)
+                    .setParameter("mk", matKhau)
+                    .getSingleResult();
+
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
 }

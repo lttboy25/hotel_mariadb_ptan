@@ -53,57 +53,30 @@ public class NhanVienService {
         return nhanVienDao.generateMaNV();
     }
 
-    /**
-     * Xác thực đăng nhập
-     * @param tenDangNhap tên đăng nhập
-     * @param matKhau mật khẩu
-     * @return NhanVienDTO nếu xác thực thành công, null nếu thất bại
-     */
-    public NhanVienDTO xacThucDangNhap(String tenDangNhap, String matKhau) {
-        if (tenDangNhap == null || tenDangNhap.isEmpty() ||
-            matKhau == null || matKhau.isEmpty()) {
+
+
+    public NhanVienDTO xacThucDangNhap(String maNhanVien, String matKhau) {
+        if (maNhanVien == null || matKhau == null ||
+                maNhanVien.isEmpty() || matKhau.isEmpty()) {
             return null;
         }
 
-        try {
-            List<NhanVien> allNhanVien = getAllNhanVien();
-            NhanVien nhanVien = allNhanVien.stream()
-                    .filter(nv -> nv.getTaiKhoan() != null &&
-                                  nv.getTaiKhoan().getTenDangNhap().equals(tenDangNhap) &&
-                                  nv.getTaiKhoan().getMatKhau().equals(matKhau))
-                    .findFirst()
-                    .orElse(null);
+        NhanVien nv = nhanVienDao.login(maNhanVien, matKhau);
 
-            if (nhanVien != null) {
-                return mapToDTO(nhanVien);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (nv != null) {
+            return mapToDTO(nv);
         }
 
         return null;
     }
-
-    /**
-     * Chuyển đổi NhanVien entity thành DTO
-     */
-    private NhanVienDTO mapToDTO(NhanVien nhanVien) {
-        if (nhanVien == null) {
-            return null;
-        }
-
+    private NhanVienDTO mapToDTO(NhanVien nv) {
         return NhanVienDTO.builder()
-                .maNhanVien(nhanVien.getMaNhanVien())
-                .CCCD(nhanVien.getCCCD())
-                .tenNhanVien(nhanVien.getTenNhanVien())
-                .taiKhoan(nhanVien.getTaiKhoan() != null ? nhanVien.getTaiKhoan().getTenDangNhap() : "")
-                .gioiTinh(nhanVien.isGioiTinh())
-                .ngaySinh(nhanVien.getNgaySinh())
-                .email(nhanVien.getEmail())
-                .soDienThoai(nhanVien.getSoDienThoai())
-                .ngayBatDau(nhanVien.getNgayBatDau())
-                .trangThai(nhanVien.getTrangThai() != null ? nhanVien.getTrangThai().toString() : "")
-                .diaChi(nhanVien.getDiaChi())
+                .maNhanVien(nv.getMaNhanVien())
+                .tenNhanVien(nv.getTenNhanVien())
+                .taiKhoan(nv.getTaiKhoan() != null ? nv.getTaiKhoan().getMaNhanVien() : "")
+                .email(nv.getEmail())
+                .soDienThoai(nv.getSoDienThoai())
+                .trangThai(nv.getTrangThai() != null ? nv.getTrangThai().toString() : "")
                 .build();
     }
 
