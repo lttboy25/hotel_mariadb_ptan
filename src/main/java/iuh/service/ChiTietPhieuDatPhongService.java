@@ -2,6 +2,7 @@ package iuh.service;
 
 import iuh.dao.ChitietPhieuDatPhongDao;
 import iuh.entity.ChiTietPhieuDatPhong;
+import iuh.entity.PhieuDatPhong;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +20,14 @@ public class ChiTietPhieuDatPhongService {
 
     public boolean updateTrangThaiByMaPhong(String maPhong, String trangThai){
         if (maPhong == null || trangThai == null){return false;}
-        if (chitietPhieuDatPhongDao.findChiTietPhieuDatPhongByMaPhong(maPhong) == null){return false;}
 
         return  chitietPhieuDatPhongDao.updateStatusDetailTicketByRoomCode(maPhong, trangThai);
+    }
+
+    public List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(String statusTicket, String statusDetail, String cccd) {
+        if(statusTicket == null || statusDetail == null || cccd == null){throw new NullPointerException("Lấy danh sách phiếu đặt phòng bị rỗng");}
+
+        return chitietPhieuDatPhongDao.getChiTietPhieuDatPhongByToPayment(statusTicket, statusDetail, cccd);
+
     }
 }

@@ -85,6 +85,8 @@ public class Mapper {
                 .tongTien(hoaDonDTO.getTongTien())
                 .chiTietHoaDon(hoaDonDTO.getChiTietHoaDon())
                 .chiTietHoaDon(hoaDonDTO.getChiTietHoaDon())
+                .tienKhachDua(hoaDonDTO.getTienKhachDua())
+                .tienThoi(hoaDonDTO.getTienThoi())
                 .build();
     }
 
@@ -102,6 +104,8 @@ public class Mapper {
                 .tongTien(hoaDon.getTongTien())
                 .chiTietHoaDon(hoaDon.getChiTietHoaDon())
                 .chiTietHoaDon(hoaDon.getChiTietHoaDon())
+                .tienKhachDua(hoaDon.getTienKhachDua())
+                .tienThoi(hoaDon.getTienThoi())
                 .build();
     }
 

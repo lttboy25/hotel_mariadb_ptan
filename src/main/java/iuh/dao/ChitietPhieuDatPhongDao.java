@@ -8,6 +8,7 @@ package iuh.dao;
 
 import iuh.db.JPAUtil;
 import iuh.entity.ChiTietPhieuDatPhong;
+import iuh.entity.PhieuDatPhong;
 import jakarta.persistence.EntityManager;
 
 import java.time.LocalDateTime;
@@ -71,7 +72,7 @@ public class ChitietPhieuDatPhongDao extends AbstractGenericDaoImpl<ChiTietPhieu
 
                return(
                        doInTransaction(entityManager ->
-                               em.createQuery(query,  ChiTietPhieuDatPhong.class)
+                                       entityManager.createQuery(query,  ChiTietPhieuDatPhong.class)
                                        .setParameter("maPhong", maPhong)
                                        .getSingleResultOrNull()
                                )
@@ -79,8 +80,6 @@ public class ChitietPhieuDatPhongDao extends AbstractGenericDaoImpl<ChiTietPhieu
            } catch (Exception e) {
                throw new RuntimeException(e);
            }
-
-
     }
 
     public boolean updateStatusDetailTicketByRoomCode(String maPhong, String status) {
@@ -111,5 +110,18 @@ public class ChitietPhieuDatPhongDao extends AbstractGenericDaoImpl<ChiTietPhieu
         } finally {
             em.close();
         }
+    }
+
+    public List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(String statusTicket, String statusDetail, String cccd) {
+        return doInTransaction(em -> em.createQuery("""
+                SELECT ctpdp FROM ChiTietPhieuDatPhong ctpdp
+                WHERE ctpdp.phieuDatPhong.trangThai = :statusTicket
+                       AND ctpdp.phieuDatPhong.khachHang.CCCD = :cccd 
+                       AND ctpdp.trangThai = :statusDetail"""
+                        , ChiTietPhieuDatPhong.class)
+                .setParameter("statusTicket", statusTicket)
+                .setParameter("cccd", cccd)
+                .setParameter("statusDetail", statusDetail)
+                .getResultList());
     }
 }

@@ -34,6 +34,8 @@ public class HoaDon implements Serializable {
     private LocalDateTime ngayTao;
     private String trangThai;
     private double tongTien;
+    private double tienKhachDua;
+    private double tienThoi;
 
     @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL)
     @Builder.Default

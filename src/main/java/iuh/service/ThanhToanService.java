@@ -20,45 +20,26 @@ public class ThanhToanService {
     private  NhanVienService nhanVienService = new NhanVienService();
 
     private Mapper mapper = new Mapper();
-    // Quy trình thực hiện thanh toán:
-    // B1: Nhập CCCD tìm Phòng cần thanh toán
-    // B2: Chọn phòng cần thanh toán
-    // B3: Chọn phương thức thanh toán
-    // B4: Thanh Toán
-
-    // 3.1 Thanh toán bằng tiền mặt
-    // Có các mệnh giá chọn nhanh
-    // Ô nhập số tiền khách đưa
-    // Hiển thị số tiền hoàn trả
-
-    // 3.2 Hiển thị mã QR quét mã để thanh toán
 
     public List<Phong> getRoomsByStatus(String status) {
         return phongService.getRoomsByStatus(status);
     }
 
     public List<ChiTietPhieuDatPhong> getDanhSachPhieuDatPhongDeThanhToan(String cccd) {
-        List<ChiTietPhieuDatPhong> dsPhongDangThue = new ArrayList<>();
-        List<PhieuDatPhong> dsPhieuDatPhongChuaLoc = phieuDatPhongService.getByTrangThai("Đã nhận phòng");
-        List<PhieuDatPhong> dsPhieuDatPhong = phieuDatPhongService.filteredListByCCCD(dsPhieuDatPhongChuaLoc, cccd);
+        return chiTietPhieuDatPhongService
+                .getChiTietPhieuDatPhongByToPayment("Đã nhận phòng", "Chưa thanh toán", cccd);
 
-        if (dsPhieuDatPhong == null || dsPhieuDatPhong.isEmpty())
-            return dsPhongDangThue;
-
-        dsPhieuDatPhong.forEach(pdp -> {
-            List<ChiTietPhieuDatPhong> ds = chiTietPhieuDatPhongService
-                    .getChiTietPhieuDatPhongByMaPDP(pdp.getMaPhieuDatPhong());
-            if (ds != null)
-                dsPhongDangThue.addAll(ds);
-        });
-
-        return dsPhongDangThue;
     }
 
-    public boolean thanhToan(List<ChiTietPhieuDatPhong> listThanhToan) {
+    public boolean coTheThanhToan(double tienKhachDua, double tongTien) {
+        if (tienKhachDua < tongTien) return false;
+        else return true;
+    }
+
+    public HoaDon thanhToan(List<ChiTietPhieuDatPhong> listThanhToan, double tienKhachDua, double tienThua) {
 
         if (listThanhToan == null || listThanhToan.isEmpty()) {
-            return false;
+            return null;
         }
 
         double tongTien = 0.0;
@@ -72,7 +53,7 @@ public class ThanhToanService {
                 throw new RuntimeException("Phòng " + ctpdp.getPhong().getMaPhong() + " đã thanh toán!");
             }
 
-            double tien = ctpdp.tinhThanhTien();
+            double tien = (ctpdp.tinhThanhTien() + ctpdp.tinhThanhTien()*0.1);
             tongTien += tien;
 
             ChiTietHoaDon cthd = new ChiTietHoaDon();
@@ -89,21 +70,25 @@ public class ThanhToanService {
         HoaDon hoaDon = new HoaDon();
         hoaDon.setNgayDat(LocalDateTime.now());
         hoaDon.setKhachHang(phieuDatPhong.getKhachHang());
-         hoaDon.setNhanVien(nv);
+        hoaDon.setNhanVien(nv);
         hoaDon.setTrangThai("Đã thanh toán");
+        hoaDon.setNgayDat(LocalDateTime.now());
         hoaDon.setTongTien(tongTien);
+        hoaDon.setTienKhachDua(tienKhachDua);
+        hoaDon.setTienThoi(tienThua);
 
         hoaDon = hoaDonDao.save(mapper.map(hoaDon));
         if (hoaDon == null) {
             throw new RuntimeException("Không thể tạo hóa đơn");
         }
 
+
         for (ChiTietHoaDon cthd : dsChiTietHoaDon) {
 
             cthd.setHoaDon(hoaDon);
 
-            ChiTietHoaDon saved = chiTietHoaDonDao.save(mapper.map(cthd));
-            if (saved == null) {
+            ChiTietHoaDon luuChiTietHoaDon = chiTietHoaDonDao.save(mapper.map(cthd));
+            if (luuChiTietHoaDon == null) {
                 throw new RuntimeException("Lỗi lưu chi tiết hóa đơn");
             }
 
@@ -139,6 +124,6 @@ public class ThanhToanService {
                     "Đã thanh toán");
         }
 
-        return true;
+        return hoaDon;
     }
 }

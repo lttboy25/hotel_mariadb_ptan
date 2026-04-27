@@ -32,6 +32,8 @@ public class HoaDonDTO implements Serializable {
     private LocalDateTime ngayTao;
     private String trangThai;
     private double tongTien;
+    private double tienKhachDua;
+    private double tienThoi;
 
     private List<ChiTietHoaDon> chiTietHoaDon = new ArrayList<>();
 }

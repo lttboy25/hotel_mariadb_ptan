@@ -5,6 +5,7 @@ import javax.swing.border.*;
 import javax.swing.table.*;
 
 import iuh.entity.ChiTietPhieuDatPhong;
+import iuh.entity.HoaDon;
 import iuh.entity.PhieuDatPhong;
 import iuh.service.ChiTietPhieuDatPhongService;
 import iuh.service.PhieuDatPhongService;
@@ -18,6 +19,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * ThanhToanPanel - Giao diện trang Thanh Toán
+ *
+ * Quy trình:
+ * B1: Nhập CCCD → Tìm phòng cần thanh toán
+ * B2: Tick checkbox chọn 1 hoặc nhiều phòng cần thanh toán
+ * B3: Chọn phương thức thanh toán (Tiền mặt / Momo)
+ * B4: Nhấn nút Thanh Toán
+ */
 public class ThanhToanPanel extends JPanel {
 
     // ═══════════════════════════════════════════════════════════════════
@@ -84,7 +94,7 @@ public class ThanhToanPanel extends JPanel {
     private JButton      btnThanhToan;
 
     // ── Services & dữ liệu nghiệp vụ
-    private ThanhToanService             thanhToanService = new  ThanhToanService();
+    private ThanhToanService             thanhToanService = new ThanhToanService();
     private ChiTietPhieuDatPhongService  chiTietPhieuDatPhongService = new ChiTietPhieuDatPhongService();
     private PhieuDatPhongService         phieuDatPhongService        = new PhieuDatPhongService();
 
@@ -97,6 +107,7 @@ public class ThanhToanPanel extends JPanel {
     private double       tongTienPhong = 0.0;
     private double       tienKhachDua  = 0.0;
     private NumberFormat formatter     = NumberFormat.getInstance(new Locale("vi", "VN"));
+    private double tienThua = 0.0;
 
     // ═══════════════════════════════════════════════════════════════════
     // KHỞI TẠO
@@ -180,6 +191,10 @@ public class ThanhToanPanel extends JPanel {
         return card;
     }
 
+    /**
+     * Tìm kiếm phòng theo CCCD đang nhập trong tfCCCD.
+     * Xoá kết quả cũ → gọi service → nạp vào bảng.
+     */
     private void timKiem() {
         String cccd = tfCCCD.getText().trim();
 
@@ -194,13 +209,14 @@ public class ThanhToanPanel extends JPanel {
             return;
         }
 
+        // Reset trạng thái trước khi nạp kết quả mới
         listThanhToan.clear();
         tongTienPhong = 0.0;
         tienKhachDua  = 0.0;
 
         danhSachPhong = thanhToanService.getDanhSachPhieuDatPhongDeThanhToan(cccd);
 
-        modelBang.setRowCount(0);
+        modelBang.setRowCount(0); // xoá dòng cũ
         for (ChiTietPhieuDatPhong ct : danhSachPhong) {
             modelBang.addRow(new Object[]{
                     false,
@@ -236,6 +252,9 @@ public class ThanhToanPanel extends JPanel {
         }
     }
 
+    // ─────────────────────────────────────────────────────────────────
+    // B2: Bảng phòng — CỘT 0 LÀ CHECKBOX để chọn nhiều phòng
+    // ─────────────────────────────────────────────────────────────────
     private JPanel buildTableCard() {
         JPanel card = new RoundedPanel(12, BG_WHITE);
         card.setLayout(new BorderLayout());
@@ -601,23 +620,29 @@ public class ThanhToanPanel extends JPanel {
         btnThanhToan.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
         btnThanhToan.setPreferredSize(new Dimension(Integer.MAX_VALUE, 48));
         btnThanhToan.addActionListener(e -> {
-            boolean isSuccessPayment = thanhToanService.thanhToan(listThanhToan);
-            if(isSuccessPayment){
+
+            boolean isThanhToan = thanhToanService.coTheThanhToan(tienKhachDua, tongTienPhong);
+            if (isThanhToan) {
+                HoaDon hoaDon = thanhToanService.thanhToan(listThanhToan, tienKhachDua, tienThua);
+                if (hoaDon != null) {
+                    HDPanel hdPanel = new HDPanel(hoaDon);
+                    hdPanel.show(this);
+                    refresh();
+                }
+                else {
+                    JOptionPane.showMessageDialog(this,
+                            "Thanh toán thất bại",
+                            "Thất bại",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            else {
                 JOptionPane.showMessageDialog(this,
-                        "Bạn đã thanh toán thành công",
-                        "Thành công",
-                        JOptionPane.INFORMATION_MESSAGE
-                        );
-                refresh();
-            }else{
-                JOptionPane.showMessageDialog(this,
-                        "Bạn đã thanh toán thất bại",
-                        "Thất bại",
-                            JOptionPane.ERROR_MESSAGE
-                );
+                        "Thanh toán thất bại vì số tiền khách hàng đưa không đủ",
+                        "Thanh toán thất bại",
+                        JOptionPane.ERROR_MESSAGE);
             }
         });
-
         panel.add(btnThanhToan);
 
         return panel;
@@ -760,8 +785,8 @@ public class ThanhToanPanel extends JPanel {
             tienKhachDua = number.doubleValue();
 
             double vat      = tongTienPhong * 0.1;
-            double total    = tongTienPhong + vat;
-            double tienThua = tienKhachDua - total;
+            tongTienPhong   = tongTienPhong + vat;
+            tienThua = tienKhachDua - tongTienPhong;
 
             if (tienThua >= 0) {
                 lblTienThua.setText(formatter.format(tienThua) + " đ");
@@ -801,6 +826,62 @@ public class ThanhToanPanel extends JPanel {
             lblTienThua.setText("—");
             lblTienThua.setForeground(GREEN);
         }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // REFRESH: Reset toàn bộ panel về trạng thái ban đầu
+    // Gọi sau khi thanh toán thành công hoặc cần làm mới dữ liệu
+    // ═══════════════════════════════════════════════════════════════════
+    public void refresh() {
+
+        // ── 1. Reset ô tìm kiếm về placeholder ──
+        tfCCCD.setText("Nhập CCCD");
+        tfCCCD.setForeground(TEXT_GRAY);
+
+        // ── 2. Reset biến tiền trước để TableModelListener không tính sai khi addRow ──
+        listThanhToan.clear();
+        tongTienPhong = 0.0;
+        tienKhachDua  = 0.0;
+
+        // ── 3. Tải lại dữ liệu bảng từ ThanhToanService ──
+        // Tải lại theo CCCD đang nhập (nếu ô trống thì trả về danh sách rỗng)
+        String cccdHienTai = tfCCCD.getText().trim();
+        boolean coTimKiem = !cccdHienTai.isEmpty() && !cccdHienTai.equals("Nhập CCCD");
+        danhSachPhong = coTimKiem
+                ? thanhToanService.getDanhSachPhieuDatPhongDeThanhToan(cccdHienTai)
+                : new ArrayList<>();
+
+        modelBang.setRowCount(0); // xóa toàn bộ dòng cũ
+        for (ChiTietPhieuDatPhong ct : danhSachPhong) {
+            modelBang.addRow(new Object[]{
+                    false,
+                    ct.getPhong().getSoPhong(),
+                    ct.getPhong().getLoaiPhong(),
+                    ct.getSoGioLuuTru(),
+                    ct.tinhThanhTien()
+            });
+        }
+
+        // ── 4. Reset checkbox header "chọn tất cả" ──
+        chkTatCa.setSelected(false);
+        bangPhong.getTableHeader().repaint();
+
+        // ── 5. Reset summary card ──
+        lblSoPhongChon.setText("Chưa chọn phòng nào");
+        lblSoPhongChon.setForeground(TEXT_GRAY);
+        lblTongTien.setText("0 đ");
+        lblVAT.setText("10%");
+        lblTotal.setText("0 đ");
+
+        // ── 6. Reset panel tiền mặt ──
+        tfKhachDua.setText("");
+        lblTienThua.setText("—");
+        lblTienThua.setForeground(GREEN);
+
+        // ── 7. Về phương thức mặc định: Tiền mặt ──
+        rbTienMat.setSelected(true);
+        panelTienMat.setVisible(true);
+        panelQR.setVisible(false);
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -1027,43 +1108,6 @@ public class ThanhToanPanel extends JPanel {
             super.paintComponent(g);
         }
     }
-    public void refresh() {
 
-        tfCCCD.setText("Nhập CCCD");
-        tfCCCD.setForeground(TEXT_GRAY);
 
-        listThanhToan.clear();
-        tongTienPhong = 0.0;
-        tienKhachDua  = 0.0;
-
-        danhSachPhong = thanhToanService.getDanhSachPhieuDatPhongDeThanhToan(tfCCCD.getText().trim());
-
-        modelBang.setRowCount(0);
-        for (ChiTietPhieuDatPhong ct : danhSachPhong) {
-            modelBang.addRow(new Object[]{
-                    false,
-                    ct.getPhong().getSoPhong(),
-                    ct.getPhong().getLoaiPhong(),
-                    ct.getSoGioLuuTru(),
-                    ct.tinhThanhTien()
-            });
-        }
-
-        chkTatCa.setSelected(false);
-        bangPhong.getTableHeader().repaint();
-
-        lblSoPhongChon.setText("Chưa chọn phòng nào");
-        lblSoPhongChon.setForeground(TEXT_GRAY);
-        lblTongTien.setText("0 đ");
-        lblVAT.setText("10%");
-        lblTotal.setText("0 đ");
-
-        tfKhachDua.setText("");
-        lblTienThua.setText("—");
-        lblTienThua.setForeground(GREEN);
-
-        rbTienMat.setSelected(true);
-        panelTienMat.setVisible(true);
-        panelQR.setVisible(false);
-    }
 }
