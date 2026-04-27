@@ -166,20 +166,21 @@ public class PhongDao extends AbstractGenericDaoImpl<Phong, String> {
                 WHERE p.tinhTrang = :status """ , Phong.class).setParameter("status", status).getResultList());
     }
 
-    public boolean updateStatusRoom(String maPhong, String trangThai) {
+    public boolean updateStatusRoom(String maPhong, String trangThai, String tinhTrang) {
         EntityManager em = JPAUtil.getEntityManager();
         try {
             em.getTransaction().begin();
 
             String query = """
                 UPDATE Phong p
-                SET p.trangThai = :status
+                SET p.trangThai = :status, p.tinhTrang = :tinhTrang
                 WHERE p.maPhong = :maPhong
         """;
 
             int updatedRows = em.createQuery(query)
                     .setParameter("status", trangThai)
                     .setParameter("maPhong", maPhong)
+                    .setParameter("tinhTrang", tinhTrang)
                     .executeUpdate();
 
             em.getTransaction().commit();

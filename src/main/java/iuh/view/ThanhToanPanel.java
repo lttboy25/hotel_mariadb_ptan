@@ -623,7 +623,13 @@ public class ThanhToanPanel extends JPanel {
         btnThanhToan.addActionListener(e -> {
 
             boolean isThanhToan = thanhToanService.coTheThanhToan(tienKhachDua, tongTien);
-            if (isThanhToan) {
+            if (!isThanhToan || tfKhachDua.getText().equals("")) {
+                JOptionPane.showMessageDialog(this,
+                        "Thanh toán thất bại vì số tiền khách hàng đưa không đủ",
+                        "Thanh toán thất bại",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+            else {
                 HoaDon hoaDon = thanhToanService.thanhToan(listThanhToan, tienKhachDua, tienThua);
                 if (hoaDon != null) {
                     HDPanel hdPanel = new HDPanel(hoaDon);
@@ -636,12 +642,6 @@ public class ThanhToanPanel extends JPanel {
                             "Thất bại",
                             JOptionPane.ERROR_MESSAGE);
                 }
-            }
-            else {
-                JOptionPane.showMessageDialog(this,
-                        "Thanh toán thất bại vì số tiền khách hàng đưa không đủ",
-                        "Thanh toán thất bại",
-                        JOptionPane.ERROR_MESSAGE);
             }
         });
         panel.add(btnThanhToan);

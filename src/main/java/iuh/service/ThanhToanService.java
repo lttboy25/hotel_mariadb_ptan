@@ -100,7 +100,7 @@ public class ThanhToanService {
             }
 
             boolean ktraPhong = phongService
-                    .updateStatusRoom(cthd.getPhong().getMaPhong(), "Trống");
+                    .updateStatusRoom(cthd.getPhong().getMaPhong(), "Sẵn sàng", "Trống");
 
             if (!ktraPhong) {
                 throw new RuntimeException("Lỗi cập nhật phòng");
