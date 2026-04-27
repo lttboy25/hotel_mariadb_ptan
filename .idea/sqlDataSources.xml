@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DdlMappings">
+    <mapping uuid="9448759d-844a-4f28-8767-85456787f4c2" name="hotel@localhost Mapping">
+      <data-sources db="15ad062d-e410-4986-9f47-9d30f00ae928" />
+      <scope>
+        <node kind="schema" qname="hotel" />
+      </scope>
+    </mapping>
+  </component>
+</project>
