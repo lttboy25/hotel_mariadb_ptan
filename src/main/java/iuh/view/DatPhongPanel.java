@@ -518,6 +518,23 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
         LocalDateTime checkIn  = (checkInPicker  != null) ? checkInPicker.getValue()  : null;
         LocalDateTime checkOut = (checkOutPicker != null) ? checkOutPicker.getValue() : null;
 
+        int adults   = (spAdults != null) ? (int) spAdults.getValue() : 0;
+        int children = (spChildren != null) ? (int) spChildren.getValue() : 0;
+
+        if (adults <= 0 && children <= 0) {
+            JOptionPane.showMessageDialog(this,
+                    "Vui lòng chọn ít nhất 1 người lớn hoặc trẻ em.",
+                    "Dữ liệu không hợp lệ", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (children > 0 && adults <= 0) {
+            JOptionPane.showMessageDialog(this,
+                    "Trẻ em phải đi kèm ít nhất 1 người lớn.",
+                    "Dữ liệu không hợp lệ", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         if (checkIn != null && checkIn.isBefore(LocalDateTime.now())) {
             JOptionPane.showMessageDialog(this,
                     "Ngày check-in không được trong quá khứ.",
@@ -550,8 +567,6 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
         selectedRooms.clear();
         refreshBookingList();
 
-        int adults   = (int) spAdults.getValue();
-        int children = (int) spChildren.getValue();
 
         String keyword = normPlaceholder(searchField.getText(), "Số phòng");
         String type  = normPlaceholder(filterType,  "Loại phòng");

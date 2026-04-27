@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/db/FIX_DU_LIEU_DANG_NHAP.sql" dialect="MariaDB" />
+    <file url="file://$PROJECT_DIR$/db/LoaiPhong.sql" dialect="MariaDB" />
+    <file url="file://$PROJECT_DIR$/db/NhanVien.sql" dialect="MariaDB" />
     <file url="file://$PROJECT_DIR$/db/PhieuDatPhong.sql" dialect="MariaDB" />
+    <file url="file://$PROJECT_DIR$/db/Phong.sql" dialect="MariaDB" />
+    <file url="file://$PROJECT_DIR$/db/TaiKhoan_DuLieuMau.sql" dialect="MariaDB" />
     <file url="file://$PROJECT_DIR$/db/hotel.sql" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/db/khuyenMai.sql" dialect="MariaDB" />
   </component>

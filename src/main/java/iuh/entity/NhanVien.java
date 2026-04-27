@@ -34,7 +34,7 @@ public class NhanVien implements Serializable {
     @Column(name = "tenNhanVien", nullable = false, length = 100)
     private String tenNhanVien;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "tenDangNhap", unique = true)
     private TaiKhoan taiKhoan;
 

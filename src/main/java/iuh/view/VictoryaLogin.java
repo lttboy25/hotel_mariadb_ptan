@@ -1,5 +1,8 @@
 package iuh.view;
 
+import iuh.dto.NhanVienDTO;
+import iuh.service.NhanVienService;
+
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
@@ -22,6 +25,8 @@ public class VictoryaLogin extends JFrame {
     private static final Font FONT_INPUT = new Font("Segoe UI", Font.PLAIN, 14);
     private static final Font FONT_BUTTON = new Font("Segoe UI", Font.BOLD, 15);
     private static final Font FONT_LINK = new Font("Segoe UI", Font.PLAIN, 13);
+
+    private final NhanVienService nhanVienService = new NhanVienService();
 
     public VictoryaLogin() {
         setTitle("Victorya - Đăng nhập");
@@ -228,8 +233,8 @@ public class VictoryaLogin extends JFrame {
         form.add(forgotLink);
         form.add(Box.createVerticalStrut(28));
 
-        //  Login button09
-        JButton loginBtn = createLoginButton("Đăng nhập");
+        //  Login button
+        JButton loginBtn = createLoginButton("Đăng nhập", emailField, passField);
         loginBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
         loginBtn.setMaximumSize(new Dimension(360, 48));
         form.add(loginBtn);
@@ -319,7 +324,7 @@ public class VictoryaLogin extends JFrame {
         });
     }
 
-    private JButton createLoginButton(String text) {
+    private JButton createLoginButton(String text, JTextField emailField, JPasswordField passField) {
         JButton btn = new JButton(text) {
             private boolean hover = false;
             private boolean pressed = false;
@@ -362,8 +367,36 @@ public class VictoryaLogin extends JFrame {
         btn.setPreferredSize(new Dimension(360, 48));
 
         btn.addActionListener(e -> {
-            new VictoryaDashboard();
-            dispose();
+            String tenDangNhap = emailField.getText().trim();
+            String matKhau = new String(passField.getPassword());
+
+            // Kiểm tra trống
+            if (tenDangNhap.isEmpty() || matKhau.isEmpty()) {
+                JOptionPane.showMessageDialog(VictoryaLogin.this,
+                        "Vui lòng nhập tài khoản và mật khẩu!",
+                        "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Xác thực đăng nhập
+            NhanVienDTO nhanVien = nhanVienService.xacThucDangNhap(tenDangNhap, matKhau);
+
+            if (nhanVien != null) {
+                // Lưu vào CurrentUser
+                CurrentUser.getInstance().setNhanVien(nhanVien);
+
+                // Mở dashboard
+                new VictoryaDashboard();
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(VictoryaLogin.this,
+                        "Tài khoản hoặc mật khẩu không chính xác!",
+                        "Đăng nhập thất bại", JOptionPane.ERROR_MESSAGE);
+
+                // Xóa mật khẩu đã nhập
+                passField.setText("");
+                passField.requestFocus();
+            }
         });
 
         return btn;
@@ -377,3 +410,4 @@ public class VictoryaLogin extends JFrame {
         SwingUtilities.invokeLater(VictoryaLogin::new);
     }
 }
+

@@ -1,5 +1,8 @@
 package iuh.view;
 
+import iuh.dto.NhanVienDTO;
+import iuh.service.NhanVienService;
+
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
@@ -25,6 +28,11 @@ public class TaiKhoanPanel extends JPanel {
     static final Font F_PLAIN12= new Font("Segoe UI", Font.PLAIN, 12);
     static final Font F_BOLD12 = new Font("Segoe UI", Font.BOLD, 12);
 
+    // Reference để lưu trữ field hiển thị
+    private JLabel nameLbl, emailLbl;
+    private JTextField tfHoTen, tfCCCD, tfDiaChi, tfNgaySinh, tfTaiKhoan, tfEmail;
+    private JPanel genderPanel;
+
     public TaiKhoanPanel() {
         setLayout(new BorderLayout());
         setBackground(BG);
@@ -36,6 +44,28 @@ public class TaiKhoanPanel extends JPanel {
         scroll.setBackground(BG);
         scroll.getViewport().setBackground(BG);
         add(scroll, BorderLayout.CENTER);
+
+        // Tải dữ liệu người dùng từ CurrentUser
+        loadUserData();
+    }
+
+    private void loadUserData() {
+        CurrentUser currentUser = CurrentUser.getInstance();
+        NhanVienDTO nv = currentUser.getNhanVien();
+
+        if (nv != null) {
+            // Cập nhật header (tên + email)
+            nameLbl.setText(nv.getTenNhanVien());
+            emailLbl.setText(nv.getEmail() != null ? nv.getEmail() : "");
+
+            // Cập nhật form fields
+            tfHoTen.setText(nv.getTenNhanVien());
+            tfCCCD.setText(nv.getCCCD() != null ? nv.getCCCD() : "");
+            tfDiaChi.setText(nv.getDiaChi() != null ? nv.getDiaChi() : "");
+            tfNgaySinh.setText(nv.getNgaySinh() != null ? nv.getNgaySinh().toString() : "");
+            tfTaiKhoan.setText(nv.getTaiKhoan() != null ? nv.getTaiKhoan() : "");
+            tfEmail.setText(nv.getEmail() != null ? nv.getEmail() : "");
+        }
     }
 
     // ── Header ────────────────────────────────────────────────────────────────
@@ -141,9 +171,9 @@ public class TaiKhoanPanel extends JPanel {
         nameInfo.setLayout(new BoxLayout(nameInfo, BoxLayout.Y_AXIS));
         nameInfo.setOpaque(false);
         nameInfo.setBorder(new EmptyBorder(4, 14, 0, 0));
-        JLabel nameLbl = lbl("Hoàng", F_NAME, DARK);
+        nameLbl = lbl("", F_NAME, DARK);
         nameLbl.setAlignmentX(LEFT_ALIGNMENT);
-        JLabel emailLbl = lbl("example@gmail.com", F_EMAIL, GRAY);
+        emailLbl = lbl("", F_EMAIL, GRAY);
         emailLbl.setAlignmentX(LEFT_ALIGNMENT);
         nameInfo.add(nameLbl);
         nameInfo.add(Box.createVerticalStrut(2));
@@ -155,25 +185,32 @@ public class TaiKhoanPanel extends JPanel {
         p.add(Box.createVerticalStrut(28));
 
         // Form fields
-        p.add(formRow("Họ và tên:", buildInputField("Nguyễn Huy Hoàng", false)));
+        tfHoTen = buildInputField("", false);
+        tfCCCD = buildInputField("", false);
+        tfDiaChi = buildInputField("", false);
+        tfNgaySinh = buildInputField("", false);
+        tfTaiKhoan = buildInputField("", false);
+        tfEmail = buildInputField("", false);
+        p.add(formRow("Họ và tên:", tfHoTen));
         p.add(Box.createVerticalStrut(16));
-        p.add(formRow("CCCD:", buildInputField("0123456789", false)));
+        p.add(formRow("CCCD:", tfCCCD));
         p.add(Box.createVerticalStrut(16));
-        p.add(formRow("Địa Chỉ", buildInputField("DHCN TP.HCM", false)));
+        p.add(formRow("Địa Chỉ", tfDiaChi));
         p.add(Box.createVerticalStrut(16));
 
         // Giới tính row with toggles
-        p.add(formRow("Giới tính", buildGenderRow()));
+        genderPanel = buildGenderRow();
+        p.add(formRow("Giới tính", genderPanel));
         p.add(Box.createVerticalStrut(16));
 
-        p.add(formRow("Ngày Sinh", buildInputField("27/08/2004", false)));
+        p.add(formRow("Ngày Sinh", tfNgaySinh));
         p.add(Box.createVerticalStrut(16));
 
         // Tài khoản + Mật khẩu row
         p.add(formRow("Tài Khoản", buildAccountRow()));
         p.add(Box.createVerticalStrut(16));
 
-        p.add(formRow("Email", buildInputField("exampple@gmail.com", false)));
+        p.add(formRow("Email", tfEmail));
         p.add(Box.createVerticalStrut(40));
 
         // Lưu button centered
@@ -312,7 +349,7 @@ public class TaiKhoanPanel extends JPanel {
         // Left: username field
         JPanel left = new JPanel(new BorderLayout(10, 0));
         left.setOpaque(false);
-        left.add(buildInputField("034571958", false), BorderLayout.CENTER);
+        left.add(buildInputField("", false), BorderLayout.CENTER);
 
         // Middle: Mật khẩu label + field
         JPanel mid = new JPanel(new BorderLayout(8, 0));
@@ -358,13 +395,13 @@ public class TaiKhoanPanel extends JPanel {
         gc.fill = GridBagConstraints.HORIZONTAL; gc.gridy = 0;
 
         gc.gridx = 0; gc.weightx = 0.35;
-        row.add(buildInputField("034571958", false), gc);
+        row.add(buildInputField("", false), gc);
 
         gc.gridx = 1; gc.weightx = 0.0; gc.insets = new Insets(0, 12, 0, 0);
         row.add(lbl("Mật Khẩu", F_LABEL, MID), gc);
 
         gc.gridx = 2; gc.weightx = 0.3; gc.insets = new Insets(0, 8, 0, 0);
-        row.add(buildInputField("•••••••", false), gc);
+        row.add(buildInputField("", false), gc);
 
         gc.gridx = 3; gc.weightx = 0.0; gc.insets = new Insets(0, 10, 0, 0);
         row.add(changePwdBtn, gc);
@@ -376,3 +413,4 @@ public class TaiKhoanPanel extends JPanel {
         JLabel l = new JLabel(t); l.setFont(f); l.setForeground(c); return l;
     }
 }
+

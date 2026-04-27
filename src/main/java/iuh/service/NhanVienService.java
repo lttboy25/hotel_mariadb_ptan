@@ -1,10 +1,12 @@
 package iuh.service;
 
 import iuh.dao.NhanVienDao;
+import iuh.dto.NhanVienDTO;
 import iuh.entity.NhanVien;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class NhanVienService {
 
@@ -49,6 +51,60 @@ public class NhanVienService {
 
     public String generateNextMaNhanVien() {
         return nhanVienDao.generateMaNV();
+    }
+
+    /**
+     * Xác thực đăng nhập
+     * @param tenDangNhap tên đăng nhập
+     * @param matKhau mật khẩu
+     * @return NhanVienDTO nếu xác thực thành công, null nếu thất bại
+     */
+    public NhanVienDTO xacThucDangNhap(String tenDangNhap, String matKhau) {
+        if (tenDangNhap == null || tenDangNhap.isEmpty() ||
+            matKhau == null || matKhau.isEmpty()) {
+            return null;
+        }
+
+        try {
+            List<NhanVien> allNhanVien = getAllNhanVien();
+            NhanVien nhanVien = allNhanVien.stream()
+                    .filter(nv -> nv.getTaiKhoan() != null &&
+                                  nv.getTaiKhoan().getTenDangNhap().equals(tenDangNhap) &&
+                                  nv.getTaiKhoan().getMatKhau().equals(matKhau))
+                    .findFirst()
+                    .orElse(null);
+
+            if (nhanVien != null) {
+                return mapToDTO(nhanVien);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    /**
+     * Chuyển đổi NhanVien entity thành DTO
+     */
+    private NhanVienDTO mapToDTO(NhanVien nhanVien) {
+        if (nhanVien == null) {
+            return null;
+        }
+
+        return NhanVienDTO.builder()
+                .maNhanVien(nhanVien.getMaNhanVien())
+                .CCCD(nhanVien.getCCCD())
+                .tenNhanVien(nhanVien.getTenNhanVien())
+                .taiKhoan(nhanVien.getTaiKhoan() != null ? nhanVien.getTaiKhoan().getTenDangNhap() : "")
+                .gioiTinh(nhanVien.isGioiTinh())
+                .ngaySinh(nhanVien.getNgaySinh())
+                .email(nhanVien.getEmail())
+                .soDienThoai(nhanVien.getSoDienThoai())
+                .ngayBatDau(nhanVien.getNgayBatDau())
+                .trangThai(nhanVien.getTrangThai() != null ? nhanVien.getTrangThai().toString() : "")
+                .diaChi(nhanVien.getDiaChi())
+                .build();
     }
 
     public NhanVien addNhanVienAutoCode(NhanVien nhanVien) {
