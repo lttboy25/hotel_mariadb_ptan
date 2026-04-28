@@ -7,8 +7,8 @@ package iuh.dao;
 
 
 import iuh.db.JPAUtil;
-import iuh.entity.KhuyenMai;
 import iuh.entity.NhanVien;
+import iuh.entity.TaiKhoan;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
@@ -62,9 +62,23 @@ public class NhanVienDao extends AbstractGenericDaoImpl<NhanVien, String>{
         EntityManager em = JPAUtil.getEntityManager();
         try {
             em.getTransaction().begin();
-            NhanVien merged = em.merge(nhanVien);
+            NhanVien managed = em.find(NhanVien.class, nhanVien.getMaNhanVien());
+            if (managed == null) {
+                throw new IllegalArgumentException("Khong tim thay nhan vien: " + nhanVien.getMaNhanVien());
+            }
+
+            managed.setTenNhanVien(nhanVien.getTenNhanVien());
+            managed.setCCCD(nhanVien.getCCCD());
+            managed.setGioiTinh(nhanVien.isGioiTinh());
+            managed.setNgaySinh(nhanVien.getNgaySinh());
+            managed.setEmail(nhanVien.getEmail());
+            managed.setSoDienThoai(nhanVien.getSoDienThoai());
+            managed.setNgayBatDau(nhanVien.getNgayBatDau());
+            managed.setDiaChi(nhanVien.getDiaChi());
+            managed.setTrangThai(nhanVien.getTrangThai());
+
             em.getTransaction().commit();
-            return merged;
+            return managed;
         }catch(Exception e){
             if(em.getTransaction().isActive()){
                 em.getTransaction().rollback();
@@ -163,6 +177,41 @@ public class NhanVienDao extends AbstractGenericDaoImpl<NhanVien, String>{
 
         } catch (NoResultException e) {
             return null;
+        }
+    }
+
+    public boolean doiMatKhau(String maNV, String matKhauCu, String matKhauMoi) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            TaiKhoan taiKhoan = em.find(TaiKhoan.class, maNV);
+            if (taiKhoan == null) {
+                em.getTransaction().rollback();
+                return false;
+            }
+            if (!taiKhoan.getMatKhau().equals(matKhauCu)) {
+                em.getTransaction().rollback();
+                return false;
+            }
+
+            taiKhoan.setMatKhau(matKhauMoi);
+            em.merge(taiKhoan);
+            em.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    public String layMatKhauTheoMaNhanVien(String maNV) {
+        try (EntityManager em = JPAUtil.getEntityManager()) {
+            TaiKhoan taiKhoan = em.find(TaiKhoan.class, maNV);
+            return taiKhoan != null ? taiKhoan.getMatKhau() : null;
         }
     }
 }

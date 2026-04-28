@@ -42,6 +42,7 @@ public class ThanhToanService {
             return null;
         }
 
+        LocalDateTime now = LocalDateTime.now();
         double tongTien = 0.0;
         List<ChiTietHoaDon> dsChiTietHoaDon = new ArrayList<>();
 
@@ -59,7 +60,7 @@ public class ThanhToanService {
             ChiTietHoaDon cthd = new ChiTietHoaDon();
             cthd.setChiTietPhieuDatPhong(ctpdp);
             cthd.setPhong(ctpdp.getPhong());
-            cthd.setNgayTao(ctpdp.getThoiGianTraPhong());
+            cthd.setNgayTao(now);
             cthd.setTongTien(tien);
 
             dsChiTietHoaDon.add(cthd);
@@ -68,11 +69,11 @@ public class ThanhToanService {
         NhanVien nv = nhanVienService.getNhanVienById("NV001").orElse(null);
 
         HoaDon hoaDon = new HoaDon();
-        hoaDon.setNgayDat(LocalDateTime.now());
+        hoaDon.setNgayDat(now);
         hoaDon.setKhachHang(phieuDatPhong.getKhachHang());
         hoaDon.setNhanVien(nv);
         hoaDon.setTrangThai("Đã thanh toán");
-        hoaDon.setNgayDat(LocalDateTime.now());
+        hoaDon.setNgayTao(now);
         hoaDon.setTongTien(tongTien);
         hoaDon.setTienKhachDua(tienKhachDua);
         hoaDon.setTienThoi(tienThua);

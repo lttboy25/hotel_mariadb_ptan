@@ -35,7 +35,7 @@ public class VictoryaLogin extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
-        // Main panel: left blue + right white
+        // CreateSchema panel: left blue + right white
         JPanel mainPanel = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {

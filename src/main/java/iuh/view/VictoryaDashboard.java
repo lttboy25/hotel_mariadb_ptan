@@ -299,7 +299,7 @@ public class VictoryaDashboard extends JFrame {
 
         // Click handler
         if (iconType == NavIcon.LOGOUT) {
-            row.addMouseListener(new MouseAdapter() {
+            MouseAdapter logoutHandler = new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     int choice = JOptionPane.showConfirmDialog(
@@ -330,9 +330,13 @@ public class VictoryaDashboard extends JFrame {
                         row.repaint();
                     }
                 }
-            });
+            };
+            row.addMouseListener(logoutHandler);
+            inner.addMouseListener(logoutHandler);
+            icon.addMouseListener(logoutHandler);
+            lbl.addMouseListener(logoutHandler);
         } else if (cardKey != null) {
-            row.addMouseListener(new MouseAdapter() {
+            MouseAdapter navHandler = new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     // Deactivate all
@@ -369,9 +373,13 @@ public class VictoryaDashboard extends JFrame {
                         row.repaint();
                     }
                 }
-            });
+            };
+            row.addMouseListener(navHandler);
+            inner.addMouseListener(navHandler);
+            icon.addMouseListener(navHandler);
+            lbl.addMouseListener(navHandler);
         } else {
-            row.addMouseListener(new MouseAdapter() {
+            MouseAdapter hoverHandler = new MouseAdapter() {
                 @Override
                 public void mouseEntered(MouseEvent e) {
                     if (!active[0]) {
@@ -387,7 +395,11 @@ public class VictoryaDashboard extends JFrame {
                         row.repaint();
                     }
                 }
-            });
+            };
+            row.addMouseListener(hoverHandler);
+            inner.addMouseListener(hoverHandler);
+            icon.addMouseListener(hoverHandler);
+            lbl.addMouseListener(hoverHandler);
         }
 
         return row;
@@ -417,7 +429,7 @@ public class VictoryaDashboard extends JFrame {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ignored) {
         }
-        SwingUtilities.invokeLater(VictoryaDashboard::new);
+        SwingUtilities.invokeLater(VictoryaLogin::new);
     }
 }
 

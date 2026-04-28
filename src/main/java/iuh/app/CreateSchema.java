@@ -1,9 +1,9 @@
-package iuh;
+package iuh.app;
 
 import iuh.db.JPAUtil;
 import jakarta.persistence.EntityManager;
 
-public class Main {
+public class CreateSchema {
     public static void main(String[] args) {
         EntityManager em = null;
         try {

@@ -11,7 +11,6 @@ import java.util.List;
 public class HoaDonDao extends AbstractGenericDaoImpl<HoaDon, String> {
 
     public HoaDonDao() {super(HoaDon.class);}
-    private Mapper mapper;
 
     public String generateMaHoaDon() {
         EntityManager em = JPAUtil.getEntityManager();
@@ -55,8 +54,10 @@ public class HoaDonDao extends AbstractGenericDaoImpl<HoaDon, String> {
 
     public HoaDon save(HoaDonDTO hoaDonDTO) {
 
-        HoaDon hoaDon = mapper.map(hoaDonDTO);
-        hoaDon.setMaHoaDon(generateMaHoaDon());
+        HoaDon hoaDon = Mapper.map(hoaDonDTO);
+        if (hoaDon.getMaHoaDon() == null || hoaDon.getMaHoaDon().isBlank()) {
+            hoaDon.setMaHoaDon(generateMaHoaDon());
+        }
 
         return create(hoaDon);
     }

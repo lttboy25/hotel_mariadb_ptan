@@ -7,11 +7,10 @@ import iuh.mapper.Mapper;
 
 public class ChiTietHoaDonDao extends AbstractGenericDaoImpl<ChiTietHoaDon, String> {
     public ChiTietHoaDonDao() {super(ChiTietHoaDon.class);}
-    private Mapper mapper;
 
     public ChiTietHoaDon save(ChiTietHoaDonDTO chiTietHoaDonDTO) {
 
-        return create(mapper.map(chiTietHoaDonDTO));
+        return create(Mapper.map(chiTietHoaDonDTO));
     }
 
 }
