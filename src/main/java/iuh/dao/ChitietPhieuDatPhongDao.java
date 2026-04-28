@@ -137,4 +137,14 @@ public class ChitietPhieuDatPhongDao extends AbstractGenericDaoImpl<ChiTietPhieu
                 .setParameter("cccd", cccd.trim())
                 .getResultList());
     }
+
+    public List<ChiTietPhieuDatPhong> getPhongDeNhanByCCCD(String cccd) {
+        return doInTransaction(em -> em.createQuery("""
+                SELECT ct FROM ChiTietPhieuDatPhong ct
+                WHERE ct.phieuDatPhong.khachHang.CCCD = :cccd
+                AND ct.phieuDatPhong.trangThai = 'Đã đặt'
+                """, ChiTietPhieuDatPhong.class)
+                .setParameter("cccd", cccd.trim())
+                .getResultList());
+    }
 }

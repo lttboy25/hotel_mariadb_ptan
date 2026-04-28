@@ -37,4 +37,11 @@ public class ChiTietPhieuDatPhongService {
         }
         return chitietPhieuDatPhongDao.getPhongDeHuyByCCCD(cccd);
     }
+
+    public List<ChiTietPhieuDatPhong> getPhongDeNhanByCCCD(String cccd) {
+        if (cccd == null || cccd.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+        return chitietPhieuDatPhongDao.getPhongDeNhanByCCCD(cccd);
+    }
 }

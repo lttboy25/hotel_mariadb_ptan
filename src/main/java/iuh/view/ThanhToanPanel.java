@@ -183,7 +183,7 @@ public class ThanhToanPanel extends JPanel {
         btnTimKiem.addActionListener(e -> timKiem());
 
         // Nút Làm mới: xoá ô CCCD và reset toàn bộ bảng
-        JButton btnLamMoi = buildOutlineIconButton("↺ Làm mới", 100, 36);
+        JButton btnLamMoi = buildOutlineIconButton("Làm mới", 100, 36);
         btnLamMoi.addActionListener(e -> refresh());
 
         card.add(tfCCCD);

@@ -27,7 +27,7 @@ public class ThanhToanService {
 
     public List<ChiTietPhieuDatPhong> getDanhSachPhieuDatPhongDeThanhToan(String cccd) {
         return chiTietPhieuDatPhongService
-                .getChiTietPhieuDatPhongByToPayment("Đã nhận phòng", "Chưa thanh toán", cccd);
+                .getChiTietPhieuDatPhongByToPayment("Đã nhận phòng", "Đã nhận phòng", cccd);
 
     }
 

@@ -68,6 +68,7 @@ public class VictoryaDashboard extends JFrame {
         contentCards.add(new GiaHanPhongPanel(), "giahanphong");
         contentCards.add(new QuanLyPhongPanel(), "quanlyphong");
         contentCards.add(new ThanhToanPanel(), "thanhtoan");
+        contentCards.add(new NhanPhongPanel(), "nhanphong");
 
         // Sidebar (built after contentCards so it can reference it)
         JPanel sidebar = buildSidebar();
@@ -138,9 +139,10 @@ public class VictoryaDashboard extends JFrame {
         // Child rows (initially hidden)
         Object[][] children = {
                 { NavIcon.DAT_PHONG, "Đặt Phòng", "datphong" },
+                { NavIcon.DAT_PHONG, "Nhận phòng", "nhanphong" },
                 { NavIcon.GIA_HAN, "Gia Hạn Phòng", "giahanphong" },
-                { NavIcon.HUY_PHONG, "Hủy Phòng", "huyphong" },
                 { NavIcon.DAT_PHONG, "Đổi phòng", "doiphong" },
+                { NavIcon.HUY_PHONG, "Hủy Phòng", "huyphong" }
         };
 
         JPanel[] childPanels = new JPanel[children.length];
