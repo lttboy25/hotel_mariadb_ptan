@@ -30,4 +30,11 @@ public class ChiTietPhieuDatPhongService {
         return chitietPhieuDatPhongDao.getChiTietPhieuDatPhongByToPayment(statusTicket, statusDetail, cccd);
 
     }
+
+    public List<ChiTietPhieuDatPhong> getPhongDeHuyByCCCD(String cccd) {
+        if (cccd == null || cccd.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+        return chitietPhieuDatPhongDao.getPhongDeHuyByCCCD(cccd);
+    }
 }

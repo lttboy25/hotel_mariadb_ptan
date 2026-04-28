@@ -145,6 +145,7 @@ public class PhongDao extends AbstractGenericDaoImpl<Phong, String> {
                             WHERE ct.phong.maPhong = p.maPhong
                             AND ct.thoiGianNhanPhong < :ngayTraPhong
                             AND ct.thoiGianTraPhong > :ngayNhanPhong
+                            AND ct.trangThai != 'Đã hủy'
                         )
                         ORDER BY p.maPhong
                     """;
