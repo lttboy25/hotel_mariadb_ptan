@@ -298,7 +298,40 @@ public class VictoryaDashboard extends JFrame {
         navRows.add(new NavRowEntry(row, icon, lbl, active, isChild, cardKey));
 
         // Click handler
-        if (cardKey != null) {
+        if (iconType == NavIcon.LOGOUT) {
+            row.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    int choice = JOptionPane.showConfirmDialog(
+                            VictoryaDashboard.this,
+                            "Bạn có chắc chắn muốn đăng xuất?",
+                            "Xác nhận đăng xuất",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE);
+                    if (choice == JOptionPane.YES_OPTION) {
+                        CurrentUser.getInstance().logout();
+                        VictoryaDashboard.this.dispose();
+                        new VictoryaLogin();
+                    }
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    if (!active[0]) {
+                        row.setBackground(new Color(0xF4F7FF));
+                        row.repaint();
+                    }
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    if (!active[0]) {
+                        row.setBackground(BG_WHITE);
+                        row.repaint();
+                    }
+                }
+            });
+        } else if (cardKey != null) {
             row.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
