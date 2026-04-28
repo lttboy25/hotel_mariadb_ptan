@@ -19,6 +19,8 @@ import lombok.NoArgsConstructor;
 public class PhieuHuyPhong implements Serializable {
     @Id
     @EqualsAndHashCode.Include
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "maHuyPhong")
     private Long maHuyPhong;
 
     @OneToOne(fetch = FetchType.LAZY)

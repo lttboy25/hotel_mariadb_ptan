@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/db/PhieuHuyPhong_fix.sql">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/db/PhieuHuyPhong_fix.sql" />
+              <option name="updatedContent" value="-- Ensure PhieuHuyPhong.maHuyPhong is auto-generated&#10;ALTER TABLE PhieuHuyPhong&#10;    MODIFY COLUMN maHuyPhong BIGINT NOT NULL AUTO_INCREMENT;&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
