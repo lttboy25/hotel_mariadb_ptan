@@ -66,21 +66,19 @@ VALUES
 
 -- =========================
 -- PHONG
--- =========================
 INSERT INTO Phong
-    (maPhong, moTa, soPhong, tang, tinhTrang, trangThai, maLoaiPhong)
+(maPhong, moTa, soPhong, tang, tinhTrang, trangThai, maLoaiPhong)
 VALUES
-    ('P101', 'View san vuon', '101', 1, 'Trong', 'San sang', 'LP001'),
-    ('P102', 'Gan thang may', '102', 1, 'Trong', 'San sang', 'LP001'),
-    ('P103', 'View pho', '103', 1, 'Trong', 'Dang sua chua', 'LP001'),
-    ('P201', 'Ban cong rong', '201', 2, 'Trong', 'San sang', 'LP002'),
-    ('P202', 'Cua so lon', '202', 2, 'Dang thue', 'San sang', 'LP002'),
-    ('P203', 'Yen tinh', '203', 2, 'Trong', 'San sang', 'LP002'),
-    ('P301', 'Phong VIP tang cao', '301', 3, 'Trong', 'San sang', 'LP003'),
-    ('P302', 'Noi that go', '302', 3, 'Trong', 'San sang', 'LP003'),
-    ('P303', 'Can san thuong', '303', 3, 'Trong', 'San sang', 'LP003'),
-    ('P304', 'View bien', '304', 3, 'Trong', 'San sang', 'LP003');
-
+    ('P101', N'View sân vườn', '101', 1, N'Trống', N'Sẵn sàng', 'LP001'),
+    ('P102', N'Gần thang máy', '102', 1, N'Trống', N'Sẵn sàng', 'LP001'),
+    ('P103', N'View phố', '103', 1, N'Trống', N'Đang sửa chữa', 'LP001'),
+    ('P201', N'Ban công rộng', '201', 2, N'Trống', N'Sẵn sàng', 'LP002'),
+    ('P202', N'Cửa sổ lớn', '202', 2, N'Đang thuê', N'Sẵn sàng', 'LP002'),
+    ('P203', N'Yên tĩnh', '203', 2, N'Trống', N'Sẵn sàng', 'LP002'),
+    ('P301', N'Phòng VIP tầng cao', '301', 3, N'Trống', N'Sẵn sàng', 'LP003'),
+    ('P302', N'Nội thất gỗ', '302', 3, N'Trống', N'Sẵn sàng', 'LP003'),
+    ('P303', N'Cận sân thượng', '303', 3, N'Trống', N'Sẵn sàng', 'LP003'),
+    ('P304', N'View biển', '304', 3, N'Trống', N'Sẵn sàng', 'LP003');
 -- =========================
 -- KHACH HANG
 -- =========================
