@@ -10,7 +10,6 @@ import iuh.entity.TrangThai;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 /*
  * @description
@@ -19,8 +18,6 @@ import java.util.regex.Pattern;
  * @version:    1.0
  */
 public interface KhuyenMaiDao {
-    Pattern MA_KHUYEN_MAI_PATTERN = Pattern.compile("^KM(\\d+)$");
-
     List<KhuyenMai> findAll();
 
     Optional<KhuyenMai> findById(String maKhuyenMai);
@@ -34,4 +31,17 @@ public interface KhuyenMaiDao {
     List<KhuyenMai> findByKeyword(String keyword);
 
     List<KhuyenMai> findByTrangThai(TrangThai trangThai);
+
+    default int extractNumber(String code) {
+        if (code == null) return 0;
+        try {
+            return Integer.parseInt(code.replaceAll("\\D+", ""));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    default String formatCode(int number) {
+        return String.format("KM%03d", number);
+    }
 }

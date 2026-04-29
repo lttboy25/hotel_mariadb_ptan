@@ -3,10 +3,11 @@ package iuh.dao.impl;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.PhieuDatPhong;
 import iuh.entity.PhieuHuyPhong;
+import jakarta.persistence.EntityManager;
 
 import java.util.List;
 
-public class PhieuHuyPhongDaoImpl extends AbstractGenericDaoImpl<PhieuHuyPhong, Long> implements iuh.dao.PhieuHuyPhongDao, iuh.dao.PhieuHuyPhongDao {
+public class PhieuHuyPhongDaoImpl extends AbstractGenericDaoImpl<PhieuHuyPhong, Long> implements iuh.dao.PhieuHuyPhongDao {
 
     public PhieuHuyPhongDaoImpl() {
         super(PhieuHuyPhong.class);
@@ -48,5 +49,19 @@ public class PhieuHuyPhongDaoImpl extends AbstractGenericDaoImpl<PhieuHuyPhong, 
             }
         });
     }
-
+ 
+    private void capNhatTrangThaiPhieuDatPhong(EntityManager em, PhieuDatPhong phieuDatPhong) {
+        if (phieuDatPhong == null) return;
+        
+        PhieuDatPhong managedPdp = em.find(PhieuDatPhong.class, phieuDatPhong.getMaPhieuDatPhong());
+        if (managedPdp == null) return;
+ 
+        boolean tatCaDaHuy = managedPdp.getDsachPhieuDatPhong().stream()
+                .allMatch(ct -> "Đã hủy".equals(ct.getTrangThai()));
+ 
+        if (tatCaDaHuy) {
+            managedPdp.setTrangThai("Đã hủy");
+            em.merge(managedPdp);
+        }
+    }
 }

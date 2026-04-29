@@ -2,6 +2,7 @@ package iuh.service.impl;
 
 import iuh.dao.impl.ChitietPhieuDatPhongDaoImpl;
 import iuh.entity.ChiTietPhieuDatPhong;
+import iuh.service.ChiTietPhieuDatPhongService;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -10,7 +11,7 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChiTietPhieuDatPhongServiceImpl implements ChiTietPhieuDatPhongService, iuh.service.ChiTietPhieuDatPhongService {
+public class ChiTietPhieuDatPhongServiceImpl implements ChiTietPhieuDatPhongService {
     ChitietPhieuDatPhongDaoImpl chitietPhieuDatPhongDao = new ChitietPhieuDatPhongDaoImpl();
 
     @Override

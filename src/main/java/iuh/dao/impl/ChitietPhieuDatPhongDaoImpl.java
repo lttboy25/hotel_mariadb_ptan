@@ -19,7 +19,8 @@ import java.util.List;
  * @version:    1.0
  * @created:
  */
-public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietPhieuDatPhong, Long> implements iuh.dao.ChitietPhieuDatPhongDao {
+public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietPhieuDatPhong, Long>
+        implements iuh.dao.ChitietPhieuDatPhongDao {
     public ChitietPhieuDatPhongDaoImpl() {
         super(ChiTietPhieuDatPhong.class);
     }
@@ -110,7 +111,7 @@ public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietP
 
     @Override
     public List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(String statusTicket, String statusDetail,
-                                                                         String cccd) {
+            String cccd) {
         return doInTransaction(em -> em.createQuery("""
                 SELECT ctpdp FROM ChiTietPhieuDatPhong ctpdp
                 WHERE ctpdp.phieuDatPhong.trangThai = :statusTicket
@@ -157,7 +158,7 @@ public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietP
                 JOIN ct.phieuDatPhong pdp
                 JOIN pdp.khachHang kh
                 WHERE kh.soDienThoai = :sdt
-                  AND ct.trangThai   = 'Chưa thanh toán'
+                  AND (ct.trangThai   = 'Chưa thanh toán' OR ct.trangThai = 'Đã nhận phòng')
                 """, ChiTietPhieuDatPhong.class)
                 .setParameter("sdt", soDienThoai)
                 .getResultList());
@@ -228,7 +229,7 @@ public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietP
                         JOIN ct.phieuDatPhong pdp
                         JOIN pdp.khachHang kh
                         JOIN ct.phong p
-                        WHERE ct.trangThai = 'Chưa thanh toán'
+                        WHERE (ct.trangThai = 'Chưa thanh toán' OR ct.trangThai = 'Đã nhận phòng')
                         AND (
                             :kw IS NULL
                             OR kh.soDienThoai LIKE :kw

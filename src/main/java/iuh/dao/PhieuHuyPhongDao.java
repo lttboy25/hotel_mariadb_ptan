@@ -15,6 +15,6 @@ import java.util.List;
  * @date:  4/29/2026
  * @version:    1.0
  */
-public interface PhieuHuyPhongDao {
+public interface PhieuHuyPhongDao extends GenericDao<PhieuHuyPhong, Long> {
     boolean huyNhieuPhongNghiepVu(List<PhieuHuyPhong> listPhieuHuy, double tienHoan);
 }

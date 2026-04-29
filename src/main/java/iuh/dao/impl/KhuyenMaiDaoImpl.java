@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class KhuyenMaiDaoImpl extends AbstractGenericDaoImpl<KhuyenMai, String> implements iuh.dao.KhuyenMaiDao, KhuyenMaiDao {
+public class KhuyenMaiDaoImpl extends AbstractGenericDaoImpl<KhuyenMai, String> implements KhuyenMaiDao {
 
     public KhuyenMaiDaoImpl() {
         super(KhuyenMai.class);
