@@ -3,7 +3,7 @@ package iuh.view;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.KhachHang;
 import iuh.entity.Phong;
-import iuh.service.NhanPhongService;
+import iuh.service.impl.NhanPhongServiceImpl;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -85,7 +85,7 @@ public class NhanPhongPanel extends JPanel {
     private JButton btnXacNhan;
 
     // ── Service & data
-    private NhanPhongService nhanPhongService = new NhanPhongService();
+    private NhanPhongServiceImpl nhanPhongServiceImpl = new NhanPhongServiceImpl();
 
     private List<ChiTietPhieuDatPhong> danhSachChiTiet = new ArrayList<>();
     private List<ChiTietPhieuDatPhong> listNhanPhong   = new ArrayList<>();
@@ -397,7 +397,7 @@ public class NhanPhongPanel extends JPanel {
         danhSachChiTiet.clear();
         modelBang.setRowCount(0);
 
-        danhSachChiTiet = nhanPhongService.getDanhSachPhongDaDatByCCCD(cccd);
+        danhSachChiTiet = nhanPhongServiceImpl.getDanhSachPhongDaDatByCCCD(cccd);
 
         for (ChiTietPhieuDatPhong ct : danhSachChiTiet) {
             modelBang.addRow(new Object[]{
@@ -485,7 +485,7 @@ public class NhanPhongPanel extends JPanel {
         if (confirm != JOptionPane.YES_OPTION) return;
 
         try {
-            boolean ok = nhanPhongService.nhanPhong(listNhanPhong);
+            boolean ok = nhanPhongServiceImpl.nhanPhong(listNhanPhong);
             if (ok) {
                 JOptionPane.showMessageDialog(this,
                         "Nhận phòng thành công!",

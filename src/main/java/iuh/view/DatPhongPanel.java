@@ -4,8 +4,8 @@ import iuh.dto.DatPhongRequestDTO;
 import iuh.dto.DatPhongResultDTO;
 import iuh.dto.KhachHangDTO;
 import iuh.entity.Phong;
-import iuh.service.DatPhongService;
-import iuh.service.KhachHangService;
+import iuh.service.impl.DatPhongServiceImpl;
+import iuh.service.impl.KhachHangServiceImpl;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -90,8 +90,8 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
     private String filterFloor = "Tầng";
 
     // Gom logic backend qua service + DTO
-    private final KhachHangService khachHangService = new KhachHangService();
-    private final DatPhongService datPhongService = new DatPhongService();
+    private final KhachHangServiceImpl khachHangServiceImpl = new KhachHangServiceImpl();
+    private final DatPhongServiceImpl datPhongServiceImpl = new DatPhongServiceImpl();
 
     public DatPhongPanel() {
         setLayout(new BorderLayout());
@@ -122,7 +122,7 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
                 allRooms.clear();
                 return;
             }
-            List<Phong> phongs = datPhongService.getDsPhongTrong(checkIn, checkOut);
+            List<Phong> phongs = datPhongServiceImpl.getDsPhongTrong(checkIn, checkOut);
             allRooms.clear();
             for (Phong p : phongs) {
                 allRooms.add(toRoom(p));
@@ -550,7 +550,7 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
         }
 
         try {
-            List<Phong> phongs = datPhongService.getDsPhongTrong(checkIn, checkOut);
+            List<Phong> phongs = datPhongServiceImpl.getDsPhongTrong(checkIn, checkOut);
 
             allRooms.clear();
             for (Phong p : phongs) {
@@ -1020,7 +1020,7 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
                 return;
             }
             try {
-                KhachHangDTO kh = khachHangService.timTheoCCCD(cccd);
+                KhachHangDTO kh = khachHangServiceImpl.timTheoCCCD(cccd);
                 if (kh != null) {
                     // Tìm thấy → điền sẵn form
                     foundCustomer[0] = kh;
@@ -1088,10 +1088,10 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
                 );
 
                 if (isNewCustomer[0]) {
-                    dto.setMaKhachHang(khachHangService.phatSinhMaMoi());
-                    khachHangService.themKhachHang(dto);
+                    dto.setMaKhachHang(khachHangServiceImpl.phatSinhMaMoi());
+                    khachHangServiceImpl.themKhachHang(dto);
                 } else {
-                    khachHangService.capNhatKhachHang(dto);
+                    khachHangServiceImpl.capNhatKhachHang(dto);
                 }
 
                 finalizeDatPhong(dto, checkIn, checkOut, dialog);
@@ -1130,7 +1130,7 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
                     .maPhongs(selectedRooms.stream().map(r -> r.id).toList())
                     .build();
 
-            DatPhongResultDTO result = datPhongService.datPhong(request);
+            DatPhongResultDTO result = datPhongServiceImpl.datPhong(request);
 
             dialog.dispose();
             JOptionPane.showMessageDialog(this,

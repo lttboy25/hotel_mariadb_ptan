@@ -2,8 +2,8 @@ package iuh.view;
 
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.PhieuHuyPhong;
-import iuh.service.ChiTietPhieuDatPhongService;
-import iuh.service.PhieuHuyPhongService;
+import iuh.service.impl.ChiTietPhieuDatPhongServiceImpl;
+import iuh.service.impl.PhieuHuyPhongServiceImpl;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -43,8 +43,8 @@ public class HuyPhongPanel extends JPanel {
     private JLabel lblSearchMsg;
     private JLabel lblActionMsg;
 
-    private PhieuHuyPhongService phieuHuyService = new PhieuHuyPhongService();
-    private ChiTietPhieuDatPhongService chiTietService = new ChiTietPhieuDatPhongService();
+    private PhieuHuyPhongServiceImpl phieuHuyService = new PhieuHuyPhongServiceImpl();
+    private ChiTietPhieuDatPhongServiceImpl chiTietService = new ChiTietPhieuDatPhongServiceImpl();
     private List<ChiTietPhieuDatPhong> dsChiTiet = new ArrayList<>();
 
     public HuyPhongPanel() {

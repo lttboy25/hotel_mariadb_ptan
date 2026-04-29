@@ -2,7 +2,7 @@ package iuh.view;
 
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.Phong;
-import iuh.service.ChiTietPhieuDatPhongService;
+import iuh.service.impl.ChiTietPhieuDatPhongServiceImpl;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -13,12 +13,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.List;
 
 /**
- * GiaHanPhongPanel – dữ liệu thật qua ChiTietPhieuDatPhongService → ChitietPhieuDatPhongDaoImpl.
+ * GiaHanPhongPanel – dữ liệu thật qua ChiTietPhieuDatPhongServiceImpl → ChitietPhieuDatPhongDaoImpl.
  *
  * Luồng:
  *  1. Nhập SĐT → nhấn "Tìm" (hoặc Enter) → bảng trái hiện phòng đang thuê
@@ -75,7 +74,7 @@ public class GiaHanPhongPanel extends JPanel {
     private JPanel            extendRowsPanel;
 
     // ── Service ───────────────────────────────────────────────────────────────
-    private final ChiTietPhieuDatPhongService service = new ChiTietPhieuDatPhongService();
+    private final ChiTietPhieuDatPhongServiceImpl service = new ChiTietPhieuDatPhongServiceImpl();
 
     // ── Inner model mỗi dòng bên phải ────────────────────────────────────────
     private static class RowModel {

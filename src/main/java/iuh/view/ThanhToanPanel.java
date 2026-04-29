@@ -6,10 +6,9 @@ import javax.swing.table.*;
 
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.HoaDon;
-import iuh.entity.PhieuDatPhong;
-import iuh.service.ChiTietPhieuDatPhongService;
-import iuh.service.PhieuDatPhongService;
-import iuh.service.ThanhToanService;
+import iuh.service.impl.ChiTietPhieuDatPhongServiceImpl;
+import iuh.service.impl.PhieuDatPhongServiceImpl;
+import iuh.service.impl.ThanhToanServiceImpl;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -94,9 +93,9 @@ public class ThanhToanPanel extends JPanel {
     private JButton      btnThanhToan;
 
     // ── Services & dữ liệu nghiệp vụ
-    private ThanhToanService             thanhToanService = new ThanhToanService();
-    private ChiTietPhieuDatPhongService  chiTietPhieuDatPhongService = new ChiTietPhieuDatPhongService();
-    private PhieuDatPhongService         phieuDatPhongService        = new PhieuDatPhongService();
+    private ThanhToanServiceImpl thanhToanServiceImpl = new ThanhToanServiceImpl();
+    private ChiTietPhieuDatPhongServiceImpl chiTietPhieuDatPhongServiceImpl = new ChiTietPhieuDatPhongServiceImpl();
+    private PhieuDatPhongServiceImpl phieuDatPhongServiceImpl = new PhieuDatPhongServiceImpl();
 
     // Danh sách song song với bảng (index i <=> row i)
     private List<ChiTietPhieuDatPhong> danhSachPhong = new ArrayList<>();
@@ -215,7 +214,7 @@ public class ThanhToanPanel extends JPanel {
         tongTienPhong = 0.0;
         tienKhachDua  = 0.0;
 
-        danhSachPhong = thanhToanService.getDanhSachPhieuDatPhongDeThanhToan(cccd);
+        danhSachPhong = thanhToanServiceImpl.getDanhSachPhieuDatPhongDeThanhToan(cccd);
 
         modelBang.setRowCount(0); // xoá dòng cũ
         for (ChiTietPhieuDatPhong ct : danhSachPhong) {
@@ -584,7 +583,7 @@ public class ThanhToanPanel extends JPanel {
         btnThanhToan.setPreferredSize(new Dimension(Integer.MAX_VALUE, 48));
         btnThanhToan.addActionListener(e -> {
 
-            boolean isThanhToan = thanhToanService.coTheThanhToan(tienKhachDua, tongTien);
+            boolean isThanhToan = thanhToanServiceImpl.coTheThanhToan(tienKhachDua, tongTien);
             if (!isThanhToan || tfKhachDua.getText().equals("")) {
                 JOptionPane.showMessageDialog(this,
                         "Thanh toán thất bại vì số tiền khách hàng đưa không đủ",
@@ -592,7 +591,7 @@ public class ThanhToanPanel extends JPanel {
                         JOptionPane.ERROR_MESSAGE);
             }
             else {
-                HoaDon hoaDon = thanhToanService.thanhToan(listThanhToan, tienKhachDua, tienThua);
+                HoaDon hoaDon = thanhToanServiceImpl.thanhToan(listThanhToan, tienKhachDua, tienThua);
                 if (hoaDon != null) {
                     HDPanel hdPanel = new HDPanel(hoaDon);
                     hdPanel.show(this);
@@ -773,12 +772,12 @@ public class ThanhToanPanel extends JPanel {
         tongTienPhong = 0.0;
         tienKhachDua  = 0.0;
 
-        // ── 3. Tải lại dữ liệu bảng từ ThanhToanService ──
+        // ── 3. Tải lại dữ liệu bảng từ ThanhToanServiceImpl ──
         // Tải lại theo CCCD đang nhập (nếu ô trống thì trả về danh sách rỗng)
         String cccdHienTai = tfCCCD.getText().trim();
         boolean coTimKiem = !cccdHienTai.isEmpty() && !cccdHienTai.equals("Nhập CCCD");
         danhSachPhong = coTimKiem
-                ? thanhToanService.getDanhSachPhieuDatPhongDeThanhToan(cccdHienTai)
+                ? thanhToanServiceImpl.getDanhSachPhieuDatPhongDeThanhToan(cccdHienTai)
                 : new ArrayList<>();
 
         modelBang.setRowCount(0); // xóa toàn bộ dòng cũ

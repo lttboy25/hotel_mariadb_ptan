@@ -7,7 +7,7 @@ package iuh.view;
 
 
 import iuh.entity.PhieuDatPhong;
-import iuh.service.PhieuDatPhongService;
+import iuh.service.impl.PhieuDatPhongServiceImpl;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -56,7 +56,7 @@ public class PDPPanel extends JPanel {
     }
 
     private void loadData() {
-        PhieuDatPhongService service = new PhieuDatPhongService();
+        PhieuDatPhongServiceImpl service = new PhieuDatPhongServiceImpl();
 
         List<PhieuDatPhong> list = service.getAll();
 

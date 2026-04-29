@@ -8,7 +8,7 @@ import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 
-import iuh.service.DoiPhongService;
+import iuh.service.impl.DoiPhongServiceImpl;
 import iuh.entity.Phong;
 
 public class DoiPhongPanel extends JPanel {
@@ -70,7 +70,7 @@ public class DoiPhongPanel extends JPanel {
     private JPanel    summaryPanel;
     private JTextField searchField;
 
-    private final DoiPhongService doiPhongService = new DoiPhongService();
+    private final DoiPhongServiceImpl doiPhongServiceImpl = new DoiPhongServiceImpl();
 
     // ── Constructor ───────────────────────────────────────────────────────────
     public DoiPhongPanel(String maPDP) {
@@ -109,7 +109,7 @@ public class DoiPhongPanel extends JPanel {
         availRooms.clear();
         allBookedRooms.clear();
 
-        for (Phong p : doiPhongService.getAllBookedRooms()) {
+        for (Phong p : doiPhongServiceImpl.getAllBookedRooms()) {
             Room r = new Room(p.getMaPhong(),
                     p.getLoaiPhong().getTenLoaiPhong(),
                     "Tầng " + p.getTang(),
@@ -118,7 +118,7 @@ public class DoiPhongPanel extends JPanel {
             bookedRooms.add(r);
             allBookedRooms.add(r);
         }
-        for (Phong p : doiPhongService.getAvailableRooms()) {
+        for (Phong p : doiPhongServiceImpl.getAvailableRooms()) {
             availRooms.add(new Room(p.getMaPhong(),
                     p.getLoaiPhong().getTenLoaiPhong(),
                     "Tầng " + p.getTang(),
@@ -138,7 +138,7 @@ public class DoiPhongPanel extends JPanel {
     }
 
     private String getMaPDPByPhong(String maPhong) {
-        return doiPhongService.getMaPDPByPhong(maPhong);
+        return doiPhongServiceImpl.getMaPDPByPhong(maPhong);
     }
 
     // =========================================================================
@@ -745,7 +745,7 @@ public class DoiPhongPanel extends JPanel {
                     "Xác nhận đổi phòng", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
                 try {
-                    doiPhongService.doiPhong(getMaPDPByPhong(from.id), from.id, to.id);
+                    doiPhongServiceImpl.doiPhong(getMaPDPByPhong(from.id), from.id, to.id);
                     JOptionPane.showMessageDialog(this,
                             "Đổi phòng thành công!\n" + from.id + " → " + to.id,
                             "Thành công", JOptionPane.INFORMATION_MESSAGE);

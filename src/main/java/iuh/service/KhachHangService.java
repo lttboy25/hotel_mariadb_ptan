@@ -1,58 +1,40 @@
+/*
+ * @ (#) KhachHangService.java     1.0    4/29/2026
+ *
+ * Copyright (c) 2026 IUH. All rights reserved.
+ */
 package iuh.service;
 
-import iuh.dao.impl.KhachHangDaoImpl;
 import iuh.dto.KhachHangDTO;
-import iuh.entity.KhachHang;
-import iuh.mapper.Mapper;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class KhachHangService {
-    private final KhachHangDaoImpl khachHangDao = new KhachHangDaoImpl();
+/*
+ * @description
+ * @author:NguyenTruong
+ * @date:  4/29/2026
+ * @version:    1.0
+ */
+public interface KhachHangService {
+    List<KhachHangDTO> loadAll();
 
-    public List<KhachHangDTO> loadAll() {
-        return khachHangDao.loadAll()
-                .stream()
-                .map(Mapper::map)
-                .collect(Collectors.toList());
-    }
+    boolean themKhachHang(KhachHangDTO kh);
 
-    public boolean themKhachHang(KhachHangDTO kh) {
-        if (kh == null) return false;
-        if (kh.getNgayTao() == null) kh.setNgayTao(LocalDate.now());
-        KhachHang entity = Mapper.map(kh);
-        return khachHangDao.create(entity) != null;
-    }
+    boolean capNhatKhachHang(KhachHangDTO kh);
 
-    public boolean capNhatKhachHang(KhachHangDTO kh) {
-        if (kh == null) return false;
-        KhachHang entity = Mapper.map(kh);
-        return khachHangDao.update(entity) != null;
-    }
+    boolean xoaKhachHang(String maKH);
 
-    public boolean xoaKhachHang(String maKH) {
-        return khachHangDao.delete(maKH);
-    }
+    List<KhachHangDTO> timKiem(String kw);
 
-    public List<KhachHangDTO> timKiem(String kw) {
-        return khachHangDao.findByKeyword(kw)
-                .stream()
-                .map(Mapper::map)
-                .collect(Collectors.toList());
-    }
+    String phatSinhMaMoi();
 
-    public String phatSinhMaMoi() {
-        return khachHangDao.generateNextMaKH();
-    }
+    KhachHangDTO timTheoCCCD(String cccd);
 
-    public KhachHangDTO timTheoCCCD(String cccd) {
-        return Mapper.map(khachHangDao.findByCCCD(cccd));
-    }
+    KhachHangDTO findByCCCD(String cccd);
 
-    public KhachHangDTO findByCCCD(String cccd) { return timTheoCCCD(cccd); }
-    public boolean create(KhachHangDTO dto) { return themKhachHang(dto); }
-    public boolean update(KhachHangDTO dto) { return capNhatKhachHang(dto); }
-    public String generateNextMaKH() { return phatSinhMaMoi(); }
+    boolean create(KhachHangDTO dto);
+
+    boolean update(KhachHangDTO dto);
+
+    String generateNextMaKH();
 }

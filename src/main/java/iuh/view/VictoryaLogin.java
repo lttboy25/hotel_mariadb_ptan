@@ -1,14 +1,13 @@
 package iuh.view;
 
 import iuh.dto.NhanVienDTO;
-import iuh.service.NhanVienService;
+import iuh.service.impl.NhanVienServiceImpl;
 
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
-import java.awt.image.BufferedImage;
 
 public class VictoryaLogin extends JFrame {
 
@@ -26,7 +25,7 @@ public class VictoryaLogin extends JFrame {
     private static final Font FONT_BUTTON = new Font("Segoe UI", Font.BOLD, 15);
     private static final Font FONT_LINK = new Font("Segoe UI", Font.PLAIN, 13);
 
-    private final NhanVienService nhanVienService = new NhanVienService();
+    private final NhanVienServiceImpl nhanVienServiceImpl = new NhanVienServiceImpl();
 
     public VictoryaLogin() {
         setTitle("Victorya - Đăng nhập");
@@ -378,7 +377,7 @@ public class VictoryaLogin extends JFrame {
                 return;
             }
 
-            NhanVienDTO nhanVien = nhanVienService.xacThucDangNhap(maNhanVien, matKhau);
+            NhanVienDTO nhanVien = nhanVienServiceImpl.xacThucDangNhap(maNhanVien, matKhau);
 
             if (nhanVien != null) {
                 CurrentUser.getInstance().setNhanVien(nhanVien);

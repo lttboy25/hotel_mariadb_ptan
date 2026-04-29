@@ -1,7 +1,7 @@
 package iuh.view;
 
 import iuh.dto.KhachHangDTO;
-import iuh.service.KhachHangService;
+import iuh.service.impl.KhachHangServiceImpl;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -38,7 +38,7 @@ public class QuanLyKhachHangPanel extends JPanel {
     private DefaultTableModel tableModel;
     private JTextField tfSearch;
 
-    private KhachHangService service = new KhachHangService();
+    private KhachHangServiceImpl service = new KhachHangServiceImpl();
 
     public QuanLyKhachHangPanel() {
         setLayout(new BorderLayout());
@@ -220,7 +220,7 @@ public class QuanLyKhachHangPanel extends JPanel {
     class KhachHangModal extends JDialog {
 
         private JTextField tfMa, tfTen, tfSdt, tfEmail, tfCccd;
-        private KhachHangService service = new KhachHangService();
+        private KhachHangServiceImpl service = new KhachHangServiceImpl();
         private Object[] rowData;
 
         KhachHangModal(JFrame owner, Object[] data, boolean isNew) {

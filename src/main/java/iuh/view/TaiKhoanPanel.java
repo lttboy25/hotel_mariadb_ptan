@@ -1,7 +1,7 @@
 package iuh.view;
 
 import iuh.dto.NhanVienDTO;
-import iuh.service.NhanVienService;
+import iuh.service.impl.NhanVienServiceImpl;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -32,7 +32,7 @@ public class TaiKhoanPanel extends JPanel {
     static final Font F_BTN = new Font("Segoe UI", Font.BOLD, 13);
     static final Font F_STATUS = new Font("Segoe UI", Font.BOLD, 11);
 
-    private final NhanVienService nhanVienService = new NhanVienService();
+    private final NhanVienServiceImpl nhanVienServiceImpl = new NhanVienServiceImpl();
 
     private JLabel nameLbl;
     private JLabel emailLbl;
@@ -319,7 +319,7 @@ public class TaiKhoanPanel extends JPanel {
             return;
         }
         NhanVienDTO fullNv = nv.getMaNhanVien() != null
-                ? nhanVienService.getNhanVienDTOById(nv.getMaNhanVien())
+                ? nhanVienServiceImpl.getNhanVienDTOById(nv.getMaNhanVien())
                 : null;
         applyUserData(fullNv != null ? fullNv : nv);
     }
@@ -356,7 +356,7 @@ public class TaiKhoanPanel extends JPanel {
         tfNgayBatDau.setText(nv.getNgayBatDau() != null ? nv.getNgayBatDau().toString() : "");
         tfTrangThai.setText(trangThai);
         tfTaiKhoan.setText(nv.getTaiKhoan() != null ? nv.getTaiKhoan() : "");
-        tfMatKhau.setText(nhanVienService.layMatKhauHienTai(maNV) == null ? "" : "********");
+        tfMatKhau.setText(nhanVienServiceImpl.layMatKhauHienTai(maNV) == null ? "" : "********");
         tfGioiTinh.setText(nv.getGioiTinhText());
     }
 
@@ -401,7 +401,7 @@ public class TaiKhoanPanel extends JPanel {
         }
 
         try {
-            boolean thanhCong = nhanVienService.doiMatKhau(maNhanVien, matKhauCu, matKhauMoi);
+            boolean thanhCong = nhanVienServiceImpl.doiMatKhau(maNhanVien, matKhauCu, matKhauMoi);
             if (!thanhCong) {
                 JOptionPane.showMessageDialog(this, "Mat khau hien tai khong dung.", "Thong bao", JOptionPane.WARNING_MESSAGE);
                 return;

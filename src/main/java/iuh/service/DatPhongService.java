@@ -1,45 +1,27 @@
 /*
- * @ (#) DatPhongService.java     1.0    4/20/2026
+ * @ (#) DatPhongService.java     1.0    4/29/2026
  *
  * Copyright (c) 2026 IUH. All rights reserved.
  */
 package iuh.service;
 
-
-/*
- * @description
- * @author:NguyenTruong
- * @date:  4/20/2026
- * @version:    1.0
- */
-
-import iuh.dao.impl.DatPhongDaoImpl;
-import iuh.dao.impl.PhongDaoImpl;
 import iuh.dto.DatPhongRequestDTO;
 import iuh.dto.DatPhongResultDTO;
-import iuh.entity.PhieuDatPhong;
 import iuh.entity.Phong;
-import iuh.mapper.Mapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class DatPhongService {
-    private final DatPhongDaoImpl datPhongDao;
-    private PhongDaoImpl phongDaoImpl = new PhongDaoImpl();
-    public DatPhongService() {
-        this.datPhongDao = new DatPhongDaoImpl();
-    }
+/*
+ * @description
+ * @author:NguyenTruong
+ * @date:  4/29/2026
+ * @version:    1.0
+ */
+public interface DatPhongService {
+    DatPhongResultDTO datPhong(DatPhongRequestDTO request);
 
-
-
-    public DatPhongResultDTO datPhong(DatPhongRequestDTO request) {
-        validateRequest(request);
-        PhieuDatPhong phieuDatPhong = datPhongDao.saveDatPhong(request);
-        return Mapper.mapToDatPhongResult(phieuDatPhong, request);
-    }
-
-    private void validateRequest(DatPhongRequestDTO request) {
+    default void validateRequest(DatPhongRequestDTO request) {
         if (request == null) {
             throw new IllegalArgumentException("Thiếu dữ liệu đặt phòng.");
         }
@@ -69,17 +51,10 @@ public class DatPhongService {
         }
         request.setSoNguoi(tongNguoi);
     }
-    public List<Phong> getDsPhongTrong(LocalDateTime checkIn, LocalDateTime checkOut) {
-        if (checkIn == null || checkOut == null) {
-            throw new IllegalArgumentException("Thiếu thời gian nhận/trả phòng.");
-        }
-        if (!checkOut.isAfter(checkIn)) {
-            throw new IllegalArgumentException("Thời gian trả phòng phải sau thời gian nhận phòng.");
-        }
-        return phongDaoImpl.findPhongByDate(checkIn, checkOut);
-    }
 
-    private boolean isBlank(String value) {
+    List<Phong> getDsPhongTrong(LocalDateTime checkIn, LocalDateTime checkOut);
+
+    default boolean isBlank(String value) {
         return value == null || value.trim().isEmpty();
     }
 }

@@ -1,7 +1,7 @@
 package iuh.view;
 
 import iuh.dto.ThongKeDTO;
-import iuh.service.ThongKeService;
+import iuh.service.impl.ThongKeServiceImpl;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -41,7 +41,7 @@ public class ThongKePanel extends JPanel {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final Color[] PIE_COLORS = {BLUE, GREEN, ORANGE, RED, PURPLE, new Color(0x14B8A6)};
 
-    private final ThongKeService thongKeService = new ThongKeService();
+    private final ThongKeServiceImpl thongKeServiceImpl = new ThongKeServiceImpl();
 
     private final JSpinner spTuNgay;
     private final JSpinner spDenNgay;
@@ -208,7 +208,7 @@ public class ThongKePanel extends JPanel {
         try {
             LocalDate tuNgay = spinnerToLocalDate(spTuNgay);
             LocalDate denNgay = spinnerToLocalDate(spDenNgay);
-            ThongKeDTO dto = thongKeService.layThongKe(tuNgay, denNgay);
+            ThongKeDTO dto = thongKeServiceImpl.layThongKe(tuNgay, denNgay);
             capNhatGiaoDien(dto);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(

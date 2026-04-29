@@ -2,8 +2,8 @@ package iuh.view;
 
 import iuh.entity.LoaiPhong;
 import iuh.entity.Phong;
-import iuh.service.LoaiPhongService;
-import iuh.service.PhongService;
+import iuh.service.impl.LoaiPhongServiceImpl;
+import iuh.service.impl.PhongServiceImpl;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -39,8 +39,8 @@ public class QuanLyPhongPanel extends JPanel {
 
     private static final String SEARCH_PLACEHOLDER = "Tìm theo mã phòng, số phòng, loại...";
 
-    private final PhongService phongService = new PhongService();
-    private final LoaiPhongService loaiPhongService = new LoaiPhongService();
+    private final PhongServiceImpl phongServiceImpl = new PhongServiceImpl();
+    private final LoaiPhongServiceImpl loaiPhongServiceImpl = new LoaiPhongServiceImpl();
 
     private DefaultTableModel tableModel;
     private JTable table;
@@ -253,7 +253,7 @@ public class QuanLyPhongPanel extends JPanel {
                     int row = table.getSelectedRow();
                     if (row >= 0) {
                         String maPhong = String.valueOf(tableModel.getValueAt(row, 0));
-                        java.util.Optional<Phong> phongOpt = phongService.getRoomById(maPhong);
+                        java.util.Optional<Phong> phongOpt = phongServiceImpl.getRoomById(maPhong);
                         if (phongOpt.isPresent()) {
                             openModal(phongOpt.get(), false);
                         }
@@ -280,9 +280,9 @@ public class QuanLyPhongPanel extends JPanel {
     private java.util.List<Phong> getCurrentData() {
         String keyword = getSearchKeyword();
         if (keyword.isBlank()) {
-            return phongService.getAllRoom();
+            return phongServiceImpl.getAllRoom();
         }
-        return phongService.getRoomByKeyword(keyword);
+        return phongServiceImpl.getRoomByKeyword(keyword);
     }
 
     private String getSearchKeyword() {
@@ -366,7 +366,7 @@ class PhongModal extends JDialog {
     private static final Color RED = QuanLyNhanVienPanel.RED;
     private static final Color BLUE_LIGHT = QuanLyNhanVienPanel.BLUE_LIGHT;
 
-    private final PhongService phongService = new PhongService();
+    private final PhongServiceImpl phongServiceImpl = new PhongServiceImpl();
     private final Runnable onChanged;
     private final boolean isNew;
     private final Phong current;
@@ -378,7 +378,7 @@ class PhongModal extends JDialog {
     private JTextField tfMoTa;
     private JComboBox<String> cbTinhTrang;
     private JComboBox<String> cbTrangThai;
-    private LoaiPhongService loaiPhongService = new LoaiPhongService();
+    private LoaiPhongServiceImpl loaiPhongServiceImpl = new LoaiPhongServiceImpl();
 
     PhongModal(JFrame owner, Phong phong, boolean isNew, Runnable onChanged) {
         super(owner, isNew ? "Thêm phòng" : "Chi tiết phòng", true);
@@ -457,7 +457,7 @@ class PhongModal extends JDialog {
         tfSo = field(current.getSoPhong(), false);
 
         cbTang = new JComboBox<>();
-        for (int t : phongService.getAllTang()) {
+        for (int t : phongServiceImpl.getAllTang()) {
             cbTang.addItem(t);
         }
         styleCombo(cbTang);
@@ -465,7 +465,7 @@ class PhongModal extends JDialog {
             cbTang.setSelectedItem(current.getTang());
 
         cbLoaiPhong = new JComboBox<>();
-        for (LoaiPhong lp : loaiPhongService.getAll()) {
+        for (LoaiPhong lp : loaiPhongServiceImpl.getAll()) {
             cbLoaiPhong.addItem(lp);
         }
         styleCombo(cbLoaiPhong);
@@ -473,7 +473,7 @@ class PhongModal extends JDialog {
         tfMoTa = field(current.getMoTa(), true);
 
         cbTinhTrang = new JComboBox<>();
-        for (String tinhTrang : phongService.getAllTinhTrang()) {
+        for (String tinhTrang : phongServiceImpl.getAllTinhTrang()) {
             cbTinhTrang.addItem(tinhTrang);
         }
         styleCombo(cbTinhTrang);
@@ -481,7 +481,7 @@ class PhongModal extends JDialog {
             cbTinhTrang.setSelectedItem(current.getTinhTrang() != null ? current.getTinhTrang().toString() : "Trống");
 
         cbTrangThai = new JComboBox<>();
-        for (String trangThai : phongService.getAllTrangThai()) {
+        for (String trangThai : phongServiceImpl.getAllTrangThai()) {
             cbTrangThai.addItem(trangThai);
         }
         styleCombo(cbTrangThai);
@@ -604,7 +604,7 @@ class PhongModal extends JDialog {
                 .tinhTrang(tinhTrang)
                 .trangThai(trangThai)
                 .build();
-        if (phongService.checkNull(phongMoi)) {
+        if (phongServiceImpl.checkNull(phongMoi)) {
             return phongMoi;
         }
         return null;
@@ -613,7 +613,7 @@ class PhongModal extends JDialog {
     private void onSave() {
         try {
             Phong phongMoi = getThisForm();
-            phongService.createPhong(phongMoi);
+            phongServiceImpl.createPhong(phongMoi);
             JOptionPane.showMessageDialog(this, "Đã thêm phòng.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             if (onChanged != null)
                 onChanged.run();
@@ -630,7 +630,7 @@ class PhongModal extends JDialog {
             Phong phongMoi = getThisForm();
             phongMoi.setMaPhong(maPhong);
             phongMoi.setSoPhong(soPhong);
-            phongService.updatePhong(phongMoi);
+            phongServiceImpl.updatePhong(phongMoi);
 
             // TODO: Validate and update
             JOptionPane.showMessageDialog(this, "Đã cập nhật phòng.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
@@ -649,7 +649,7 @@ class PhongModal extends JDialog {
         try {
             // TODO: Delete room
             String maPhong = tfMa.getText().trim();
-            if (phongService.deletePhong(maPhong))
+            if (phongServiceImpl.deletePhong(maPhong))
                 JOptionPane.showMessageDialog(this, "Đã xóa phòng.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             else
                 JOptionPane.showMessageDialog(this, "Đã xóa phòng thất bại!.", "Thông báo", JOptionPane.ERROR_MESSAGE);

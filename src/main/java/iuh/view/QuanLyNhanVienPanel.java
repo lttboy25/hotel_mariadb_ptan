@@ -2,7 +2,7 @@ package iuh.view;
 
 import iuh.entity.NhanVien;
 import iuh.entity.TrangThaiNhanVien;
-import iuh.service.NhanVienService;
+import iuh.service.impl.NhanVienServiceImpl;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -50,7 +50,7 @@ public class QuanLyNhanVienPanel extends JPanel {
             "Số điện thoại", "Email", "Ngày bắt đầu", "Trạng thái", "Địa chỉ"
     };
 
-    private final NhanVienService nhanVienService = new NhanVienService();
+    private final NhanVienServiceImpl nhanVienServiceImpl = new NhanVienServiceImpl();
     private final DefaultTableModel tableModel = new DefaultTableModel(COLUMNS, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
@@ -151,8 +151,8 @@ public class QuanLyNhanVienPanel extends JPanel {
     private void refreshTable() {
         String keyword = tfSearch.getText().trim();
         List<NhanVien> list = keyword.isBlank()
-                ? nhanVienService.getAllNhanVien()
-                : nhanVienService.searchNhanVienByName(keyword);
+                ? nhanVienServiceImpl.getAllNhanVien()
+                : nhanVienServiceImpl.searchNhanVienByName(keyword);
 
         tableModel.setRowCount(0);
         for (NhanVien nv : list) {
@@ -179,7 +179,7 @@ public class QuanLyNhanVienPanel extends JPanel {
         NhanVien nv = null;
         if (row != null) {
             String maNV = String.valueOf(tableModel.getValueAt(row, 0));
-            nv = nhanVienService.getNhanVienById(maNV).orElse(null);
+            nv = nhanVienServiceImpl.getNhanVienById(maNV).orElse(null);
         }
 
         NhanVienModal modal = new NhanVienModal(
@@ -233,7 +233,7 @@ public class QuanLyNhanVienPanel extends JPanel {
 }
 
 class NhanVienModal extends JDialog {
-    private final NhanVienService nhanVienService = new NhanVienService();
+    private final NhanVienServiceImpl nhanVienServiceImpl = new NhanVienServiceImpl();
     private final boolean isNew;
     private final NhanVien current;
     private Runnable onChanged;
@@ -336,7 +336,7 @@ class NhanVienModal extends JDialog {
 
     private void fillData() {
         if (isNew) {
-            tfMaNV.setText(nhanVienService.generateNextMaNhanVien());
+            tfMaNV.setText(nhanVienServiceImpl.generateNextMaNhanVien());
             return;
         }
 
@@ -362,8 +362,8 @@ class NhanVienModal extends JDialog {
 
     private void onSave() {
         try {
-            NhanVien saved = nhanVienService.addNhanVienAutoCode(collectFormData());
-            String matKhauMacDinh = nhanVienService.taoMatKhauMacDinh(saved.getMaNhanVien());
+            NhanVien saved = nhanVienServiceImpl.addNhanVienAutoCode(collectFormData());
+            String matKhauMacDinh = nhanVienServiceImpl.taoMatKhauMacDinh(saved.getMaNhanVien());
             notifyChangedAndClose("Đã thêm nhân viên. Mật khẩu mặc định: " + matKhauMacDinh);
         } catch (Exception ex) {
             showError(ex);
@@ -372,7 +372,7 @@ class NhanVienModal extends JDialog {
 
     private void onUpdate() {
         try {
-            nhanVienService.updateNhanVien(collectFormData());
+            nhanVienServiceImpl.updateNhanVien(collectFormData());
             notifyChangedAndClose("Đã cập nhật nhân viên.");
         } catch (Exception ex) {
             showError(ex);
@@ -386,7 +386,7 @@ class NhanVienModal extends JDialog {
         }
 
         try {
-            nhanVienService.deleteNhanVien(tfMaNV.getText().trim());
+            nhanVienServiceImpl.deleteNhanVien(tfMaNV.getText().trim());
             notifyChangedAndClose("Đã xóa nhân viên.");
         } catch (Exception ex) {
             showError(ex);

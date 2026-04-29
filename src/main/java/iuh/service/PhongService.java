@@ -1,95 +1,46 @@
+/*
+ * @ (#) PhongService.java     1.0    4/29/2026
+ *
+ * Copyright (c) 2026 IUH. All rights reserved.
+ */
 package iuh.service;
+
+import iuh.entity.Phong;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import iuh.dao.impl.PhongDaoImpl;
-import iuh.entity.Phong;
+/*
+ * @description
+ * @author:NguyenTruong
+ * @date:  4/29/2026
+ * @version:    1.0
+ */
+public interface PhongService {
+    List<Phong> getAllRoom();
 
-public class PhongService {
-    private PhongDaoImpl phongDaoImpl = new PhongDaoImpl();
+    Optional<Phong> getRoomById(String maPhong);
 
-    public List<Phong> getAllRoom() {
-        return phongDaoImpl.findAll();
-    }
+    List<Phong> getRoomByKeyword(String keyword);
 
-    public Optional<Phong> getRoomById(String maPhong) {
-        return phongDaoImpl.findById(maPhong);
-    }
+    Phong createPhong(Phong phong);
 
-    public List<Phong> getRoomByKeyword(String keyword) {
-        return phongDaoImpl.findByKeyword(keyword);
-    }
+    Phong updatePhong(Phong phong);
 
-    public Phong createPhong(Phong phong) {
-        return phongDaoImpl.save(phong);
-    }
+    boolean deletePhong(String maPhong);
 
-    public Phong updatePhong(Phong phong) {
-        return phongDaoImpl.updateRoom(phong);
-    }
+    boolean checkNull(Phong phong);
 
-    public boolean deletePhong(String maPhong) {
-        return phongDaoImpl.deleteRoom(maPhong);
-    }
+    List<Integer> getAllTang();
 
-    public boolean checkNull(Phong phong) {
-        if (phong.getTang() == 0 || phong.getLoaiPhong() == null || phong.getTinhTrang() == null
-                || phong.getTrangThai() == null) {
-            return false;
-        }
-        return true;
-    }
+    List<String> getAllTinhTrang();
 
-    public List<Integer> getAllTang() {
-        return getAllRoom()
-                .stream()
-                .map(p -> p.getTang())
-                .distinct()
-                .toList();
-    }
+    List<String> getAllTrangThai();
 
-    public List<String> getAllTinhTrang() {
-        return getAllRoom()
-                .stream()
-                .map(p -> p.getTinhTrang())
-                .distinct()
-                .toList();
-    }
+    List<Phong> getPhongByDate(LocalDateTime ngayNhan, LocalDateTime ngayTra);
 
-    public List<String> getAllTrangThai() {
-        return getAllRoom()
-                .stream()
-                .map(p -> p.getTrangThai())
-                .distinct()
-                .toList();
-    }
+    List<Phong> getRoomsByStatus(String status);
 
-    public List<Phong> getPhongByDate(LocalDateTime ngayNhan, LocalDateTime ngayTra) {
-
-        if (ngayNhan == null || ngayTra == null) {
-            throw new IllegalArgumentException("Ngày nhận/trả không được null");
-        }
-
-        if (!ngayNhan.isBefore(ngayTra)) {
-            throw new IllegalArgumentException("Ngày nhận phải trước ngày trả");
-        }
-
-        return phongDaoImpl.findPhongByDate(ngayNhan, ngayTra);
-    }
-
-    public List<Phong> getRoomsByStatus(String status) {
-        List<Phong> ketqua = phongDaoImpl.getRoomsByStatus(status);
-
-        if (ketqua == null || ketqua.isEmpty()) {
-            throw new RuntimeException("Không tìm thấy phòng ứng với tình trạng trên");
-        }
-
-        return ketqua;
-    }
-
-    public boolean updateStatusRoom(String maPhong, String trangThai, String tinhTrang) {
-        return phongDaoImpl.updateStatusRoom(maPhong, trangThai, tinhTrang);
-    }
+    boolean updateStatusRoom(String maPhong, String trangThai, String tinhTrang);
 }

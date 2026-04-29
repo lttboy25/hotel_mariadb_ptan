@@ -3,11 +3,7 @@
  *
  * Copyright (c) 2026 IUH. All rights reserved.
  */
-package iuh.service;
-
-import iuh.entity.LoaiPhong;
-
-import java.util.List;
+package iuh.service.i;
 
 /*
  * @description
@@ -16,5 +12,4 @@ import java.util.List;
  * @version:    1.0
  */
 public interface LoaiPhongService {
-    List<LoaiPhong> getAll();
 }

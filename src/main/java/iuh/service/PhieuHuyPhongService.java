@@ -1,24 +1,20 @@
+/*
+ * @ (#) PhieuHuyPhongService.java     1.0    4/29/2026
+ *
+ * Copyright (c) 2026 IUH. All rights reserved.
+ */
 package iuh.service;
 
-import iuh.dao.impl.PhieuHuyPhongDaoImpl;
 import iuh.entity.PhieuHuyPhong;
 
 import java.util.List;
 
-public class PhieuHuyPhongService {
-    private PhieuHuyPhongDaoImpl phieuHuyPhongDao = new PhieuHuyPhongDaoImpl();
-
-//    public boolean thucHienHuyPhong(PhieuHuyPhong phieuHuy) {
-//        if (phieuHuy == null || phieuHuy.getChiTietPhieuDatPhong() == null) {
-//            return false;
-//        }
-//        return phieuHuyPhongDao.huyPhongNghiepVu(phieuHuy);
-//    }
-
-    public boolean thucHienHuyNhieuPhong(List<PhieuHuyPhong> listPhieuHuy, double tienHoan) {
-        if (listPhieuHuy == null || listPhieuHuy.isEmpty()) {
-            return false;
-        }
-        return phieuHuyPhongDao.huyNhieuPhongNghiepVu(listPhieuHuy, tienHoan);
-    }
+/*
+ * @description
+ * @author:NguyenTruong
+ * @date:  4/29/2026
+ * @version:    1.0
+ */
+public interface PhieuHuyPhongService {
+    boolean thucHienHuyNhieuPhong(List<PhieuHuyPhong> listPhieuHuy, double tienHoan);
 }
