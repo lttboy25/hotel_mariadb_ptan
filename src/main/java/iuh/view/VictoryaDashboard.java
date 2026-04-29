@@ -1,5 +1,8 @@
 package iuh.view;
 
+import iuh.dto.NhanVienDTO;
+import iuh.entity.NhanVien;
+
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
@@ -50,11 +53,19 @@ public class VictoryaDashboard extends JFrame {
         JPanel root = new JPanel(new BorderLayout());
         root.setBackground(BG_MAIN);
 
+        NhanVienDTO nvHienTai = CurrentUser.getInstance().getNhanVien();
+        TrangChuPanel trangChu = new TrangChuPanel(nvHienTai);
+
+    // Cấu hình Callback chuyển tab như đã hứa ở code trước
+        trangChu.setOnSwitchToBooking(() -> {
+            cardLayout.show(contentCards, "datphong");
+        });
+
         // Content cards
         cardLayout = new CardLayout();
         contentCards = new JPanel(cardLayout);
         contentCards.setBackground(BG_MAIN);
-        contentCards.add(new TrangChuPanel(), "trangchu");
+        contentCards.add(trangChu, "trangchu");
         contentCards.add(new ThongKePanel(), "thongke");
         contentCards.add(new DatPhongPanel(), "datphong");
         contentCards.add(new HuyPhongPanel(), "huyphong");
