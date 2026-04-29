@@ -137,4 +137,96 @@ public class ChitietPhieuDatPhongDao extends AbstractGenericDaoImpl<ChiTietPhieu
                 .setParameter("cccd", cccd.trim())
                 .getResultList());
     }
+
+    /**
+     * Lấy danh sách chi tiết phiếu đặt phòng đang thuê (Chưa thanh toán)
+     * theo số điện thoại khách hàng.
+     */
+    public List<ChiTietPhieuDatPhong> getDangThueBySDT(String soDienThoai) {
+        return doInTransaction(em -> em.createQuery("""
+                SELECT ct FROM ChiTietPhieuDatPhong ct
+                JOIN ct.phieuDatPhong pdp
+                JOIN pdp.khachHang kh
+                WHERE kh.soDienThoai = :sdt
+                  AND ct.trangThai   = 'Chưa thanh toán'
+                """, ChiTietPhieuDatPhong.class)
+                .setParameter("sdt", soDienThoai)
+                .getResultList()
+        );
+    }
+
+    /**
+     * Cập nhật thời gian trả phòng mới và số giờ lưu trú cho một chi tiết phiếu.
+     */
+    public boolean updateGiaHan(Long id, LocalDateTime thoiGianTraMoi, int soGioMoi) {
+        return doInTransaction(em -> {
+            int rows = em.createQuery("""
+                    UPDATE ChiTietPhieuDatPhong ct
+                    SET ct.thoiGianTraPhong = :thoiGianTraMoi,
+                        ct.soGioLuuTru     = :soGioMoi
+                    WHERE ct.id = :id
+                    """)
+                    .setParameter("thoiGianTraMoi", thoiGianTraMoi)
+                    .setParameter("soGioMoi", soGioMoi)
+                    .setParameter("id", id)
+                    .executeUpdate();
+            return rows > 0;
+        });
+    }
+
+    public ChiTietPhieuDatPhong findById(Long id) {
+        return doInTransaction(em -> em.find(ChiTietPhieuDatPhong.class, id));
+    }
+
+    public boolean isRoomAvailableForExtension(Long chiTietId, LocalDateTime newEndTime) {
+        return doInTransaction(em -> {
+
+            String jpql = """
+            SELECT COUNT(ct)
+            FROM ChiTietPhieuDatPhong ct
+            WHERE ct.phong.maPhong = (
+                SELECT c.phong.maPhong 
+                FROM ChiTietPhieuDatPhong c 
+                WHERE c.id = :chiTietId
+            )
+            AND ct.id <> :chiTietId
+            AND ct.trangThai != 'Đã hủy'
+            AND ct.thoiGianNhanPhong < :newEndTime
+            AND ct.thoiGianTraPhong > (
+                SELECT c.thoiGianTraPhong 
+                FROM ChiTietPhieuDatPhong c 
+                WHERE c.id = :chiTietId
+            )
+        """;
+
+            Long count = em.createQuery(jpql, Long.class)
+                    .setParameter("chiTietId", chiTietId)
+                    .setParameter("newEndTime", newEndTime)
+                    .getSingleResult();
+
+            return count == 0;
+        });
+    }
+
+    public List<ChiTietPhieuDatPhong> searchPhongDangThue(String keyword) {
+        return doInTransaction(em -> {
+
+            String jpql = """
+            SELECT ct FROM ChiTietPhieuDatPhong ct
+            JOIN ct.phieuDatPhong pdp
+            JOIN pdp.khachHang kh
+            JOIN ct.phong p
+            WHERE ct.trangThai = 'Chưa thanh toán'
+            AND (
+                :kw IS NULL
+                OR kh.soDienThoai LIKE :kw
+                OR p.soPhong LIKE :kw
+            )
+        """;
+
+            return em.createQuery(jpql, ChiTietPhieuDatPhong.class)
+                    .setParameter("kw", keyword == null ? null : "%" + keyword + "%")
+                    .getResultList();
+        });
+    }
 }
