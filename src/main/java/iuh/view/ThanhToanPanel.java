@@ -563,55 +563,17 @@ public class ThanhToanPanel extends JPanel {
         panel.add(Box.createVerticalStrut(18));
 
         // ── Label "Phương thức thanh toán" ──
-        JLabel lblChon = new JLabel("Phương thức thanh toán");
+        JLabel lblChon = new JLabel(" ");
         lblChon.setForeground(TEXT_MID);
         lblChon.setFont(F_BOLD13.deriveFont(F_BOLD13.getSize() * 1.1f));
         lblChon.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(lblChon);
         panel.add(Box.createVerticalStrut(8));
 
-        // ── Radio card ──
-        ButtonGroup bg = new ButtonGroup();
-        rbTienMat = createRadio("Tiền mặt", true);
-        rbMomo    = createRadio("Momo", false);
-        bg.add(rbTienMat);
-        bg.add(rbMomo);
-
-        JPanel radioCard = new JPanel();
-        radioCard.setLayout(new BoxLayout(radioCard, BoxLayout.Y_AXIS));
-        radioCard.setBackground(new Color(0xF8F9FF));
-        radioCard.setBorder(new CompoundBorder(
-                new LineBorder(BORDER_COL, 1, true),
-                new EmptyBorder(10, 20, 10, 20)));
-        // FIX: không set MaximumSize height cứng -> text không bị cắt khi font lớn
-        radioCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
-        radioCard.setAlignmentX(Component.CENTER_ALIGNMENT);
-        rbTienMat.setAlignmentX(Component.LEFT_ALIGNMENT);
-        rbMomo.setAlignmentX(Component.LEFT_ALIGNMENT);
-        radioCard.add(rbTienMat);
-        radioCard.add(Box.createVerticalStrut(8));
-        radioCard.add(rbMomo);
-        panel.add(radioCard);
-        panel.add(Box.createVerticalStrut(16));
-
         // ── Nội dung thanh toán ──
         panelTienMat = buildPanelTienMat();
         panelTienMat.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(panelTienMat);
-
-        panelQR = buildPanelQR();
-        panelQR.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panelQR.setVisible(false);
-        panel.add(panelQR);
-
-        rbTienMat.addActionListener(e -> {
-            panelTienMat.setVisible(true);
-            panelQR.setVisible(false);
-        });
-        rbMomo.addActionListener(e -> {
-            panelTienMat.setVisible(false);
-            panelQR.setVisible(true);
-        });
 
         panel.add(Box.createVerticalGlue());
 
@@ -733,39 +695,6 @@ public class ThanhToanPanel extends JPanel {
         return panel;
     }
 
-    // ═══════════════════════════════════════════════════════════════════
-    // 3.2 PANEL QR MOMO — QR căn giữa hoàn toàn
-    // ═══════════════════════════════════════════════════════════════════
-    private JPanel buildPanelQR() {
-        JPanel panel = new JPanel();
-        panel.setOpaque(false);
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
-        JLabel lblHuongDan = new JLabel("Quét mã QR để thanh toán:");
-        lblHuongDan.setFont(F_BOLD13);
-        lblHuongDan.setForeground(TEXT_MID);
-        lblHuongDan.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.add(lblHuongDan);
-        panel.add(Box.createVerticalStrut(12));
-
-        // FIX QR: bọc trong FlowLayout.CENTER -> luôn căn giữa bất kể width panel
-        JPanel qrWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-        qrWrapper.setOpaque(false);
-        qrWrapper.setAlignmentX(Component.CENTER_ALIGNMENT);
-        qrCodePanel = new QRCodePanel(190);
-        qrWrapper.add(qrCodePanel);
-        panel.add(qrWrapper);
-
-        panel.add(Box.createVerticalStrut(10));
-
-        JLabel lblSoTien = new JLabel("Số tiền: " + formatter.format(tongTienPhong) + " đ");
-        lblSoTien.setFont(F_BOLD14);
-        lblSoTien.setForeground(BLUE);
-        lblSoTien.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.add(lblSoTien);
-
-        return panel;
-    }
 
     // ═══════════════════════════════════════════════════════════════════
     // TIỆN ÍCH THANH TOÁN

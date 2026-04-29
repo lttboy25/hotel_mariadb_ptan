@@ -299,8 +299,34 @@ public class DoiPhongPanel extends JPanel {
         searchBtn.addActionListener(doSearch);
         searchField.addActionListener(doSearch);
 
+        JButton refreshBtn = new JButton("Làm mới") {
+            @Override protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(getModel().isRollover() ? new Color(0x5A6478) : new Color(0x6B7280));
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                g2.setColor(WHITE); g2.setFont(F_BOLD12);
+                FontMetrics fm = g2.getFontMetrics();
+                g2.drawString(getText(),
+                        (getWidth() - fm.stringWidth(getText())) / 2,
+                        (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
+                g2.dispose();
+            }
+        };
+        refreshBtn.setOpaque(false); refreshBtn.setContentAreaFilled(false);
+        refreshBtn.setBorderPainted(false); refreshBtn.setForeground(WHITE);
+        refreshBtn.setFont(F_BOLD12);
+        refreshBtn.setPreferredSize(new Dimension(90, 40));
+        refreshBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        refreshBtn.addActionListener(e -> reloadAll());
+
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        btnPanel.setOpaque(false);
+        btnPanel.add(searchBtn);
+        btnPanel.add(refreshBtn);
+
         row.add(wrapper, BorderLayout.CENTER);
-        row.add(searchBtn, BorderLayout.EAST);
+        row.add(btnPanel, BorderLayout.EAST);
         return row;
     }
 
