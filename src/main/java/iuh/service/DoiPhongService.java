@@ -6,8 +6,8 @@
 package iuh.service;
 
 
-import iuh.dao.ChitietPhieuDatPhongDao;
-import iuh.dao.PhongDao;
+import iuh.dao.impl.ChitietPhieuDatPhongDaoImpl;
+import iuh.dao.impl.PhongDaoImpl;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.Phong;
 
@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
  * @created:
  */
 public class DoiPhongService {
-    private PhongDao phongDao = new PhongDao();
-    private ChitietPhieuDatPhongDao ctDao = new ChitietPhieuDatPhongDao();
+    private PhongDaoImpl phongDaoImpl = new PhongDaoImpl();
+    private ChitietPhieuDatPhongDaoImpl ctDao = new ChitietPhieuDatPhongDaoImpl();
 
     //lay phong da dat
     public List<Phong> getBookedRooms(String maPDP){
@@ -43,7 +43,7 @@ public class DoiPhongService {
                 .collect(Collectors.toList());
 
         // Lọc ra những phòng trống và không nằm trong danh sách đã đặt
-        return phongDao.getAvailableRooms()
+        return phongDaoImpl.getAvailableRooms()
                 .stream()
                 .filter(p -> !bookedIds.contains(p.getMaPhong()))
                 .collect(Collectors.toList());
@@ -67,7 +67,7 @@ public class DoiPhongService {
             throw new RuntimeException("Phòng mới đã có người đặt!");
         }
         //lay phong moi
-        Phong phongMoi = phongDao.findById(maPhongMoi).get();
+        Phong phongMoi = phongDaoImpl.findById(maPhongMoi).get();
 
         if(phongMoi == null){
             throw new RuntimeException("Phòng mới không tồn tại!");
@@ -92,8 +92,8 @@ public class DoiPhongService {
     }
 
     public double tinhPhiChenhLech(String maPhongCu, String maPhongMoi) {
-        Phong cu  = phongDao.findById(maPhongCu).orElseThrow();
-        Phong moi = phongDao.findById(maPhongMoi).orElseThrow();
+        Phong cu  = phongDaoImpl.findById(maPhongCu).orElseThrow();
+        Phong moi = phongDaoImpl.findById(maPhongMoi).orElseThrow();
         return moi.getLoaiPhong().getGia() - cu.getLoaiPhong().getGia();
     }
 

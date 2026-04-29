@@ -5,7 +5,7 @@
  */
 package iuh.service;
 
-import iuh.dao.ThongKeDao;
+import iuh.dao.impl.ThongKeDaoImpl;
 import iuh.dto.ThongKeDTO;
 
 import java.time.LocalDate;
@@ -14,7 +14,7 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
 public class ThongKeService {
-    private final ThongKeDao thongKeDao = new ThongKeDao();
+    private final ThongKeDaoImpl thongKeDaoImpl = new ThongKeDaoImpl();
 
     public ThongKeDTO layThongKe(LocalDate tuNgay, LocalDate denNgay) {
         if (tuNgay == null || denNgay == null) {
@@ -29,18 +29,18 @@ public class ThongKeService {
         if (thoiDiemThongKe.isAfter(now)) {
             thoiDiemThongKe = now;
         }
-        long tongSoPhong = thongKeDao.demTongSoPhong();
-        long soPhongDangSuDung = thongKeDao.demPhongDangSuDung(thoiDiemThongKe);
-        long soKhachDangLuuTru = thongKeDao.demKhachDangLuuTru(thoiDiemThongKe);
-        long soLuotDatPhong = thongKeDao.demDatPhongTrongKhoang(tuNgay, denNgay);
-        long soLuotHuyPhong = thongKeDao.demHuyPhongTrongKhoang(tuNgay, denNgay);
+        long tongSoPhong = thongKeDaoImpl.demTongSoPhong();
+        long soPhongDangSuDung = thongKeDaoImpl.demPhongDangSuDung(thoiDiemThongKe);
+        long soKhachDangLuuTru = thongKeDaoImpl.demKhachDangLuuTru(now);
+        long soLuotDatPhong = thongKeDaoImpl.demDatPhongTrongKhoang(tuNgay, denNgay);
+        long soLuotHuyPhong = thongKeDaoImpl.demHuyPhongTrongKhoang(tuNgay, denNgay);
 
         long soNgay = ChronoUnit.DAYS.between(tuNgay, denNgay) + 1;
         LocalDate kyTruocDenNgay = tuNgay.minusDays(1);
         LocalDate kyTruocTuNgay = kyTruocDenNgay.minusDays(soNgay - 1);
-        long soLuotDatPhongKyTruoc = thongKeDao.demDatPhongTrongKhoang(kyTruocTuNgay, kyTruocDenNgay);
+        long soLuotDatPhongKyTruoc = thongKeDaoImpl.demDatPhongTrongKhoang(kyTruocTuNgay, kyTruocDenNgay);
 
-        double tongDoanhThu = thongKeDao.tinhDoanhThuTrongKhoang(tuNgay.atStartOfDay(), denNgay.plusDays(1).atStartOfDay());
+        double tongDoanhThu = thongKeDaoImpl.tinhDoanhThuTrongKhoang(tuNgay.atStartOfDay(), denNgay.plusDays(1).atStartOfDay());
         double tyLeLapDay = tongSoPhong == 0 ? 0d : (soPhongDangSuDung * 100.0) / tongSoPhong;
         double tyLeHuyPhong = soLuotDatPhong == 0 ? 0d : (soLuotHuyPhong * 100.0) / soLuotDatPhong;
         double tyLeTangTruongDatPhong = soLuotDatPhongKyTruoc == 0
@@ -60,10 +60,10 @@ public class ThongKeService {
                 .soLuotHuyPhong(soLuotHuyPhong)
                 .tyLeHuyPhong(tyLeHuyPhong)
                 .tongDoanhThu(tongDoanhThu)
-                .dsDatPhongTheoThang(thongKeDao.thongKeDatPhongTheo12ThangGanNhat(denNgay))
-                .dsDoanhThuTheoNgay(thongKeDao.thongKeDoanhThuTheoNgay(tuNgay, denNgay))
-                .dsTrangThaiDatPhong(thongKeDao.thongKeTrangThaiDatPhong(tuNgay, denNgay))
-                .dsLoaiPhong(thongKeDao.thongKeLoaiPhong(tuNgay, denNgay))
+                .dsDatPhongTheoThang(thongKeDaoImpl.thongKeDatPhongTheo12ThangGanNhat(denNgay))
+                .dsDoanhThuTheoNgay(thongKeDaoImpl.thongKeDoanhThuTheoNgay(tuNgay, denNgay))
+                .dsTrangThaiDatPhong(thongKeDaoImpl.thongKeTrangThaiDatPhong(tuNgay, denNgay))
+                .dsLoaiPhong(thongKeDaoImpl.thongKeLoaiPhong(tuNgay, denNgay))
                 .build();
     }
 }

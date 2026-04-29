@@ -144,3 +144,37 @@ VALUES
 -- Tai khoan admin: NV001 / NV001
 -- Nhan vien thuong: NV002 / NV002
 -- Mat khau mac dinh cua nhan vien moi them trong app: chinh la ma nhan vien
+-- =========================
+-- CHÈN THÊM 10 PHÒNG MỚI
+-- =========================
+INSERT INTO Phong
+(maPhong, moTa, soPhong, tang, tinhTrang, trangThai, maLoaiPhong)
+VALUES
+    ('P401', N'Phòng Standard yên tĩnh', '401', 4, N'Trống', N'Sẵn sàng', 'LP001'),
+    ('P402', N'Phòng Standard view phố', '402', 4, N'Trống', N'Sẵn sàng', 'LP001'),
+    ('P403', N'Phòng Deluxe ban công', '403', 4, N'Trống', N'Sẵn sàng', 'LP002'),
+    ('P501', N'Phòng Deluxe tầng cao', '501', 5, N'Trống', N'Sẵn sàng', 'LP002'),
+    ('P502', N'Phòng Deluxe rộng rãi', '502', 5, N'Trống', N'Sẵn sàng', 'LP002'),
+    ('P503', N'Phòng Suite sang trọng', '503', 5, N'Trống', N'Sẵn sàng', 'LP003'),
+    ('P601', N'Penthouse Suite đặc biệt', '601', 6, N'Trống', N'Sẵn sàng', 'LP003'),
+    ('P602', N'Phòng Suite view toàn cảnh', '602', 6, N'Trống', N'Sẵn sàng', 'LP003'),
+    ('P603', N'Phòng Standard tiết kiệm', '603', 6, N'Trống', N'Đang sửa chữa', 'LP001'),
+    ('P604', N'Phòng Deluxe hiện đại', '604', 6, N'Trống', N'Sẵn sàng', 'LP002');
+
+
+-- =========================
+-- CHÈN THÊM 10 PHÒNG MỚI (ĐỢT 2)
+-- =========================
+INSERT INTO Phong
+(maPhong, moTa, soPhong, tang, tinhTrang, trangThai, maLoaiPhong)
+VALUES
+    ('P701', N'Phòng Standard hướng đông', '701', 7, N'Trống', N'Sẵn sàng', 'LP001'),
+    ('P702', N'Phòng Standard hướng tây', '702', 7, N'Trống', N'Sẵn sàng', 'LP001'),
+    ('P801', N'Phòng Deluxe có bồn tắm', '801', 8, N'Trống', N'Sẵn sàng', 'LP002'),
+    ('P802', N'Phòng Deluxe máy chiếu', '802', 8, N'Trống', N'Sẵn sàng', 'LP002'),
+    ('P803', N'Phòng Deluxe yên tĩnh', '803', 8, N'Trống', N'Sẵn sàng', 'LP002'),
+    ('P901', N'Phòng Suite gia đình lớn', '901', 9, N'Trống', N'Sẵn sàng', 'LP003'),
+    ('P902', N'Phòng Suite quầy bar mini', '902', 9, N'Trống', N'Sẵn sàng', 'LP003'),
+    ('P1001', N'Presidential Suite', '1001', 10, N'Trống', N'Sẵn sàng', 'LP003'),
+    ('P1002', N'Phòng Suite tầng thượng', '1002', 10, N'Trống', N'Sẵn sàng', 'LP003'),
+    ('P1003', N'Phòng Standard nhỏ', '1003', 10, N'Trống', N'Đang dọn dẹp', 'LP001');

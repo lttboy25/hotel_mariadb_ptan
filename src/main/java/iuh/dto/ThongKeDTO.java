@@ -14,11 +14,13 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.io.Serializable;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ThongKeDTO {
+public class ThongKeDTO implements Serializable {
     private LocalDate tuNgay;
     private LocalDate denNgay;
 
@@ -49,7 +51,7 @@ public class ThongKeDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class DuLieuCotDTO {
+    public static class DuLieuCotDTO implements Serializable {
         private String nhan;
         private double giaTri;
     }
@@ -58,7 +60,7 @@ public class ThongKeDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class DuLieuNgayDTO {
+    public static class DuLieuNgayDTO implements Serializable {
         private LocalDate ngay;
         private double giaTri;
     }
@@ -67,7 +69,7 @@ public class ThongKeDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class DuLieuTyTrongDTO {
+    public static class DuLieuTyTrongDTO implements Serializable {
         private String nhan;
         private double giaTri;
     }

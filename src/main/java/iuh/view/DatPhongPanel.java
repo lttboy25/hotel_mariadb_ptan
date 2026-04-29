@@ -623,12 +623,20 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
     }
 
     private boolean matchCapacity(Room r, int adults, int children) {
-        return r.maxAdults >= adults && r.maxChildren >= children;
+        // Cho phép hiển thị tất cả các phòng có sức chứa, khách hàng có thể chọn nhiều phòng cho đoàn đông người
+        return r.maxAdults > 0 || r.maxChildren > 0;
     }
 
     /** Điểm "dư" capacity – nhỏ hơn = phù hợp hơn */
     private int capacityGap(Room r, int adults, int children) {
-        return Math.max(0, r.maxAdults - adults) + Math.max(0, r.maxChildren - children);
+        if (r.maxAdults >= adults && r.maxChildren >= children) {
+            // Nếu phòng chứa đủ: ưu tiên phòng vừa vặn nhất (gap nhỏ nhất)
+            return (r.maxAdults - adults) + (r.maxChildren - children);
+        } else {
+            // Nếu phòng không chứa đủ (cho đoàn đông): ưu tiên phòng lớn nhất để giảm số lượng phòng cần đặt
+            // Trả về giá trị lớn hơn 1000 để nằm sau các phòng chứa đủ, nhưng ưu tiên phòng lớn hơn (gap nhỏ hơn)
+            return 1000 + (adults - r.maxAdults) + (children - r.maxChildren);
+        }
     }
     //  PANEL PHẢI – Tóm tắt đặt phòng đã chọn
     private JPanel buildRight() {
@@ -878,15 +886,39 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
     }
 
     private List<String> allocateGuestsForUI(List<Room> rooms, int adults, int children) {
-        List<String> result = new ArrayList<>();
+        int n = rooms.size();
+        int[] adultsAlloc = new int[n];
+        int[] childrenAlloc = new int[n];
+
         int remainingAdults = adults;
         int remainingChildren = children;
-        for (Room room : rooms) {
-            int adultsInRoom = Math.min(remainingAdults, Math.max(0, room.maxAdults));
-            int childrenInRoom = Math.min(remainingChildren, Math.max(0, room.maxChildren));
-            remainingAdults -= adultsInRoom;
-            remainingChildren -= childrenInRoom;
-            result.add(adultsInRoom + " NL, " + childrenInRoom + " TE");
+
+        // Bước 1: Mỗi phòng 1 người lớn
+        for (int i = 0; i < n && remainingAdults > 0; i++) {
+            if (rooms.get(i).maxAdults > 0) {
+                adultsAlloc[i] = 1;
+                remainingAdults--;
+            }
+        }
+
+        // Bước 2: Lấp đầy người lớn
+        for (int i = 0; i < n && remainingAdults > 0; i++) {
+            int canTake = rooms.get(i).maxAdults - adultsAlloc[i];
+            int toAdd = Math.min(remainingAdults, canTake);
+            adultsAlloc[i] += toAdd;
+            remainingAdults -= toAdd;
+        }
+
+        // Bước 3: Trẻ em
+        for (int i = 0; i < n && remainingChildren > 0; i++) {
+            int toAdd = Math.min(remainingChildren, rooms.get(i).maxChildren);
+            childrenAlloc[i] += toAdd;
+            remainingChildren -= toAdd;
+        }
+
+        List<String> result = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            result.add(adultsAlloc[i] + " NL, " + childrenAlloc[i] + " TE");
         }
         return result;
     }

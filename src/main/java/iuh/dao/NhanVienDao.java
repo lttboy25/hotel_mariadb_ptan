@@ -1,152 +1,39 @@
 /*
- * @ (#) NhanVienDao.java       1.0
+ * @ (#) NhanVienDao.java     1.0    4/29/2026
  *
- * Copyright (c) 2026 IUH. All rights reserved
+ * Copyright (c) 2026 IUH. All rights reserved.
  */
 package iuh.dao;
 
-
-import iuh.db.JPAUtil;
 import iuh.entity.NhanVien;
-import iuh.entity.TaiKhoan;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /*
- * @description:
- * @author: Duc Thuan
- * @date: 16/4/2026
+ * @description
+ * @author:NguyenTruong
+ * @date:  4/29/2026
  * @version:    1.0
- * @created:
  */
-public class NhanVienDao extends AbstractGenericDaoImpl<NhanVien, String>{
-    public NhanVienDao() {
-        super(NhanVien.class);
-    }
+public interface NhanVienDao {
+    List<NhanVien> findAll();
 
-    public NhanVienDao(Class entityClass) {
-        super(entityClass);
-    }
+    Optional<NhanVien> findById(String maNhanVien);
 
-    public List<NhanVien> findAll(){
-        return loadAll();
-    }
+    List<NhanVien> findByName(String name);
 
-    public Optional<NhanVien> findById(String maNhanVien){
-        if(maNhanVien == null || maNhanVien.isEmpty()){
-            return Optional.empty();
-        }
-        try(EntityManager em = JPAUtil.getEntityManager()){
-            return Optional.ofNullable(em.find(NhanVien.class, maNhanVien));
-        }
-    }
+    NhanVien save(NhanVien nhanVien);
 
-    public List<NhanVien> findByName(String name){
-        try(EntityManager em = JPAUtil.getEntityManager()){
-            String q = name == null ? "" : name.trim().toLowerCase();
-            return em.createQuery("select n from NhanVien n WHERE LOWER(n.tenNhanVien) LIKE :name ", NhanVien.class)
-                    .setParameter("name", "%" + q + "%").getResultList();
-        }
-    }
+    NhanVien update(NhanVien nhanVien);
 
-    public NhanVien save(NhanVien nhanVien){
-        return create(nhanVien);
-    }
+    boolean delete(String maNhanVien);
 
-    public NhanVien update(NhanVien nhanVien){
-        EntityManager em = JPAUtil.getEntityManager();
-        try {
-            em.getTransaction().begin();
-            NhanVien managed = em.find(NhanVien.class, nhanVien.getMaNhanVien());
-            if (managed == null) {
-                throw new IllegalArgumentException("Khong tim thay nhan vien: " + nhanVien.getMaNhanVien());
-            }
+    List<NhanVien> search(String keyword);
 
-            managed.setTenNhanVien(nhanVien.getTenNhanVien());
-            managed.setCCCD(nhanVien.getCCCD());
-            managed.setGioiTinh(nhanVien.isGioiTinh());
-            managed.setNgaySinh(nhanVien.getNgaySinh());
-            managed.setEmail(nhanVien.getEmail());
-            managed.setSoDienThoai(nhanVien.getSoDienThoai());
-            managed.setNgayBatDau(nhanVien.getNgayBatDau());
-            managed.setDiaChi(nhanVien.getDiaChi());
-            managed.setTrangThai(nhanVien.getTrangThai());
+    String generateMaNV();
 
-            em.getTransaction().commit();
-            return managed;
-        }catch(Exception e){
-            if(em.getTransaction().isActive()){
-                em.getTransaction().rollback();
-            }
-            throw e;
-        }finally{
-            em.close();
-        }
-    }
-
-    public boolean delete(String maNhanVien){
-        EntityManager em = JPAUtil.getEntityManager();
-        try{
-            NhanVien entity = em.find(NhanVien.class, maNhanVien);
-            if(entity == null){
-                return false;
-            }
-            em.getTransaction().begin();
-            em.remove(entity);
-            em.getTransaction().commit();
-            return true;
-        }catch(Exception e){
-            if(em.getTransaction().isActive()){
-                em.getTransaction().rollback();
-            }
-            throw e;
-        }finally{
-            em.close();
-        }
-    }
-
-    public List<NhanVien> search(String keyword) {
-        EntityManager em = JPAUtil.getEntityManager();
-
-        return em.createQuery(
-                        "SELECT n FROM NhanVien n WHERE n.maNhanVien LIKE :kw OR n.tenNhanVien LIKE :kw",
-                        NhanVien.class
-                )
-                .setParameter("kw", "%" + keyword + "%")
-                .getResultList();
-    }
-
-    public String generateMaNV() {
-        List<String> allCodes = doInTransaction(em ->
-                em.createQuery("select n.maNhanVien from NhanVien n", String.class)
-                        .getResultList()
-        );
-
-        Set<String> existingCodes = allCodes.stream()
-                .filter(code -> code != null && !code.isBlank())
-                .collect(Collectors.toSet());
-
-        int nextNumber = allCodes.stream()
-                .map(this::extractNumber)
-                .max(Integer::compareTo)
-                .orElse(0) + 1;
-
-        String candidate = formatMaNV(nextNumber);
-
-        while (existingCodes.contains(candidate)) {
-            nextNumber++;
-            candidate = formatMaNV(nextNumber);
-        }
-
-        return candidate;
-    }
-
-    private int extractNumber(String code) {
+    default int extractNumber(String code) {
         if (code == null) return 0;
 
         try {
@@ -156,62 +43,15 @@ public class NhanVienDao extends AbstractGenericDaoImpl<NhanVien, String>{
         }
     }
 
-    private String formatMaNV(int number) {
+    default String formatMaNV(int number) {
         return String.format("NV%03d", number);
     }
 
-    public boolean existsById(String maNhanVien) {
-        return findById(maNhanVien).isPresent();
-    }
+    boolean existsById(String maNhanVien);
 
+    NhanVien login(String maNV, String matKhau);
 
-    public NhanVien login(String maNV, String matKhau) {
-        try (EntityManager em = JPAUtil.getEntityManager()) {
-            return em.createQuery(
-                            "SELECT nv FROM NhanVien nv JOIN nv.taiKhoan tk " +
-                                    "WHERE nv.maNhanVien = :maNV AND tk.matKhau = :mk",
-                            NhanVien.class)
-                    .setParameter("maNV", maNV)
-                    .setParameter("mk", matKhau)
-                    .getSingleResult();
+    boolean doiMatKhau(String maNV, String matKhauCu, String matKhauMoi);
 
-        } catch (NoResultException e) {
-            return null;
-        }
-    }
-
-    public boolean doiMatKhau(String maNV, String matKhauCu, String matKhauMoi) {
-        EntityManager em = JPAUtil.getEntityManager();
-        try {
-            em.getTransaction().begin();
-            TaiKhoan taiKhoan = em.find(TaiKhoan.class, maNV);
-            if (taiKhoan == null) {
-                em.getTransaction().rollback();
-                return false;
-            }
-            if (!taiKhoan.getMatKhau().equals(matKhauCu)) {
-                em.getTransaction().rollback();
-                return false;
-            }
-
-            taiKhoan.setMatKhau(matKhauMoi);
-            em.merge(taiKhoan);
-            em.getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw e;
-        } finally {
-            em.close();
-        }
-    }
-
-    public String layMatKhauTheoMaNhanVien(String maNV) {
-        try (EntityManager em = JPAUtil.getEntityManager()) {
-            TaiKhoan taiKhoan = em.find(TaiKhoan.class, maNV);
-            return taiKhoan != null ? taiKhoan.getMatKhau() : null;
-        }
-    }
+    String layMatKhauTheoMaNhanVien(String maNV);
 }

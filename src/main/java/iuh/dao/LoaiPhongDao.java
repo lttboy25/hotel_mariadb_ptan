@@ -1,16 +1,20 @@
+/*
+ * @ (#) LoaiPhongDao.java     1.0    4/29/2026
+ *
+ * Copyright (c) 2026 IUH. All rights reserved.
+ */
 package iuh.dao;
-
-import java.util.List;
 
 import iuh.entity.LoaiPhong;
 
-public class LoaiPhongDao extends AbstractGenericDaoImpl<LoaiPhong, String> {
+import java.util.List;
 
-    public LoaiPhongDao() {
-        super(LoaiPhong.class);
-    }
-
-    public List<LoaiPhong> findAll() {
-        return loadAll();
-    }
+/*
+ * @description
+ * @author:NguyenTruong
+ * @date:  4/29/2026
+ * @version:    1.0
+ */
+public interface LoaiPhongDao {
+    List<LoaiPhong> findAll();
 }

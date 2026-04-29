@@ -1,6 +1,6 @@
 package iuh.service;
 
-import iuh.dao.KhachHangDao;
+import iuh.dao.impl.KhachHangDaoImpl;
 import iuh.dto.KhachHangDTO;
 import iuh.entity.KhachHang;
 import iuh.mapper.Mapper;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class KhachHangService {
-    private final KhachHangDao khachHangDao = new KhachHangDao();
+    private final KhachHangDaoImpl khachHangDao = new KhachHangDaoImpl();
 
     public List<KhachHangDTO> loadAll() {
         return khachHangDao.loadAll()

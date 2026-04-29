@@ -1,232 +1,49 @@
 /*
- * @ (#) ChitietPhieuDatPhongDao.java       1.0
+ * @ (#) ChitietPhieuDatPhongDao.java     1.0    4/29/2026
  *
- * Copyright (c) 2026 IUH. All rights reserved
+ * Copyright (c) 2026 IUH. All rights reserved.
  */
 package iuh.dao;
 
-import iuh.db.JPAUtil;
 import iuh.entity.ChiTietPhieuDatPhong;
-import iuh.entity.PhieuDatPhong;
-import jakarta.persistence.EntityManager;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 /*
- * @description:
- * @author: Duc Thuan
- * @date: 23/4/2026
+ * @description
+ * @author:NguyenTruong
+ * @date:  4/29/2026
  * @version:    1.0
- * @created:
  */
-public class ChitietPhieuDatPhongDao extends AbstractGenericDaoImpl<ChiTietPhieuDatPhong, Long> {
-    public ChitietPhieuDatPhongDao() {
-        super(ChiTietPhieuDatPhong.class);
-    }
-
+public interface ChitietPhieuDatPhongDao {
     // lay phong theo ma phieu dat phong
-    public List<ChiTietPhieuDatPhong> getByMaPhieuDatPhong(String maPDP) {
-        return doInTransaction(em -> em.createQuery("""
-                    SELECT ct FROM ChiTietPhieuDatPhong ct
-                    WHERE ct.phieuDatPhong.maPhieuDatPhong = :ma
-                """, ChiTietPhieuDatPhong.class)
-                .setParameter("ma", maPDP)
-                .getResultList());
-    }
+    List<ChiTietPhieuDatPhong> getByMaPhieuDatPhong(String maPDP);
 
     // kiem tra trung lich
-    public boolean isRoomAvailable(String maPhong, LocalDateTime checkIn, LocalDateTime checkOut) {
-        Long count = doInTransaction(em -> em.createQuery("""
-                     SELECT COUNT(ct) FROM ChiTietPhieuDatPhong ct
-                     WHERE ct.phong.maPhong = :maPhong
-                     AND ct.thoiGianNhanPhong < :checkOut
-                     AND ct.thoiGianTraPhong > :checkIn
-                     AND ct.trangThai != 'Đã hủy'
-                """, Long.class)
-                .setParameter("maPhong", maPhong)
-                .setParameter("checkIn", checkIn)
-                .setParameter("checkOut", checkOut)
-                .getSingleResult());
-        return count == 0;
-    }
+    boolean isRoomAvailable(String maPhong, LocalDateTime checkIn, LocalDateTime checkOut);
 
-    public List<ChiTietPhieuDatPhong> getAll() {
-        return doInTransaction(
-                em -> em.createQuery("SELECT ct FROM ChiTietPhieuDatPhong ct", ChiTietPhieuDatPhong.class)
-                        .getResultList());
-    }
+    List<ChiTietPhieuDatPhong> getAll();
 
-    public ChiTietPhieuDatPhong findChiTietPhieuDatPhongByMaPhong(String maPhong) {
-        EntityManager em = JPAUtil.getEntityManager();
-        try {
-            String query = """
-                    SELECT ctpdp
-                    FROM ChiTietPhieuDatPhong ctpdp
-                    WHERE ctpdp.phong.maPhong = :maPhong
-                    """;
+    ChiTietPhieuDatPhong findChiTietPhieuDatPhongByMaPhong(String maPhong);
 
-            return (doInTransaction(entityManager -> entityManager.createQuery(query, ChiTietPhieuDatPhong.class)
-                    .setParameter("maPhong", maPhong)
-                    .getSingleResultOrNull()));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    boolean updateStatusDetailTicketByRoomCode(String maPhong, String status);
 
-    public boolean updateStatusDetailTicketByRoomCode(String maPhong, String status) {
-        EntityManager em = JPAUtil.getEntityManager();
-
-        try {
-            em.getTransaction().begin();
-
-            String query = """
-                            UPDATE ChiTietPhieuDatPhong ctpdp
-                            SET ctpdp.trangThai = :status
-                            WHERE ctpdp.phong.maPhong = :maPhong
-                    """;
-
-            int updatedRows = em.createQuery(query)
-                    .setParameter("status", status)
-                    .setParameter("maPhong", maPhong)
-                    .executeUpdate();
-
-            em.getTransaction().commit();
-
-            return updatedRows > 0;
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw new RuntimeException(e);
-        } finally {
-            em.close();
-        }
-    }
-
-    public List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(String statusTicket, String statusDetail,
-            String cccd) {
-        return doInTransaction(em -> em.createQuery("""
-                SELECT ctpdp FROM ChiTietPhieuDatPhong ctpdp
-                WHERE ctpdp.phieuDatPhong.trangThai = :statusTicket
-                       AND ctpdp.phieuDatPhong.khachHang.CCCD = :cccd
-                       AND ctpdp.trangThai = :statusDetail""", ChiTietPhieuDatPhong.class)
-                .setParameter("statusTicket", statusTicket)
-                .setParameter("cccd", cccd)
-                .setParameter("statusDetail", statusDetail)
-                .getResultList());
-    }
+    List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(String statusTicket, String statusDetail,
+                                                                  String cccd);
 
     // Tìm các phòng đang ở trạng thái 'Đã đặt' dựa trên CCCD
-    public List<ChiTietPhieuDatPhong> getPhongDeHuyByCCCD(String cccd) {
-        return doInTransaction(em -> em.createQuery("""
-                SELECT ct FROM ChiTietPhieuDatPhong ct
-                WHERE ct.phieuDatPhong.khachHang.CCCD = :cccd
-                AND ct.phieuDatPhong.trangThai = 'Đã đặt'
-                AND ct.trangThai != 'Đã hủy'
-                """, ChiTietPhieuDatPhong.class)
-                .setParameter("cccd", cccd.trim())
-                .getResultList());
-    }
+    List<ChiTietPhieuDatPhong> getPhongDeHuyByCCCD(String cccd);
 
-    public List<ChiTietPhieuDatPhong> getPhongDeNhanByCCCD(String cccd) {
-        return doInTransaction(em -> em.createQuery("""
-                SELECT ct FROM ChiTietPhieuDatPhong ct
-                WHERE ct.phieuDatPhong.khachHang.CCCD = :cccd
-                AND ct.phieuDatPhong.trangThai = 'Đã đặt'
-                """, ChiTietPhieuDatPhong.class)
-                .setParameter("cccd", cccd.trim())
-                .getResultList());
-    }
+    List<ChiTietPhieuDatPhong> getPhongDeNhanByCCCD(String cccd);
 
-    /**
-     * Lấy danh sách chi tiết phiếu đặt phòng đang thuê (Chưa thanh toán)
-     * theo số điện thoại khách hàng.
-     */
-    public List<ChiTietPhieuDatPhong> getDangThueBySDT(String soDienThoai) {
-        return doInTransaction(em -> em.createQuery("""
-                SELECT ct FROM ChiTietPhieuDatPhong ct
-                JOIN ct.phieuDatPhong pdp
-                JOIN pdp.khachHang kh
-                WHERE kh.soDienThoai = :sdt
-                  AND ct.trangThai   = 'Chưa thanh toán'
-                """, ChiTietPhieuDatPhong.class)
-                .setParameter("sdt", soDienThoai)
-                .getResultList());
-    }
+    List<ChiTietPhieuDatPhong> getDangThueBySDT(String soDienThoai);
 
-    /**
-     * Cập nhật thời gian trả phòng mới và số giờ lưu trú cho một chi tiết phiếu.
-     */
-    public boolean updateGiaHan(Long id, LocalDateTime thoiGianTraMoi, int soGioMoi) {
-        return doInTransaction(em -> {
-            int rows = em.createQuery("""
-                    UPDATE ChiTietPhieuDatPhong ct
-                    SET ct.thoiGianTraPhong = :thoiGianTraMoi,
-                        ct.soGioLuuTru     = :soGioMoi
-                    WHERE ct.id = :id
-                    """)
-                    .setParameter("thoiGianTraMoi", thoiGianTraMoi)
-                    .setParameter("soGioMoi", soGioMoi)
-                    .setParameter("id", id)
-                    .executeUpdate();
-            return rows > 0;
-        });
-    }
+    boolean updateGiaHan(Long id, LocalDateTime thoiGianTraMoi, int soGioMoi);
 
-    public ChiTietPhieuDatPhong findById(Long id) {
-        return doInTransaction(em -> em.find(ChiTietPhieuDatPhong.class, id));
-    }
+    ChiTietPhieuDatPhong findById(Long id);
 
-    public boolean isRoomAvailableForExtension(Long chiTietId, LocalDateTime newEndTime) {
-        return doInTransaction(em -> {
+    boolean isRoomAvailableForExtension(Long chiTietId, LocalDateTime newEndTime);
 
-            String jpql = """
-                        SELECT COUNT(ct)
-                        FROM ChiTietPhieuDatPhong ct
-                        WHERE ct.phong.maPhong = (
-                            SELECT c.phong.maPhong
-                            FROM ChiTietPhieuDatPhong c
-                            WHERE c.id = :chiTietId
-                        )
-                        AND ct.id <> :chiTietId
-                        AND ct.trangThai != 'Đã hủy'
-                        AND ct.thoiGianNhanPhong < :newEndTime
-                        AND ct.thoiGianTraPhong > (
-                            SELECT c.thoiGianTraPhong
-                            FROM ChiTietPhieuDatPhong c
-                            WHERE c.id = :chiTietId
-                        )
-                    """;
-
-            Long count = em.createQuery(jpql, Long.class)
-                    .setParameter("chiTietId", chiTietId)
-                    .setParameter("newEndTime", newEndTime)
-                    .getSingleResult();
-
-            return count == 0;
-        });
-    }
-
-    public List<ChiTietPhieuDatPhong> searchPhongDangThue(String keyword) {
-        return doInTransaction(em -> {
-
-            String jpql = """
-                        SELECT ct FROM ChiTietPhieuDatPhong ct
-                        JOIN ct.phieuDatPhong pdp
-                        JOIN pdp.khachHang kh
-                        JOIN ct.phong p
-                        WHERE ct.trangThai = 'Chưa thanh toán'
-                        AND (
-                            :kw IS NULL
-                            OR kh.soDienThoai LIKE :kw
-                            OR p.soPhong LIKE :kw
-                        )
-                    """;
-
-            return em.createQuery(jpql, ChiTietPhieuDatPhong.class)
-                    .setParameter("kw", keyword == null ? null : "%" + keyword + "%")
-                    .getResultList();
-        });
-    }
+    List<ChiTietPhieuDatPhong> searchPhongDangThue(String keyword);
 }

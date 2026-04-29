@@ -5,7 +5,7 @@
  */
 package iuh.service;
 
-import iuh.dao.KhuyenMaiDao;
+import iuh.dao.impl.KhuyenMaiDaoImpl;
 import iuh.dto.KhuyenMaiDTO;
 import iuh.entity.KhuyenMai;
 import iuh.entity.TrangThai;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class KhuyenMaiService {
 
-	private final KhuyenMaiDao khuyenMaiDao = new KhuyenMaiDao();
+	private final KhuyenMaiDaoImpl khuyenMaiDao = new KhuyenMaiDaoImpl();
 
 	public List<KhuyenMaiDTO> getAllKhuyenMai() {
 		return khuyenMaiDao.findAll().stream()

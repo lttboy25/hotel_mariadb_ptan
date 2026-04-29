@@ -1,6 +1,6 @@
 package iuh.service;
 
-import iuh.dao.NhanVienDao;
+import iuh.dao.impl.NhanVienDaoImpl;
 import iuh.dto.NhanVienDTO;
 import iuh.entity.NhanVien;
 import iuh.entity.TaiKhoan;
@@ -11,7 +11,7 @@ import java.util.Optional;
 public class NhanVienService {
     public static final String VAI_TRO_MAC_DINH = "employee";
 
-    private final NhanVienDao nhanVienDao = new NhanVienDao();
+    private final NhanVienDaoImpl nhanVienDao = new NhanVienDaoImpl();
 
     public List<NhanVien> getAllNhanVien() {
         return nhanVienDao.findAll();

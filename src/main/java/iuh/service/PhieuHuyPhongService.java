@@ -1,12 +1,12 @@
 package iuh.service;
 
-import iuh.dao.PhieuHuyPhongDao;
+import iuh.dao.impl.PhieuHuyPhongDaoImpl;
 import iuh.entity.PhieuHuyPhong;
 
 import java.util.List;
 
 public class PhieuHuyPhongService {
-    private PhieuHuyPhongDao phieuHuyPhongDao = new PhieuHuyPhongDao();
+    private PhieuHuyPhongDaoImpl phieuHuyPhongDao = new PhieuHuyPhongDaoImpl();
 
 //    public boolean thucHienHuyPhong(PhieuHuyPhong phieuHuy) {
 //        if (phieuHuy == null || phieuHuy.getChiTietPhieuDatPhong() == null) {

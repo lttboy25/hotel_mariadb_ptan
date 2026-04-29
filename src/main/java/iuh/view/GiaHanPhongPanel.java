@@ -18,7 +18,7 @@ import java.util.*;
 import java.util.List;
 
 /**
- * GiaHanPhongPanel – dữ liệu thật qua ChiTietPhieuDatPhongService → ChitietPhieuDatPhongDao.
+ * GiaHanPhongPanel – dữ liệu thật qua ChiTietPhieuDatPhongService → ChitietPhieuDatPhongDaoImpl.
  *
  * Luồng:
  *  1. Nhập SĐT → nhấn "Tìm" (hoặc Enter) → bảng trái hiện phòng đang thuê

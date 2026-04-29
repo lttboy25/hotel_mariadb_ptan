@@ -1,4 +1,4 @@
-package iuh.dao;
+package iuh.dao.impl;
 
 
 import iuh.dao.GenericDao;

@@ -1,76 +1,28 @@
+/*
+ * @ (#) PhieuDatPhongDao.java     1.0    4/29/2026
+ *
+ * Copyright (c) 2026 IUH. All rights reserved.
+ */
 package iuh.dao;
 
-import iuh.db.JPAUtil;
-import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.PhieuDatPhong;
-import iuh.entity.Phong;
-import jakarta.persistence.EntityManager;
 
 import java.util.List;
 
-public class PhieuDatPhongDao extends AbstractGenericDaoImpl<PhieuDatPhong, String> {
+/*
+ * @description
+ * @author:NguyenTruong
+ * @date:  4/29/2026
+ * @version:    1.0
+ */
+public interface PhieuDatPhongDao {
+    List<PhieuDatPhong> getAll();
 
-    public PhieuDatPhongDao() {super(PhieuDatPhong.class);}
+    List<PhieuDatPhong> getPhieuDatPhongByStatus(String status);
 
-    public List<PhieuDatPhong> getAll() {
-        return doInTransaction(em ->
-                em.createQuery("SELECT ct FROM PhieuDatPhong ct", PhieuDatPhong.class)
-                        .getResultList()
-        );
-    }
+    PhieuDatPhong getPhieuDatPhongByCode(String maPhieu);
 
-    public List<PhieuDatPhong> getPhieuDatPhongByStatus(String status) {
-        return doInTransaction(em -> em.createQuery("""
-                SELECT pdp FROM PhieuDatPhong pdp
-                WHERE pdp.trangThai = :status """
-                , PhieuDatPhong.class).setParameter("status", status).getResultList());
-    }
+    boolean updateStatusBookingTicket(String maPhieu, String trangThai);
 
-    public PhieuDatPhong getPhieuDatPhongByCode(String maPhieu) {
-        return doInTransaction(em -> em.createQuery("""
-                SELECT pdp FROM PhieuDatPhong pdp
-                WHERE pdp.maPhieuDatPhong = :maPhieu """
-                , PhieuDatPhong.class).setParameter("maPhieu", maPhieu).getSingleResultOrNull());
-    }
-
-    public boolean updateStatusBookingTicket(String maPhieu, String trangThai) {
-            EntityManager em = JPAUtil.getEntityManager();
-            try {
-                em.getTransaction().begin();
-
-                String query = """
-                UPDATE PhieuDatPhong pdp
-                SET pdp.trangThai = :status
-                WHERE pdp.maPhieuDatPhong = :maPhieu
-        """;
-
-                int updatedRows = em.createQuery(query)
-                        .setParameter("status", trangThai)
-                        .setParameter("maPhieu", maPhieu)
-                        .executeUpdate();
-
-                em.getTransaction().commit();
-
-                return updatedRows > 0;
-            } catch (Exception e) {
-                if (em.getTransaction().isActive()) {
-                    em.getTransaction().rollback();
-                }
-                throw new RuntimeException(e);
-            } finally {
-                em.close();
-            }
-
-    }
-
-    public List<PhieuDatPhong> getPhieuDatPhongByToPayment(String status, String cccd) {
-        return doInTransaction(em -> em.createQuery("""
-                SELECT pdp FROM PhieuDatPhong pdp
-                WHERE pdp.trangThai = :status
-                       AND pdp.khachHang.CCCD = :cccd"""
-                , PhieuDatPhong.class)
-                .setParameter("status", status)
-                .setParameter("cccd", cccd)
-                .getResultList());
-    }
+    List<PhieuDatPhong> getPhieuDatPhongByToPayment(String status, String cccd);
 }

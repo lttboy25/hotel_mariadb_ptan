@@ -13,8 +13,8 @@ package iuh.service;
  * @version:    1.0
  */
 
-import iuh.dao.DatPhongDao;
-import iuh.dao.PhongDao;
+import iuh.dao.impl.DatPhongDaoImpl;
+import iuh.dao.impl.PhongDaoImpl;
 import iuh.dto.DatPhongRequestDTO;
 import iuh.dto.DatPhongResultDTO;
 import iuh.entity.PhieuDatPhong;
@@ -25,10 +25,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class DatPhongService {
-    private final DatPhongDao datPhongDao;
-    private PhongDao phongDao = new PhongDao();
+    private final DatPhongDaoImpl datPhongDao;
+    private PhongDaoImpl phongDaoImpl = new PhongDaoImpl();
     public DatPhongService() {
-        this.datPhongDao = new DatPhongDao();
+        this.datPhongDao = new DatPhongDaoImpl();
     }
 
 
@@ -76,7 +76,7 @@ public class DatPhongService {
         if (!checkOut.isAfter(checkIn)) {
             throw new IllegalArgumentException("Thời gian trả phòng phải sau thời gian nhận phòng.");
         }
-        return phongDao.findPhongByDate(checkIn, checkOut);
+        return phongDaoImpl.findPhongByDate(checkIn, checkOut);
     }
 
     private boolean isBlank(String value) {

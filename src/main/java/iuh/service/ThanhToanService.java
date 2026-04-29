@@ -4,18 +4,16 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import iuh.dao.ChiTietHoaDonDao;
-import iuh.dao.HoaDonDao;
-import iuh.dto.ChiTietHoaDonDTO;
-import iuh.dto.HoaDonDTO;
+import iuh.dao.impl.ChiTietHoaDonDaoImpl;
+import iuh.dao.impl.HoaDonDaoImpl;
 import iuh.entity.*;
 import iuh.mapper.Mapper;
 
 public class ThanhToanService {
     private PhongService phongService = new PhongService();
     private ChiTietPhieuDatPhongService chiTietPhieuDatPhongService = new ChiTietPhieuDatPhongService();
-    private HoaDonDao hoaDonDao = new HoaDonDao();
-    private ChiTietHoaDonDao chiTietHoaDonDao = new ChiTietHoaDonDao();
+    private HoaDonDaoImpl hoaDonDao = new HoaDonDaoImpl();
+    private ChiTietHoaDonDaoImpl chiTietHoaDonDao = new ChiTietHoaDonDaoImpl();
     private PhieuDatPhongService phieuDatPhongService = new PhieuDatPhongService();
     private  NhanVienService nhanVienService = new NhanVienService();
 

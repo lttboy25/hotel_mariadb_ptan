@@ -1,38 +1,37 @@
 package iuh.service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import iuh.dao.PhongDao;
+import iuh.dao.impl.PhongDaoImpl;
 import iuh.entity.Phong;
 
 public class PhongService {
-    private PhongDao phongDao = new PhongDao();
+    private PhongDaoImpl phongDaoImpl = new PhongDaoImpl();
 
     public List<Phong> getAllRoom() {
-        return phongDao.findAll();
+        return phongDaoImpl.findAll();
     }
 
     public Optional<Phong> getRoomById(String maPhong) {
-        return phongDao.findById(maPhong);
+        return phongDaoImpl.findById(maPhong);
     }
 
     public List<Phong> getRoomByKeyword(String keyword) {
-        return phongDao.findByKeyword(keyword);
+        return phongDaoImpl.findByKeyword(keyword);
     }
 
     public Phong createPhong(Phong phong) {
-        return phongDao.save(phong);
+        return phongDaoImpl.save(phong);
     }
 
     public Phong updatePhong(Phong phong) {
-        return phongDao.updateRoom(phong);
+        return phongDaoImpl.updateRoom(phong);
     }
 
     public boolean deletePhong(String maPhong) {
-        return phongDao.deleteRoom(maPhong);
+        return phongDaoImpl.deleteRoom(maPhong);
     }
 
     public boolean checkNull(Phong phong) {
@@ -77,11 +76,11 @@ public class PhongService {
             throw new IllegalArgumentException("Ngày nhận phải trước ngày trả");
         }
 
-        return phongDao.findPhongByDate(ngayNhan, ngayTra);
+        return phongDaoImpl.findPhongByDate(ngayNhan, ngayTra);
     }
 
     public List<Phong> getRoomsByStatus(String status) {
-        List<Phong> ketqua = phongDao.getRoomsByStatus(status);
+        List<Phong> ketqua = phongDaoImpl.getRoomsByStatus(status);
 
         if (ketqua == null || ketqua.isEmpty()) {
             throw new RuntimeException("Không tìm thấy phòng ứng với tình trạng trên");
@@ -91,6 +90,6 @@ public class PhongService {
     }
 
     public boolean updateStatusRoom(String maPhong, String trangThai, String tinhTrang) {
-        return phongDao.updateStatusRoom(maPhong, trangThai, tinhTrang);
+        return phongDaoImpl.updateStatusRoom(maPhong, trangThai, tinhTrang);
     }
 }

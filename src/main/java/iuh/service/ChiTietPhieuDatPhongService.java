@@ -1,8 +1,8 @@
 package iuh.service;
 
-import iuh.dao.ChitietPhieuDatPhongDao;
+import iuh.dao.impl.ChitietPhieuDatPhongDaoImpl;
 import iuh.entity.ChiTietPhieuDatPhong;
-import iuh.entity.PhieuDatPhong;
+
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChiTietPhieuDatPhongService {
-    ChitietPhieuDatPhongDao chitietPhieuDatPhongDao = new ChitietPhieuDatPhongDao();
+    ChitietPhieuDatPhongDaoImpl chitietPhieuDatPhongDao = new ChitietPhieuDatPhongDaoImpl();
 
     public List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByMaPDP(String maPDP) {
         List<ChiTietPhieuDatPhong> ds = new ArrayList<>();

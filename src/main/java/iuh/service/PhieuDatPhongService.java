@@ -1,6 +1,6 @@
 package iuh.service;
 
-import iuh.dao.PhieuDatPhongDao;
+import iuh.dao.impl.PhieuDatPhongDaoImpl;
 import iuh.entity.KhachHang;
 import iuh.entity.PhieuDatPhong;
 
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PhieuDatPhongService {
-    PhieuDatPhongDao phieuDatPhongDao = new PhieuDatPhongDao();
+    PhieuDatPhongDaoImpl phieuDatPhongDao = new PhieuDatPhongDaoImpl();
 
     public List<PhieuDatPhong> getAll() {
         List<PhieuDatPhong> list = new ArrayList<>();
