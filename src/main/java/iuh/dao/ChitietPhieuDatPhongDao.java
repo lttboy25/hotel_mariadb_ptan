@@ -8,6 +8,7 @@ package iuh.dao;
 
 import iuh.db.JPAUtil;
 import iuh.entity.ChiTietPhieuDatPhong;
+import iuh.entity.PhieuDatPhong;
 import jakarta.persistence.EntityManager;
 
 import java.time.LocalDateTime;
@@ -44,6 +45,7 @@ public class ChitietPhieuDatPhongDao extends AbstractGenericDaoImpl<ChiTietPhieu
                     WHERE ct.phong.maPhong = :maPhong
                     AND ct.thoiGianNhanPhong < :checkOut
                     AND ct.thoiGianTraPhong > :checkIn
+                    AND ct.trangThai != 'Đã hủy'
                """, Long.class)
                     .setParameter("maPhong", maPhong)
                     .setParameter("checkIn", checkIn)
@@ -71,7 +73,7 @@ public class ChitietPhieuDatPhongDao extends AbstractGenericDaoImpl<ChiTietPhieu
 
                return(
                        doInTransaction(entityManager ->
-                               em.createQuery(query,  ChiTietPhieuDatPhong.class)
+                                       entityManager.createQuery(query,  ChiTietPhieuDatPhong.class)
                                        .setParameter("maPhong", maPhong)
                                        .getSingleResultOrNull()
                                )
@@ -79,8 +81,6 @@ public class ChitietPhieuDatPhongDao extends AbstractGenericDaoImpl<ChiTietPhieu
            } catch (Exception e) {
                throw new RuntimeException(e);
            }
-
-
     }
 
     public boolean updateStatusDetailTicketByRoomCode(String maPhong, String status) {
@@ -111,5 +111,30 @@ public class ChitietPhieuDatPhongDao extends AbstractGenericDaoImpl<ChiTietPhieu
         } finally {
             em.close();
         }
+    }
+
+    public List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(String statusTicket, String statusDetail, String cccd) {
+        return doInTransaction(em -> em.createQuery("""
+                SELECT ctpdp FROM ChiTietPhieuDatPhong ctpdp
+                WHERE ctpdp.phieuDatPhong.trangThai = :statusTicket
+                       AND ctpdp.phieuDatPhong.khachHang.CCCD = :cccd 
+                       AND ctpdp.trangThai = :statusDetail"""
+                        , ChiTietPhieuDatPhong.class)
+                .setParameter("statusTicket", statusTicket)
+                .setParameter("cccd", cccd)
+                .setParameter("statusDetail", statusDetail)
+                .getResultList());
+    }
+
+    // Tìm các phòng đang ở trạng thái 'Đã đặt' dựa trên CCCD
+    public List<ChiTietPhieuDatPhong> getPhongDeHuyByCCCD(String cccd) {
+        return doInTransaction(em -> em.createQuery("""
+                SELECT ct FROM ChiTietPhieuDatPhong ct
+                WHERE ct.phieuDatPhong.khachHang.CCCD = :cccd
+                AND ct.phieuDatPhong.trangThai = 'Đã đặt'
+                AND ct.trangThai != 'Đã hủy'
+                """, ChiTietPhieuDatPhong.class)
+                .setParameter("cccd", cccd.trim())
+                .getResultList());
     }
 }

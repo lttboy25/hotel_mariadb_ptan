@@ -75,16 +75,17 @@ public class Mapper {
         if (hoaDonDTO == null) return null;
         return HoaDon
                 .builder()
+                .maHoaDon(hoaDonDTO.getMaHoaDon())
                 .ngayDat(hoaDonDTO.getNgayDat())
                 .khachHang(hoaDonDTO.getKhachHang())
                 .nhanVien(hoaDonDTO.getNhanVien())
-                .khuyenMai(hoaDonDTO.getKhuyenMai())
                 .khuyenMai(hoaDonDTO.getKhuyenMai())
                 .ngayTao(hoaDonDTO.getNgayTao())
                 .trangThai(hoaDonDTO.getTrangThai())
                 .tongTien(hoaDonDTO.getTongTien())
                 .chiTietHoaDon(hoaDonDTO.getChiTietHoaDon())
-                .chiTietHoaDon(hoaDonDTO.getChiTietHoaDon())
+                .tienKhachDua(hoaDonDTO.getTienKhachDua())
+                .tienThoi(hoaDonDTO.getTienThoi())
                 .build();
     }
 
@@ -92,22 +93,24 @@ public class Mapper {
         if (hoaDon == null) return null;
         return HoaDonDTO
                 .builder()
+                .maHoaDon(hoaDon.getMaHoaDon())
                 .ngayDat(hoaDon.getNgayDat())
                 .khachHang(hoaDon.getKhachHang())
                 .nhanVien(hoaDon.getNhanVien())
-                .khuyenMai(hoaDon.getKhuyenMai())
                 .khuyenMai(hoaDon.getKhuyenMai())
                 .ngayTao(hoaDon.getNgayTao())
                 .trangThai(hoaDon.getTrangThai())
                 .tongTien(hoaDon.getTongTien())
                 .chiTietHoaDon(hoaDon.getChiTietHoaDon())
-                .chiTietHoaDon(hoaDon.getChiTietHoaDon())
+                .tienKhachDua(hoaDon.getTienKhachDua())
+                .tienThoi(hoaDon.getTienThoi())
                 .build();
     }
 
     public static ChiTietHoaDonDTO map(ChiTietHoaDon entity) {
         if (entity == null) return null;
         return ChiTietHoaDonDTO.builder()
+                .id(entity.getId())
                 .ngayTao(entity.getNgayTao())
                 .tongTien(entity.getTongTien())
                 .hoaDon(entity.getHoaDon())
@@ -119,6 +122,7 @@ public class Mapper {
     public static ChiTietHoaDon map(ChiTietHoaDonDTO entity) {
         if (entity == null) return null;
         return ChiTietHoaDon.builder()
+                .id(entity.getId())
                 .ngayTao(entity.getNgayTao())
                 .tongTien(entity.getTongTien())
                 .hoaDon(entity.getHoaDon())

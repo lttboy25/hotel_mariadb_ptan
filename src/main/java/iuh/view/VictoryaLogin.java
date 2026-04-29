@@ -1,5 +1,8 @@
 package iuh.view;
 
+import iuh.dto.NhanVienDTO;
+import iuh.service.NhanVienService;
+
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
@@ -23,6 +26,8 @@ public class VictoryaLogin extends JFrame {
     private static final Font FONT_BUTTON = new Font("Segoe UI", Font.BOLD, 15);
     private static final Font FONT_LINK = new Font("Segoe UI", Font.PLAIN, 13);
 
+    private final NhanVienService nhanVienService = new NhanVienService();
+
     public VictoryaLogin() {
         setTitle("Victorya - Đăng nhập");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -30,7 +35,7 @@ public class VictoryaLogin extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
-        // Main panel: left blue + right white
+        // CreateSchema panel: left blue + right white
         JPanel mainPanel = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -195,7 +200,7 @@ public class VictoryaLogin extends JFrame {
         form.add(Box.createVerticalStrut(36));
 
         // Tài khoản field
-        form.add(createLabel("Tài khoản"));
+        form.add(createLabel("Mã nhân viên"));
         form.add(Box.createVerticalStrut(6));
         JTextField emailField = createTextField("Enter your email");
         form.add(emailField);
@@ -204,7 +209,7 @@ public class VictoryaLogin extends JFrame {
         // Mật khẩu field
         form.add(createLabel("Mật khẩu"));
         form.add(Box.createVerticalStrut(6));
-        JPasswordField passField = createPasswordField("Name");
+        JPasswordField passField = createPasswordField("Nhập mật khẩu");
         form.add(passField);
         form.add(Box.createVerticalStrut(10));
 
@@ -228,8 +233,9 @@ public class VictoryaLogin extends JFrame {
         form.add(forgotLink);
         form.add(Box.createVerticalStrut(28));
 
-        //  Login button09
-        JButton loginBtn = createLoginButton("Đăng nhập");
+        //  Login button
+        JButton loginBtn = createLoginButton("Đăng nhập", emailField, passField);
+        passField.addActionListener(e -> loginBtn.doClick());
         loginBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
         loginBtn.setMaximumSize(new Dimension(360, 48));
         form.add(loginBtn);
@@ -319,7 +325,7 @@ public class VictoryaLogin extends JFrame {
         });
     }
 
-    private JButton createLoginButton(String text) {
+    private JButton createLoginButton(String text, JTextField emailField, JPasswordField passField) {
         JButton btn = new JButton(text) {
             private boolean hover = false;
             private boolean pressed = false;
@@ -362,10 +368,31 @@ public class VictoryaLogin extends JFrame {
         btn.setPreferredSize(new Dimension(360, 48));
 
         btn.addActionListener(e -> {
-            new VictoryaDashboard();
-            dispose();
-        });
+            String maNhanVien = emailField.getText().trim();
+            String matKhau = new String(passField.getPassword());
 
+            if (maNhanVien.isEmpty() || matKhau.isEmpty()) {
+                JOptionPane.showMessageDialog(VictoryaLogin.this,
+                        "Vui lòng nhập mã nhân viên và mật khẩu!",
+                        "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            NhanVienDTO nhanVien = nhanVienService.xacThucDangNhap(maNhanVien, matKhau);
+
+            if (nhanVien != null) {
+                CurrentUser.getInstance().setNhanVien(nhanVien);
+                new VictoryaDashboard();
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(VictoryaLogin.this,
+                        "Mã nhân viên hoặc mật khẩu không đúng!",
+                        "Đăng nhập thất bại", JOptionPane.ERROR_MESSAGE);
+
+                passField.setText("");
+                passField.requestFocus();
+            }
+        });
         return btn;
     }
 
@@ -377,3 +404,4 @@ public class VictoryaLogin extends JFrame {
         SwingUtilities.invokeLater(VictoryaLogin::new);
     }
 }
+

@@ -1,16 +1,7 @@
 package iuh.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -26,15 +17,18 @@ public class TaiKhoan implements Serializable {
 
     @Id
     @EqualsAndHashCode.Include
-    @Column(name = "tenDangNhap", nullable = false, length = 50)
-    private String tenDangNhap;
+    @Column(name = "maNhanVien", nullable = false)
+    private String maNhanVien;
 
-    @Column(name = "matKhau", nullable = false, length = 100)
+    @Column(name = "matKhau", nullable = false)
     private String matKhau;
 
-    @Column(name = "vaiTro", nullable = false, length = 50)
+    @Column(name = "vaiTro", nullable = false)
     private String vaiTro;
 
-    @OneToOne(mappedBy = "taiKhoan")
+    // mapping 1-1 (shared primary key)
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "maNhanVien")
     private NhanVien nhanVien;
 }

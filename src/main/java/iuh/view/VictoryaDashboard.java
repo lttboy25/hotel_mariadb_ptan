@@ -298,8 +298,45 @@ public class VictoryaDashboard extends JFrame {
         navRows.add(new NavRowEntry(row, icon, lbl, active, isChild, cardKey));
 
         // Click handler
-        if (cardKey != null) {
-            row.addMouseListener(new MouseAdapter() {
+        if (iconType == NavIcon.LOGOUT) {
+            MouseAdapter logoutHandler = new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    int choice = JOptionPane.showConfirmDialog(
+                            VictoryaDashboard.this,
+                            "Bạn có chắc chắn muốn đăng xuất?",
+                            "Xác nhận đăng xuất",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE);
+                    if (choice == JOptionPane.YES_OPTION) {
+                        CurrentUser.getInstance().logout();
+                        VictoryaDashboard.this.dispose();
+                        new VictoryaLogin();
+                    }
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    if (!active[0]) {
+                        row.setBackground(new Color(0xF4F7FF));
+                        row.repaint();
+                    }
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    if (!active[0]) {
+                        row.setBackground(BG_WHITE);
+                        row.repaint();
+                    }
+                }
+            };
+            row.addMouseListener(logoutHandler);
+            inner.addMouseListener(logoutHandler);
+            icon.addMouseListener(logoutHandler);
+            lbl.addMouseListener(logoutHandler);
+        } else if (cardKey != null) {
+            MouseAdapter navHandler = new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     // Deactivate all
@@ -336,9 +373,13 @@ public class VictoryaDashboard extends JFrame {
                         row.repaint();
                     }
                 }
-            });
+            };
+            row.addMouseListener(navHandler);
+            inner.addMouseListener(navHandler);
+            icon.addMouseListener(navHandler);
+            lbl.addMouseListener(navHandler);
         } else {
-            row.addMouseListener(new MouseAdapter() {
+            MouseAdapter hoverHandler = new MouseAdapter() {
                 @Override
                 public void mouseEntered(MouseEvent e) {
                     if (!active[0]) {
@@ -354,7 +395,11 @@ public class VictoryaDashboard extends JFrame {
                         row.repaint();
                     }
                 }
-            });
+            };
+            row.addMouseListener(hoverHandler);
+            inner.addMouseListener(hoverHandler);
+            icon.addMouseListener(hoverHandler);
+            lbl.addMouseListener(hoverHandler);
         }
 
         return row;
@@ -384,7 +429,7 @@ public class VictoryaDashboard extends JFrame {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ignored) {
         }
-        SwingUtilities.invokeLater(VictoryaDashboard::new);
+        SwingUtilities.invokeLater(VictoryaLogin::new);
     }
 }
 

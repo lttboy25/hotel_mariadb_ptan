@@ -157,6 +157,7 @@
                     WHERE ct.phong.maPhong = :maPhong
                     AND ct.thoiGianNhanPhong < :checkOut
                     AND ct.thoiGianTraPhong > :checkIn
+                    AND ct.trangThai != 'Đã hủy'
                     """, Long.class)
                     .setParameter("maPhong", maPhong)
                     .setParameter("checkIn", checkIn)

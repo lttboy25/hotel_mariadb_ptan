@@ -90,7 +90,7 @@ public class PhongService {
         return ketqua;
     }
 
-    public boolean updateStatusRoom(String maPhong, String trangThai) {
-        return phongDao.updateStatusRoom(maPhong, trangThai);
+    public boolean updateStatusRoom(String maPhong, String trangThai, String tinhTrang) {
+        return phongDao.updateStatusRoom(maPhong, trangThai, tinhTrang);
     }
 }

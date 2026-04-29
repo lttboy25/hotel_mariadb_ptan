@@ -62,4 +62,15 @@ public class PhieuDatPhongDao extends AbstractGenericDaoImpl<PhieuDatPhong, Stri
             }
 
     }
+
+    public List<PhieuDatPhong> getPhieuDatPhongByToPayment(String status, String cccd) {
+        return doInTransaction(em -> em.createQuery("""
+                SELECT pdp FROM PhieuDatPhong pdp
+                WHERE pdp.trangThai = :status
+                       AND pdp.khachHang.CCCD = :cccd"""
+                , PhieuDatPhong.class)
+                .setParameter("status", status)
+                .setParameter("cccd", cccd)
+                .getResultList());
+    }
 }

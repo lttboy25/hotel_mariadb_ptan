@@ -242,7 +242,7 @@ public class QuenMatKhauFrame extends JFrame {
         // Shadow shackle
         g2.setColor(new Color(0x7070B0));
         g2.drawArc(x + 5, y + 5, 60, 55, 0, 180);
-        // Main shackle gradient simulation
+        // CreateSchema shackle gradient simulation
         g2.setColor(new Color(0x9090D0));
         g2.drawArc(x, y, 60, 55, 0, 180);
 

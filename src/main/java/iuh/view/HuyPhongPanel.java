@@ -1,357 +1,429 @@
 package iuh.view;
 
+import iuh.entity.ChiTietPhieuDatPhong;
+import iuh.entity.PhieuHuyPhong;
+import iuh.service.ChiTietPhieuDatPhongService;
+import iuh.service.PhieuHuyPhongService;
+
 import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
-import java.awt.geom.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HuyPhongPanel extends JPanel {
 
-    // --- HỆ THỐNG MÀU SẮC & FONT ---
-    static final Color BG        = new Color(0xF8FAFC);
-    static final Color WHITE     = Color.WHITE;
-    static final Color PRIMARY   = new Color(0x3B82F6);
-    static final Color TEXT_D    = new Color(0x1E293B);
-    static final Color TEXT_M    = new Color(0x64748B);
-    static final Color BORDER    = new Color(0xE2E8F0);
-    static final Color INPUT_BG  = new Color(0xF1F5F9);
-    static final Color TEAL      = new Color(0x0EA47A);
-    static final Color TEAL_L    = new Color(0xE6FAF5);
+    // --- BẢNG MÀU CHUẨN FORM ---
+    static final Color BG      = new Color(0xF4F6FB);
+    static final Color WHITE   = Color.WHITE;
+    static final Color BLUE    = new Color(0x3B6FF0);
+    static final Color RED     = new Color(0xEF4444);
+    static final Color GREEN   = new Color(0x22C55E);
+    static final Color DARK    = new Color(0x1A1A2E);
+    static final Color MID     = new Color(0x4A5268);
+    static final Color BORDER  = new Color(0xE4E9F2);
 
-    static final Font F_TITLE    = new Font("Segoe UI", Font.BOLD, 16);
-    static final Font F_BOLD13   = new Font("Segoe UI", Font.BOLD, 13);
-    static final Font F_PLAIN    = new Font("Segoe UI", Font.PLAIN, 13);
-    static final Font F_SMALL    = new Font("Segoe UI", Font.PLAIN, 11);
+    static final Font F_H1     = new Font("Segoe UI", Font.BOLD, 24);
+    static final Font F_LABEL  = new Font("Segoe UI", Font.BOLD, 14);
+    static final Font F_TEXT   = new Font("Segoe UI", Font.PLAIN, 14);
+    static final Font F_BOLD12 = new Font("Segoe UI", Font.BOLD, 13);
+    static final Font F_TABLE  = new Font("Segoe UI", Font.PLAIN, 14);
 
-    static class Booking {
-        String type, checkIn, duration, guests, price, imageLabel;
-        boolean selected;
-        Booking(String type, String checkIn, String duration, String guests, String price, String imageLabel) {
-            this.type = type; this.checkIn = checkIn; this.duration = duration;
-            this.guests = guests; this.price = price; this.imageLabel = imageLabel;
-        }
-    }
+    private JTable tblDanhSach;
+    private DefaultTableModel tableModel;
+    private JTextField txtTimKiem;
 
-    private final List<Booking> bookings = new ArrayList<>();
-    private JPanel bookingListPanel;
-    private JPanel summaryContentPanel;
-    private int selectedIndex = 1;
+    // Khai báo 2 Label thông báo riêng biệt cho Tìm kiếm và Thao tác
+    private JLabel lblSearchMsg;
+    private JLabel lblActionMsg;
+
+    private PhieuHuyPhongService phieuHuyService = new PhieuHuyPhongService();
+    private ChiTietPhieuDatPhongService chiTietService = new ChiTietPhieuDatPhongService();
+    private List<ChiTietPhieuDatPhong> dsChiTiet = new ArrayList<>();
 
     public HuyPhongPanel() {
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(20, 20));
         setBackground(BG);
-        initData();
+        setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        add(buildHeader(), BorderLayout.NORTH);
+        // =========================================================
+        // 1. PANEL HEADER
+        // =========================================================
+        JPanel pnlHeader = new JPanel(new BorderLayout());
+        pnlHeader.setBackground(BG);
 
-        JPanel mainContent = buildBody();
-        JScrollPane scroll = new JScrollPane(mainContent);
-        scroll.setBorder(null);
-        scroll.getVerticalScrollBar().setUnitIncrement(16);
-        scroll.getViewport().setBackground(BG);
-        add(scroll, BorderLayout.CENTER);
-    }
+        JLabel lblTitle = lbl("Hủy phòng", F_H1, DARK);
+        pnlHeader.add(lblTitle, BorderLayout.WEST);
 
-    private void initData() {
-        bookings.add(new Booking("Phòng thường", "10/10/2025", "2 ngày 1 đêm", "2 người lớn", "2.067.000VND", "PT"));
-        bookings.add(new Booking("Phòng VIP", "12/10/2025", "2 ngày 2 đêm", "4 người lớn", "4.133.000VND", "VIP"));
-        if (bookings.size() > selectedIndex) bookings.get(selectedIndex).selected = true;
-    }
+        JPanel pnlRightWrapper = new JPanel(new BorderLayout());
+        pnlRightWrapper.setBackground(BG);
 
-    private JPanel buildHeader() {
-        JPanel h = new JPanel(new BorderLayout());
-        h.setBackground(WHITE);
-        h.setPreferredSize(new Dimension(0, 65));
-        h.setBorder(new MatteBorder(0, 0, 1, 0, BORDER));
+        JPanel pnlTimKiem = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        pnlTimKiem.setBackground(BG);
 
-        JPanel searchBox = new JPanel(new BorderLayout(10, 0)) {
-            @Override protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(INPUT_BG);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
-                g2.dispose();
+        pnlTimKiem.add(lbl("CCCD Khách hàng:", F_LABEL, MID));
+        txtTimKiem = new JTextField(15);
+        txtTimKiem.setFont(F_TEXT);
+        txtTimKiem.setPreferredSize(new Dimension(200, 40));
+        txtTimKiem.setBorder(BorderFactory.createCompoundBorder(
+                new LineBorder(BORDER, 1, true),
+                new EmptyBorder(0, 10, 0, 10)
+        ));
+        txtTimKiem.addActionListener(e -> timKiemPhongThoCCCD());
+        pnlTimKiem.add(txtTimKiem);
+
+        JButton btnTim = blueBtn("Tìm Kiếm", 100, 40);
+        btnTim.addActionListener(e -> timKiemPhongThoCCCD());
+        pnlTimKiem.add(btnTim);
+
+        lblSearchMsg = lbl(" ", new Font("Segoe UI", Font.ITALIC, 13), RED);
+        lblSearchMsg.setHorizontalAlignment(SwingConstants.RIGHT);
+        lblSearchMsg.setBorder(new EmptyBorder(5, 0, 0, 110));
+
+        pnlRightWrapper.add(pnlTimKiem, BorderLayout.CENTER);
+        pnlRightWrapper.add(lblSearchMsg, BorderLayout.SOUTH);
+
+        pnlHeader.add(pnlRightWrapper, BorderLayout.EAST);
+        add(pnlHeader, BorderLayout.NORTH);
+
+        // =========================================================
+        // 2. BẢNG DANH SÁCH
+        // =========================================================
+        String[] cols = {"Chọn", "Mã Phiếu", "Phòng", "Loại", "Tên KH", "CCCD", "Ngày Nhận", "Ngày Trả"};
+        tableModel = new DefaultTableModel(cols, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) { return column == 0; }
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                return columnIndex == 0 ? Boolean.class : String.class;
             }
         };
-        searchBox.setOpaque(false);
-        searchBox.setPreferredSize(new Dimension(300, 38));
-        searchBox.setBorder(new EmptyBorder(0, 15, 0, 15));
+        tblDanhSach = new JTable(tableModel);
+        styleTable(tblDanhSach);
 
-        // Sử dụng CustomIcon nội bộ thay vì TrangChuPanel.CustomIcon
-        JLabel searchIcon = new JLabel(new CustomIcon("search"));
-        JTextField searchField = new JTextField("Search for rooms and offers...");
-        searchField.setBorder(null); searchField.setOpaque(false);
-        searchField.setFont(F_PLAIN); searchField.setForeground(TEXT_M);
+        JScrollPane scrollPane = new JScrollPane(tblDanhSach);
+        scrollPane.setBorder(new LineBorder(BORDER, 1, true));
+        scrollPane.getViewport().setBackground(WHITE);
+        add(scrollPane, BorderLayout.CENTER);
 
-        searchBox.add(searchIcon, BorderLayout.WEST);
-        searchBox.add(searchField, BorderLayout.CENTER);
+        // =========================================================
+        // 3. PANEL FOOTER (Thêm Label thông báo lỗi ở đây)
+        // =========================================================
+        JPanel pnlFooter = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
+        pnlFooter.setBackground(BG);
 
-        JPanel leftWrap = new JPanel(new FlowLayout(FlowLayout.LEFT, 25, 13));
-        leftWrap.setOpaque(false);
-        leftWrap.add(searchBox);
+        // Label hiển thị lỗi kế bên nút Hủy
+        lblActionMsg = lbl(" ", new Font("Segoe UI", Font.ITALIC, 13), RED);
+        pnlFooter.add(lblActionMsg);
 
-        JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 13));
-        right.setOpaque(false);
+        JButton btnHuy = redBtn("Hủy Các Phòng Đã Chọn", 200, 46);
+        btnHuy.addActionListener(e -> xuLyHuyPhong());
+        pnlFooter.add(btnHuy);
 
-        JLabel bell = new JLabel(new CustomIcon("bell"));
-        JPanel avatar = new JPanel() {
-            @Override protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setPaint(new GradientPaint(0, 0, new Color(0x60A5FA), 0, getHeight(), PRIMARY));
-                g2.fillOval(0, 0, 38, 38);
-                g2.setColor(WHITE); g2.setFont(F_BOLD13);
-                FontMetrics fm = g2.getFontMetrics();
-                g2.drawString("N", 19 - fm.stringWidth("N")/2, 19 + fm.getAscent()/2 - 2);
-                g2.dispose();
-            }
-        };
-        avatar.setPreferredSize(new Dimension(38, 38)); avatar.setOpaque(false);
-
-        right.add(bell); right.add(avatar);
-        h.add(leftWrap, BorderLayout.WEST);
-        h.add(right, BorderLayout.EAST);
-        return h;
+        add(pnlFooter, BorderLayout.SOUTH);
     }
 
-    private JPanel buildBody() {
-        JPanel body = new JPanel();
-        body.setLayout(new BoxLayout(body, BoxLayout.Y_AXIS));
-        body.setBackground(BG);
-        body.setBorder(new EmptyBorder(25, 30, 25, 30));
+    // =========================================================
+    // LOGIC TÌM KIẾM
+    // =========================================================
+    private void timKiemPhongThoCCCD() {
+        String cccd = txtTimKiem.getText().trim();
 
-        JPanel searchBar = card();
-        searchBar.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 15));
-        JTextField txtCCCD = new JTextField("Nhập CCCD");
-        txtCCCD.setPreferredSize(new Dimension(300, 40));
-        txtCCCD.setBorder(new CompoundBorder(new LineBorder(BORDER, 1, true), new EmptyBorder(0, 12, 0, 12)));
-        searchBar.add(txtCCCD);
-        searchBar.add(styledBtn("Tìm kiếm", PRIMARY));
+        if (cccd.isEmpty()) {
+            lblSearchMsg.setText("Vui lòng nhập số CCCD để tìm kiếm!");
+            lblSearchMsg.setForeground(RED);
+            dsChiTiet.clear();
+            loadDataToTable();
+            return;
+        }
 
-        body.add(searchBar);
-        body.add(Box.createVerticalStrut(20));
-        body.add(buildBookingListCard());
-        body.add(Box.createVerticalStrut(20));
+        dsChiTiet = chiTietService.getPhongDeHuyByCCCD(cccd);
 
-        JPanel bottomRow = new JPanel(new GridBagLayout());
-        bottomRow.setOpaque(false);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weighty = 1.0;
+        if (dsChiTiet.isEmpty()) {
+            lblSearchMsg.setText("Không tìm thấy phòng nào đang đặt cho CCCD: " + cccd);
+            lblSearchMsg.setForeground(RED);
+        } else {
+            lblSearchMsg.setText("Đã tìm thấy " + dsChiTiet.size() + " phòng hợp lệ.");
+            lblSearchMsg.setForeground(GREEN);
+        }
 
-        // Cột trái
-        gbc.gridx = 0; gbc.weightx = 0.7;
-        JPanel reasonCard = card();
-        reasonCard.setLayout(new BorderLayout(0, 10));
-        reasonCard.setBorder(new EmptyBorder(20, 20, 20, 20));
-        reasonCard.add(lbl("Lý do hủy phòng", F_BOLD13, TEXT_D), BorderLayout.NORTH);
-        JTextArea area = new JTextArea("Lý do hủy phòng");
-        area.setBorder(new LineBorder(BORDER, 1, true));
-        reasonCard.add(new JScrollPane(area), BorderLayout.CENTER);
-        bottomRow.add(reasonCard, gbc);
-
-        // Cột phải
-        gbc.gridx = 1; gbc.weightx = 0.3; gbc.insets = new Insets(0, 20, 0, 0);
-        bottomRow.add(buildFixedSummaryCard(), gbc);
-
-        body.add(bottomRow);
-        return body;
+        loadDataToTable();
     }
 
-    private JPanel buildBookingListCard() {
-        JPanel card = card();
-        card.setLayout(new BorderLayout());
-        card.setBorder(new EmptyBorder(20, 25, 20, 25));
-        card.add(lbl("Danh sách phòng đã đặt", F_TITLE, TEXT_D), BorderLayout.NORTH);
+    private void loadDataToTable() {
+        tableModel.setRowCount(0);
+        lblActionMsg.setText(" "); // Xóa thông báo báo lỗi ở nút khi tải lại bảng
 
-        bookingListPanel = new JPanel();
-        bookingListPanel.setLayout(new BoxLayout(bookingListPanel, BoxLayout.Y_AXIS));
-        bookingListPanel.setOpaque(false);
-        bookingListPanel.setBorder(new EmptyBorder(15, 0, 0, 0));
-
-        refreshBookingList();
-        card.add(bookingListPanel, BorderLayout.CENTER);
-        return card;
-    }
-
-    private JPanel buildFixedSummaryCard() {
-        Dimension fixedDim = new Dimension(120, 260);
-
-        JPanel card = new JPanel() {
-            @Override protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(WHITE); g2.fillRoundRect(0, 0, getWidth(), getHeight(), 16, 16);
-                g2.setColor(TEAL); g2.setStroke(new BasicStroke(1.5f));
-                g2.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 16, 16);
-                g2.dispose();
-            }
-        };
-        card.setLayout(new BorderLayout());
-        card.setOpaque(false);
-        card.setPreferredSize(fixedDim);
-        card.setMinimumSize(fixedDim);
-        card.setMaximumSize(fixedDim);
-
-        JPanel inner = new JPanel();
-        inner.setLayout(new BoxLayout(inner, BoxLayout.Y_AXIS));
-        inner.setOpaque(false);
-        inner.setBorder(new EmptyBorder(20, 20, 20, 20));
-
-        // Nhãn tiêu đề căn giữa
-        JLabel tag = lbl("Tiền hoàn trả", F_BOLD13, TEAL);
-        tag.setOpaque(true); tag.setBackground(TEAL_L);
-        tag.setBorder(new EmptyBorder(5, 12, 5, 12));
-        tag.setAlignmentX(Component.CENTER_ALIGNMENT); // CĂN GIỮA
-
-        inner.add(tag);
-        inner.add(Box.createVerticalStrut(20));
-
-        summaryContentPanel = new JPanel();
-        summaryContentPanel.setLayout(new BoxLayout(summaryContentPanel, BoxLayout.Y_AXIS));
-        summaryContentPanel.setOpaque(false);
-        summaryContentPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        updateSummaryData();
-        inner.add(summaryContentPanel);
-        inner.add(Box.createVerticalGlue());
-
-        JButton btn = styledBtn("Hủy ngay", PRIMARY);
-        btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
-        btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        inner.add(btn);
-
-        card.add(inner);
-        return card;
-    }
-
-    private void updateSummaryData() {
-        if (summaryContentPanel == null) return;
-        summaryContentPanel.removeAll();
-
-        String tong = selectedIndex == 0 ? "2.067.000đ" : "6.200.000đ";
-        String hoan = selectedIndex == 0 ? "1.000.000đ" : "3.000.000đ";
-
-        summaryContentPanel.add(row("Tổng tiền phòng", tong));
-        summaryContentPanel.add(Box.createVerticalStrut(10));
-        summaryContentPanel.add(row("Cọc (30%)", "30%"));
-        summaryContentPanel.add(Box.createVerticalStrut(15));
-
-        JSeparator s = new JSeparator(); s.setForeground(BORDER);
-        summaryContentPanel.add(s);
-        summaryContentPanel.add(Box.createVerticalStrut(15));
-
-        summaryContentPanel.add(rowBold("Total price", hoan));
-
-        summaryContentPanel.revalidate();
-        summaryContentPanel.repaint();
-    }
-
-    private JPanel row(String k, String v) {
-        JPanel p = new JPanel(new BorderLayout());
-        p.setOpaque(false);
-        p.add(lbl(k, F_PLAIN, TEXT_M), BorderLayout.WEST);
-        p.add(lbl(v, F_PLAIN, TEXT_D), BorderLayout.EAST);
-        return p;
-    }
-
-    private JPanel rowBold(String k, String v) {
-        JPanel p = new JPanel(new BorderLayout());
-        p.setOpaque(false);
-        p.add(lbl(k, F_BOLD13, TEXT_D), BorderLayout.WEST);
-        p.add(lbl(v, F_BOLD13, TEXT_D), BorderLayout.EAST);
-        return p;
-    }
-
-    private void refreshBookingList() {
-        bookingListPanel.removeAll();
-        for (int i = 0; i < bookings.size(); i++) {
-            Booking b = bookings.get(i);
-            int idx = i;
-            JPanel item = new JPanel(new BorderLayout(20, 0));
-            item.setOpaque(false);
-
-            JPanel img = new JPanel(); img.setPreferredSize(new Dimension(80, 80));
-            img.setBackground(new Color(0xCBD5E1));
-
-            JPanel info = new JPanel(new GridLayout(2, 1));
-            info.setOpaque(false);
-            info.add(lbl(b.type, F_BOLD13, TEXT_D));
-            info.add(lbl(b.price, F_BOLD13, PRIMARY));
-
-            JRadioButton rb = new JRadioButton();
-            rb.setSelected(b.selected);
-            rb.setOpaque(false);
-            rb.addActionListener(e -> {
-                for (Booking x : bookings) x.selected = false;
-                b.selected = true;
-                selectedIndex = idx;
-                refreshBookingList();
-                updateSummaryData();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        for (ChiTietPhieuDatPhong ct : dsChiTiet) {
+            tableModel.addRow(new Object[]{
+                    false,
+                    ct.getPhieuDatPhong() != null ? ct.getPhieuDatPhong().getMaPhieuDatPhong() : "",
+                    ct.getPhong() != null ? ct.getPhong().getMaPhong() : "",
+                    (ct.getPhong() != null && ct.getPhong().getLoaiPhong() != null) ? ct.getPhong().getLoaiPhong().getTenLoaiPhong() : "",
+                    (ct.getPhieuDatPhong() != null && ct.getPhieuDatPhong().getKhachHang() != null) ? ct.getPhieuDatPhong().getKhachHang().getTenKhachHang() : "",
+                    (ct.getPhieuDatPhong() != null && ct.getPhieuDatPhong().getKhachHang() != null) ? ct.getPhieuDatPhong().getKhachHang().getCCCD() : "",
+                    ct.getThoiGianNhanPhong() != null ? ct.getThoiGianNhanPhong().format(formatter) : "",
+                    ct.getThoiGianTraPhong() != null ? ct.getThoiGianTraPhong().format(formatter) : ""
             });
-
-            item.add(img, BorderLayout.WEST);
-            item.add(info, BorderLayout.CENTER);
-            item.add(rb, BorderLayout.EAST);
-            bookingListPanel.add(item);
-            bookingListPanel.add(Box.createVerticalStrut(15));
         }
-        bookingListPanel.revalidate(); bookingListPanel.repaint();
     }
 
-    static JPanel card() {
-        JPanel p = new JPanel() {
+    // =========================================================
+    // LOGIC HỦY & HOÀN TIỀN
+    // =========================================================
+    private void xuLyHuyPhong() {
+        List<ChiTietPhieuDatPhong> danhSachPhongBiHuy = new ArrayList<>();
+        for (int i = 0; i < tblDanhSach.getRowCount(); i++) {
+            Boolean isChecked = (Boolean) tblDanhSach.getValueAt(i, 0);
+            if (isChecked != null && isChecked) {
+                danhSachPhongBiHuy.add(dsChiTiet.get(i));
+            }
+        }
+
+        if (danhSachPhongBiHuy.isEmpty()) {
+            lblActionMsg.setText("Vui lòng chọn ít nhất một phòng để hủy!");
+            lblActionMsg.setForeground(RED);
+            return;
+        } else {
+            lblActionMsg.setText(" ");
+        }
+
+        // --- 1. TÍNH TOÁN CỘNG DỒN TIỀN CỌC & HOÀN THEO CHÍNH SÁCH ---
+        double tongTienCoc = 0;
+        double tongTienHoan = 0;
+        LocalDateTime bayGio = LocalDateTime.now();
+        java.util.Set<String> dsMaPDP = new java.util.HashSet<>();
+
+        for (ChiTietPhieuDatPhong ct : danhSachPhongBiHuy) {
+            if (ct.getPhieuDatPhong() != null) {
+                String ma = ct.getPhieuDatPhong().getMaPhieuDatPhong();
+                double tienCocCuaPhieu = ct.getPhieuDatPhong().getTienDatCoc();
+
+                // Cộng dồn tiền cọc (Chặn cộng đúp nếu chọn nhiều phòng cùng 1 phiếu)
+                if (!dsMaPDP.contains(ma)) {
+                    tongTienCoc += tienCocCuaPhieu;
+                    dsMaPDP.add(ma);
+                }
+
+                // Tính chính sách hoàn tiền
+                LocalDateTime checkIn = ct.getThoiGianNhanPhong();
+                long gioConLai = java.time.Duration.between(bayGio, checkIn).toHours();
+                double phanTramHoan = (gioConLai >= 72) ? 1.0 : (gioConLai >= 24 ? 0.5 : 0.0);
+
+                // Ở đây ta cộng dồn tiền hoàn tính trên cọc của các phòng được chọn
+                tongTienHoan += (tienCocCuaPhieu * phanTramHoan);
+            }
+        }
+
+        java.text.NumberFormat fm = java.text.NumberFormat.getInstance(new java.util.Locale("vi", "VN"));
+
+        // --- 2. GIAO DIỆN MODAL HIỂN THỊ ---
+        Window parentWindow = SwingUtilities.getWindowAncestor(this);
+        JDialog dialog = new JDialog(parentWindow, "Xác nhận Hủy Phòng", Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.setSize(480, 420); // Tăng chiều cao để form thoáng
+        dialog.setLocationRelativeTo(this);
+        dialog.setResizable(false);
+
+        JPanel pnlContent = new JPanel(new BorderLayout(10, 15));
+        pnlContent.setBackground(WHITE);
+        pnlContent.setBorder(new EmptyBorder(25, 30, 25, 30));
+
+        JLabel lblTitle = lbl("Xác Nhận Hủy & Hoàn Tiền", F_H1.deriveFont(20f), DARK);
+        pnlContent.add(lblTitle, BorderLayout.NORTH);
+
+        // Sử dụng BoxLayout trục Y để các thành phần xếp chồng lên nhau full chiều ngang
+        JPanel pnlInput = new JPanel();
+        pnlInput.setLayout(new BoxLayout(pnlInput, BoxLayout.Y_AXIS));
+        pnlInput.setBackground(WHITE);
+
+        // A. LÝ DO
+        pnlInput.add(lbl("Lý do hủy phòng (Bắt buộc):", F_LABEL, MID));
+        pnlInput.add(Box.createVerticalStrut(5));
+        JTextArea txtLyDo = new JTextArea(3, 20);
+        txtLyDo.setFont(F_TEXT);
+        txtLyDo.setLineWrap(true);
+        txtLyDo.setWrapStyleWord(true);
+        JScrollPane scrollLyDo = new JScrollPane(txtLyDo);
+        scrollLyDo.setBorder(BorderFactory.createCompoundBorder(new LineBorder(BORDER, 1, true), new EmptyBorder(5, 8, 5, 8)));
+        pnlInput.add(scrollLyDo);
+
+        pnlInput.add(Box.createVerticalStrut(15));
+
+        // B. TIỀN CỌC (CHỈ HIỂN THỊ)
+        pnlInput.add(lbl("Tổng tiền cọc cộng dồn:", F_LABEL, MID));
+        pnlInput.add(Box.createVerticalStrut(5));
+        JTextField txtTienCocDisp = new JTextField(fm.format(tongTienCoc) + " VNĐ");
+        txtTienCocDisp.setFont(F_TEXT);
+        txtTienCocDisp.setEditable(false);
+        txtTienCocDisp.setFocusable(false);
+        txtTienCocDisp.setBackground(new Color(0xF8FAFC));
+        txtTienCocDisp.setBorder(BorderFactory.createCompoundBorder(new LineBorder(BORDER, 1, true), new EmptyBorder(0, 10, 0, 10)));
+        txtTienCocDisp.setPreferredSize(new Dimension(0, 40));
+        txtTienCocDisp.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        pnlInput.add(txtTienCocDisp);
+
+        pnlInput.add(Box.createVerticalStrut(15));
+
+        // C. TIỀN HOÀN (CHỮ ĐỎ - KHÓA SỬA)
+        pnlInput.add(lbl("Số tiền hoàn trả (Theo chính sách):", F_LABEL, DARK));
+        pnlInput.add(Box.createVerticalStrut(5));
+        JTextField txtHoanDisp = new JTextField(fm.format(tongTienHoan) + " VNĐ");
+        txtHoanDisp.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        txtHoanDisp.setForeground(RED); // SỐ MÀU ĐỎ
+        txtHoanDisp.setEditable(false); // KHÔNG CHO SỬA
+        txtHoanDisp.setFocusable(false);
+        txtHoanDisp.setBackground(new Color(0xFFF1F1)); // Nền đỏ siêu nhạt
+        txtHoanDisp.setBorder(BorderFactory.createCompoundBorder(new LineBorder(RED, 1, true), new EmptyBorder(0, 10, 0, 10)));
+        txtHoanDisp.setPreferredSize(new Dimension(0, 40));
+        txtHoanDisp.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        pnlInput.add(txtHoanDisp);
+
+        pnlContent.add(pnlInput, BorderLayout.CENTER);
+
+        // FOOTER
+        JPanel pnlBottom = new JPanel(new BorderLayout());
+        pnlBottom.setBackground(WHITE);
+        JLabel lblError = lbl(" ", new Font("Segoe UI", Font.ITALIC, 12), RED);
+        pnlBottom.add(lblError, BorderLayout.NORTH);
+
+        JPanel pnlButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+        pnlButtons.setBackground(WHITE);
+        JButton btnCancel = createBtn("Hủy bỏ", 110, 40, MID, new Color(0x323846));
+        JButton btnConfirm = createBtn("Xác nhận Hủy", 150, 40, RED, new Color(0xB91C1C));
+
+        final String[] finalLyDo = {null};
+        btnCancel.addActionListener(e -> dialog.dispose());
+
+        double finalTongTienHoan = tongTienHoan;
+        btnConfirm.addActionListener(e -> {
+            String lyDo = txtLyDo.getText().trim();
+            if (lyDo.isEmpty()) {
+                lblError.setText("Vui lòng nhập lý do hủy phòng!");
+                txtLyDo.requestFocus();
+            } else {
+                finalLyDo[0] = lyDo;
+                dialog.dispose();
+            }
+        });
+
+        pnlButtons.add(btnCancel);
+        pnlButtons.add(btnConfirm);
+        pnlBottom.add(pnlButtons, BorderLayout.CENTER);
+        pnlContent.add(pnlBottom, BorderLayout.SOUTH);
+
+        dialog.setContentPane(pnlContent);
+        dialog.setVisible(true);
+
+        // --- 3. XỬ LÝ LƯU DATABASE ---
+        if (finalLyDo[0] != null) {
+            List<PhieuHuyPhong> dsPhieuHuy = new ArrayList<>();
+            for (ChiTietPhieuDatPhong ct : danhSachPhongBiHuy) {
+                dsPhieuHuy.add(PhieuHuyPhong.builder()
+                        .lyDo(finalLyDo[0])
+                        .ngayHuy(LocalDateTime.now())
+                        .chiTietPhieuDatPhong(ct)
+                        .build());
+            }
+
+            if (phieuHuyService.thucHienHuyNhieuPhong(dsPhieuHuy, finalTongTienHoan)) {
+                dsChiTiet.removeAll(danhSachPhongBiHuy);
+                loadDataToTable();
+                lblActionMsg.setText("Đã hủy thành công. Đã hoàn: " + fm.format(finalTongTienHoan) + " VNĐ");
+                lblActionMsg.setForeground(GREEN);
+            } else {
+                lblActionMsg.setText("Lỗi kết nối Database!");
+                lblActionMsg.setForeground(RED);
+            }
+        }
+    }
+
+    // =========================================================
+    // CÁC HÀM TIỆN ÍCH VẼ GIAO DIỆN
+    // =========================================================
+    static JLabel lbl(String text, Font f, Color c) {
+        JLabel l = new JLabel(text); l.setFont(f); l.setForeground(c); return l;
+    }
+
+    static JButton blueBtn(String text, int w, int h) {
+        return createBtn(text, w, h, BLUE, new Color(0x2A5CD4));
+    }
+
+    static JButton redBtn(String text, int w, int h) {
+        return createBtn(text, w, h, RED, new Color(0xB91C1C));
+    }
+
+    private static JButton createBtn(String text, int w, int h, Color normal, Color hover) {
+        JButton btn = new JButton(text) {
             @Override protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(WHITE); g2.fillRoundRect(0, 0, getWidth(), getHeight(), 16, 16);
-                g2.setColor(BORDER); g2.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 16, 16);
+                g2.setColor(getModel().isRollover() ? hover : normal);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                g2.setColor(WHITE); g2.setFont(F_BOLD12);
+                FontMetrics fm = g2.getFontMetrics();
+                g2.drawString(getText(), (getWidth() - fm.stringWidth(getText())) / 2, (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
                 g2.dispose();
             }
         };
-        p.setOpaque(false); return p;
+        btn.setOpaque(false); btn.setContentAreaFilled(false); btn.setBorderPainted(false);
+        btn.setPreferredSize(new Dimension(w, h)); btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        return btn;
     }
 
-    static JLabel lbl(String t, Font f, Color c) {
-        JLabel l = new JLabel(t); l.setFont(f); l.setForeground(c); return l;
-    }
+    private void styleTable(JTable table) {
+        table.setFont(F_TABLE);
+        table.setRowHeight(42);
+        table.setShowVerticalLines(false);
+        table.setShowHorizontalLines(true);
+        table.setGridColor(BORDER);
+        table.setSelectionBackground(new Color(0xE8EFFE));
+        table.setSelectionForeground(DARK);
 
-    static JButton styledBtn(String text, Color bg) {
-        JButton b = new JButton(text) {
-            @Override protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(bg); g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
-                super.paintComponent(g); g2.dispose();
+        DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                c.setFont(F_LABEL); c.setBackground(WHITE); c.setForeground(MID);
+                setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createMatteBorder(0, 0, 1, 0, BORDER),
+                        new EmptyBorder(0, 10, 0, 10)
+                ));
+                setHorizontalAlignment(column == 0 ? SwingConstants.CENTER : SwingConstants.LEFT);
+                return c;
             }
         };
-        b.setFont(F_BOLD13); b.setForeground(WHITE);
-        b.setOpaque(false); b.setContentAreaFilled(false); b.setBorderPainted(false);
-        b.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        return b;
-    }
 
-    // --- CLASS CUSTOM ICON ĐƯỢC THÊM VÀO ĐỂ FIX LỖI ---
-    static class CustomIcon implements Icon {
-        private String type;
-        public CustomIcon(String type) { this.type = type; }
-        @Override
-        public void paintIcon(Component c, Graphics g, int x, int y) {
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(TEXT_M);
-            if ("search".equals(type)) {
-                g2.drawOval(x, y, 12, 12);
-                g2.drawLine(x + 10, y + 10, x + 15, y + 15);
-            } else if ("bell".equals(type)) {
-                g2.drawRoundRect(x, y, 14, 14, 4, 4);
-                g2.fillOval(x + 5, y + 15, 4, 2);
+        DefaultTableCellRenderer textRenderer = new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                setBorder(new EmptyBorder(0, 10, 0, 10));
+                return c;
             }
-            g2.dispose();
+        };
+
+        JTableHeader header = table.getTableHeader();
+        header.setPreferredSize(new Dimension(0, 45));
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            table.getColumnModel().getColumn(i).setHeaderRenderer(headerRenderer);
+            if (i > 0) table.getColumnModel().getColumn(i).setCellRenderer(textRenderer);
         }
-        @Override public int getIconWidth() { return 20; }
-        @Override public int getIconHeight() { return 20; }
+
+        table.getColumnModel().getColumn(0).setMaxWidth(60);
+        table.getColumnModel().getColumn(0).setMinWidth(60);
+        table.getColumnModel().getColumn(1).setPreferredWidth(100);
+        table.getColumnModel().getColumn(2).setPreferredWidth(80);
+        table.getColumnModel().getColumn(3).setPreferredWidth(130);
+        table.getColumnModel().getColumn(4).setPreferredWidth(180);
+        table.getColumnModel().getColumn(5).setPreferredWidth(130);
+        table.getColumnModel().getColumn(6).setPreferredWidth(140);
+        table.getColumnModel().getColumn(7).setPreferredWidth(140);
     }
 }
