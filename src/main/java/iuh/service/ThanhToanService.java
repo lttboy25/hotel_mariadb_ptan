@@ -8,6 +8,7 @@ package iuh.service;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.HoaDon;
 import iuh.entity.Phong;
+import iuh.entity.TinhTrangPhong;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ import java.util.List;
  * @version:    1.0
  */
 public interface ThanhToanService {
-    List<Phong> getRoomsByStatus(String status);
+    List<Phong> getRoomsByStatus(TinhTrangPhong status);
 
     List<ChiTietPhieuDatPhong> getDanhSachPhieuDatPhongDeThanhToan(String cccd);
 

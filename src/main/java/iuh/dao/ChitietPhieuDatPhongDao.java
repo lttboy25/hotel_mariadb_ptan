@@ -6,6 +6,9 @@
 package iuh.dao;
 
 import iuh.entity.ChiTietPhieuDatPhong;
+import iuh.entity.TrangThaiChiTietPhieuDatPhong;
+import iuh.entity.TrangThaiPhieuDatPhong;
+import iuh.entity.TrangThaiPhong;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,10 +30,11 @@ public interface ChitietPhieuDatPhongDao {
 
     ChiTietPhieuDatPhong findChiTietPhieuDatPhongByMaPhong(String maPhong);
 
-    boolean updateStatusDetailTicketByRoomCode(String maPhong, String status);
+    boolean updateStatusDetailTicketByRoomCode(String maPhong, TrangThaiChiTietPhieuDatPhong status);
 
-    List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(String statusTicket, String statusDetail,
-                                                                  String cccd);
+    List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong statusTicket,
+            TrangThaiChiTietPhieuDatPhong statusDetail,
+            String cccd);
 
     // Tìm các phòng đang ở trạng thái 'Đã đặt' dựa trên CCCD
     List<ChiTietPhieuDatPhong> getPhongDeHuyByCCCD(String cccd);

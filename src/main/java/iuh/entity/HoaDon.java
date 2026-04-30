@@ -32,7 +32,10 @@ public class HoaDon implements Serializable {
     @JoinColumn(name = "maKhuyenMai")
     private KhuyenMai khuyenMai;
     private LocalDateTime ngayTao;
-    private String trangThai;
+
+    @Enumerated(EnumType.STRING)
+    private TrangThaiHoaDon trangThai;
+
     private double tongTien;
     private double tienKhachDua;
     private double tienThoi;

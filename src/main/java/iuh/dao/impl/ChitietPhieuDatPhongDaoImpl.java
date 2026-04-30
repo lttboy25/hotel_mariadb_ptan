@@ -7,6 +7,9 @@ package iuh.dao.impl;
 
 import iuh.db.JPAUtil;
 import iuh.entity.ChiTietPhieuDatPhong;
+import iuh.entity.TrangThaiChiTietPhieuDatPhong;
+import iuh.entity.TrangThaiPhieuDatPhong;
+import iuh.entity.TrangThaiPhong;
 import jakarta.persistence.EntityManager;
 
 import java.time.LocalDateTime;
@@ -44,11 +47,12 @@ public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietP
                      WHERE ct.phong.maPhong = :maPhong
                      AND ct.thoiGianNhanPhong < :checkOut
                      AND ct.thoiGianTraPhong > :checkIn
-                     AND ct.trangThai != 'Đã hủy'
+                     AND ct.trangThai != :cancelledStatus
                 """, Long.class)
                 .setParameter("maPhong", maPhong)
                 .setParameter("checkIn", checkIn)
                 .setParameter("checkOut", checkOut)
+                .setParameter("cancelledStatus", TrangThaiChiTietPhieuDatPhong.DA_HUY)
                 .getSingleResult());
         return count == 0;
     }
@@ -79,7 +83,7 @@ public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietP
     }
 
     @Override
-    public boolean updateStatusDetailTicketByRoomCode(String maPhong, String status) {
+    public boolean updateStatusDetailTicketByRoomCode(String maPhong, TrangThaiChiTietPhieuDatPhong status) {
         EntityManager em = JPAUtil.getEntityManager();
 
         try {
@@ -110,7 +114,8 @@ public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietP
     }
 
     @Override
-    public List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(String statusTicket, String statusDetail,
+    public List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong statusTicket,
+            TrangThaiChiTietPhieuDatPhong statusDetail,
             String cccd) {
         return doInTransaction(em -> em.createQuery("""
                 SELECT ctpdp FROM ChiTietPhieuDatPhong ctpdp
@@ -129,9 +134,12 @@ public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietP
         return doInTransaction(em -> em.createQuery("""
                 SELECT ct FROM ChiTietPhieuDatPhong ct
                 WHERE ct.phieuDatPhong.khachHang.CCCD = :cccd
-                AND ct.phieuDatPhong.trangThai = 'Đã đặt'
-                AND ct.trangThai != 'Đã hủy'
+                AND ct.phieuDatPhong.trangThai = :status
+                AND ct.trangThai = :cancelledStatus
                 """, ChiTietPhieuDatPhong.class)
+
+                .setParameter("status", TrangThaiPhieuDatPhong.DA_DAT)
+                .setParameter("cancelledStatus", TrangThaiChiTietPhieuDatPhong.DA_HUY)
                 .setParameter("cccd", cccd.trim())
                 .getResultList());
     }
@@ -141,8 +149,9 @@ public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietP
         return doInTransaction(em -> em.createQuery("""
                 SELECT ct FROM ChiTietPhieuDatPhong ct
                 WHERE ct.phieuDatPhong.khachHang.CCCD = :cccd
-                AND ct.phieuDatPhong.trangThai = 'Đã đặt'
+                AND ct.phieuDatPhong.trangThai = :dadat
                 """, ChiTietPhieuDatPhong.class)
+                .setParameter("dadat", TrangThaiChiTietPhieuDatPhong.DA_DAT)
                 .setParameter("cccd", cccd.trim())
                 .getResultList());
     }
@@ -158,8 +167,10 @@ public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietP
                 JOIN ct.phieuDatPhong pdp
                 JOIN pdp.khachHang kh
                 WHERE kh.soDienThoai = :sdt
-                  AND (ct.trangThai   = 'Chưa thanh toán' OR ct.trangThai = 'Đã nhận phòng')
+                  AND (ct.trangThai = :chuaTT OR ct.trangThai = :nhanPhong)
                 """, ChiTietPhieuDatPhong.class)
+                .setParameter("chuaTT", TrangThaiChiTietPhieuDatPhong.CHUA_THANH_TOAN)
+                .setParameter("nhanPhong", TrangThaiChiTietPhieuDatPhong.NHAN_PHONG)
                 .setParameter("sdt", soDienThoai)
                 .getResultList());
     }
@@ -202,7 +213,7 @@ public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietP
                             WHERE c.id = :chiTietId
                         )
                         AND ct.id <> :chiTietId
-                        AND ct.trangThai != 'Đã hủy'
+                        AND ct.trangThai != :cancelledStatus
                         AND ct.thoiGianNhanPhong < :newEndTime
                         AND ct.thoiGianTraPhong > (
                             SELECT c.thoiGianTraPhong
@@ -213,6 +224,7 @@ public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietP
 
             Long count = em.createQuery(jpql, Long.class)
                     .setParameter("chiTietId", chiTietId)
+                    .setParameter("cancelledStatus", TrangThaiChiTietPhieuDatPhong.DA_HUY)
                     .setParameter("newEndTime", newEndTime)
                     .getSingleResult();
 
@@ -229,7 +241,7 @@ public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietP
                         JOIN ct.phieuDatPhong pdp
                         JOIN pdp.khachHang kh
                         JOIN ct.phong p
-                        WHERE (ct.trangThai = 'Chưa thanh toán' OR ct.trangThai = 'Đã nhận phòng')
+                        WHERE (ct.trangThai = :chuaTT OR ct.trangThai = :nhanPhong)
                         AND (
                             :kw IS NULL
                             OR kh.soDienThoai LIKE :kw
@@ -238,6 +250,8 @@ public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietP
                     """;
 
             return em.createQuery(jpql, ChiTietPhieuDatPhong.class)
+                    .setParameter("chuaTT", TrangThaiChiTietPhieuDatPhong.CHUA_THANH_TOAN)
+                    .setParameter("nhanPhong", TrangThaiChiTietPhieuDatPhong.NHAN_PHONG)
                     .setParameter("kw", keyword == null ? null : "%" + keyword + "%")
                     .getResultList();
         });

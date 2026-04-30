@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import iuh.entity.PhieuDatPhong;
 import iuh.entity.PhieuHuyPhong;
 import iuh.entity.Phong;
+import iuh.entity.TrangThaiChiTietPhieuDatPhong;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +22,7 @@ public class ChiTietPhieuDatPhongDTO implements Serializable {
     private PhieuDatPhong phieuDatPhong;
     private Phong phong;
 
-    private String trangThai;
+    private TrangThaiChiTietPhieuDatPhong trangThai;
     private int soGioLuuTru;
     private LocalDateTime thoiGianNhanPhong;
     private LocalDateTime thoiGianTraPhong;

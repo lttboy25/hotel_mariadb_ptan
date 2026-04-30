@@ -6,6 +6,10 @@
 package iuh.service;
 
 import iuh.entity.ChiTietPhieuDatPhong;
+import iuh.entity.TrangThai;
+import iuh.entity.TrangThaiChiTietPhieuDatPhong;
+import iuh.entity.TrangThaiPhieuDatPhong;
+import iuh.entity.TrangThaiPhong;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,10 +24,11 @@ import java.util.Map;
 public interface ChiTietPhieuDatPhongService {
     List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByMaPDP(String maPDP);
 
-    boolean updateTrangThaiByMaPhong(String maPhong, String trangThai);
+    boolean updateTrangThaiByMaPhong(String maPhong, TrangThaiChiTietPhieuDatPhong trangThai);
 
-    List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(String statusTicket, String statusDetail,
-                                                                  String cccd);
+    List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong statusTicket,
+            TrangThaiChiTietPhieuDatPhong statusDetail,
+            String cccd);
 
     List<ChiTietPhieuDatPhong> getPhongDeHuyByCCCD(String cccd);
 

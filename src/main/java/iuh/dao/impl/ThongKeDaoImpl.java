@@ -7,6 +7,8 @@ package iuh.dao.impl;
 
 import iuh.db.JPAUtil;
 import iuh.dto.ThongKeDTO;
+import iuh.entity.TrangThaiChiTietPhieuDatPhong;
+import iuh.entity.TrangThaiHoaDon;
 import jakarta.persistence.EntityManager;
 
 import java.time.LocalDate;
@@ -36,10 +38,11 @@ public class ThongKeDaoImpl implements iuh.dao.ThongKeDao {
             Long result = em.createQuery("""
                     SELECT COUNT(DISTINCT ct.phong.maPhong)
                     FROM ChiTietPhieuDatPhong ct
-                    WHERE ct.trangThai = 'Đã nhận phòng'
+                    WHERE ct.trangThai = :daNhan
                       AND ct.thoiGianTraPhong >= :thoiDiem
                     """, Long.class)
                     .setParameter("thoiDiem", thoiDiem)
+                    .setParameter("daNhan", TrangThaiChiTietPhieuDatPhong.NHAN_PHONG)
                     .getSingleResult();
             return result == null ? 0L : result;
         }
@@ -51,10 +54,11 @@ public class ThongKeDaoImpl implements iuh.dao.ThongKeDao {
             Long result = em.createQuery("""
                     SELECT SUM(ct.soNguoi)
                     FROM ChiTietPhieuDatPhong ct
-                    WHERE ct.trangThai = 'Đã nhận phòng'
+                    WHERE ct.trangThai = :daNhan
                       AND ct.thoiGianTraPhong >= :thoiDiem
                     """, Long.class)
                     .setParameter("thoiDiem", thoiDiem)
+                    .setParameter("daNhan", TrangThaiChiTietPhieuDatPhong.NHAN_PHONG)
                     .getSingleResult();
             return result == null ? 0L : result;
         }
@@ -100,10 +104,11 @@ public class ThongKeDaoImpl implements iuh.dao.ThongKeDao {
                     FROM HoaDon hd
                     WHERE COALESCE(hd.ngayTao, hd.ngayDat) >= :tuNgay
                       AND COALESCE(hd.ngayTao, hd.ngayDat) < :denNgay
-                      AND hd.trangThai = 'Đã thanh toán'
+                      AND hd.trangThai = :daThanhToan
                     """, Double.class)
                     .setParameter("tuNgay", tuNgay)
                     .setParameter("denNgay", denNgay)
+                    .setParameter("daThanhToan", TrangThaiHoaDon.DA_THANH_TOAN)
                     .getSingleResult();
             return result == null ? 0d : result;
         }
@@ -168,7 +173,7 @@ public class ThongKeDaoImpl implements iuh.dao.ThongKeDao {
                     FROM HoaDon hd
                     WHERE COALESCE(hd.ngayTao, hd.ngayDat) >= :tuNgay
                       AND COALESCE(hd.ngayTao, hd.ngayDat) < :denNgay
-                      AND hd.trangThai = 'Đã thanh toán'
+                      AND hd.trangThai = :daThanhToan
                     GROUP BY FUNCTION('year', COALESCE(hd.ngayTao, hd.ngayDat)),
                              FUNCTION('month', COALESCE(hd.ngayTao, hd.ngayDat)),
                              FUNCTION('day', COALESCE(hd.ngayTao, hd.ngayDat))
@@ -177,6 +182,7 @@ public class ThongKeDaoImpl implements iuh.dao.ThongKeDao {
                              FUNCTION('day', COALESCE(hd.ngayTao, hd.ngayDat))
                     """, Object[].class)
                     .setParameter("tuNgay", tuNgay.atStartOfDay())
+                    .setParameter("daThanhToan", TrangThaiHoaDon.DA_THANH_TOAN)
                     .setParameter("denNgay", denNgay.plusDays(1).atStartOfDay())
                     .getResultList();
 
@@ -184,8 +190,7 @@ public class ThongKeDaoImpl implements iuh.dao.ThongKeDao {
                 LocalDate ngay = LocalDate.of(
                         ((Number) row[0]).intValue(),
                         ((Number) row[1]).intValue(),
-                        ((Number) row[2]).intValue()
-                );
+                        ((Number) row[2]).intValue());
                 data.put(ngay, ((Number) row[3]).doubleValue());
             }
         }
@@ -235,12 +240,13 @@ public class ThongKeDaoImpl implements iuh.dao.ThongKeDao {
                     JOIN ct.phong p
                     JOIN p.loaiPhong lp
                     WHERE ct.phieuDatPhong.ngayTao BETWEEN :tuNgay AND :denNgay
-                      AND ct.trangThai <> 'Đã hủy'
+                      AND ct.trangThai <> :daHuy
                     GROUP BY lp.tenLoaiPhong
                     ORDER BY COUNT(ct) DESC
                     """, Object[].class)
                     .setParameter("tuNgay", tuNgay)
                     .setParameter("denNgay", denNgay)
+                    .setParameter("daHuy", TrangThaiChiTietPhieuDatPhong.DA_HUY)
                     .getResultList();
 
             for (Object[] row : rows) {

@@ -6,6 +6,9 @@ import java.util.Optional;
 
 import iuh.db.JPAUtil;
 import iuh.entity.Phong;
+import iuh.entity.TinhTrangPhong;
+import iuh.entity.TrangThaiChiTietPhieuDatPhong;
+import iuh.entity.TrangThaiPhong;
 import jakarta.persistence.EntityManager;
 
 public class PhongDaoImpl extends AbstractGenericDaoImpl<Phong, String> implements iuh.dao.PhongDao {
@@ -139,8 +142,8 @@ public class PhongDaoImpl extends AbstractGenericDaoImpl<Phong, String> implemen
     public List<Phong> getAvailableRooms() {
         return doInTransaction(em -> em.createQuery("""
                     SELECT p FROM Phong p
-                    WHERE p.tinhTrang = "Trống"
-                """, Phong.class).getResultList());
+                    WHERE p.tinhTrang = :trong
+                """, Phong.class).setParameter("trong", TinhTrangPhong.TRONG).getResultList());
     }
 
     @Override
@@ -149,18 +152,21 @@ public class PhongDaoImpl extends AbstractGenericDaoImpl<Phong, String> implemen
 
             String query = """
                         SELECT p FROM Phong p
-                        WHERE (p.tinhTrang = 'Trống' OR p.trangThai = 'Sẵn sàng')
+                        WHERE (p.tinhTrang = :trong OR p.trangThai = :sansang)
                         AND NOT EXISTS (
                             SELECT 1 FROM ChiTietPhieuDatPhong ct
                             WHERE ct.phong.maPhong = p.maPhong
                             AND ct.thoiGianNhanPhong < :ngayTraPhong
                             AND ct.thoiGianTraPhong > :ngayNhanPhong
-                            AND ct.trangThai != 'Đã hủy'
+                            AND ct.trangThai != :cancelledStatus
                         )
                         ORDER BY p.maPhong
                     """;
 
             return em.createQuery(query, Phong.class)
+                    .setParameter("cancelledStatus", TrangThaiChiTietPhieuDatPhong.DA_HUY)
+                    .setParameter("trong", TinhTrangPhong.TRONG)
+                    .setParameter("sansang", TrangThaiPhong.SAN_SANG)
                     .setParameter("ngayNhanPhong", ngayNhanPhong)
                     .setParameter("ngayTraPhong", ngayTraPhong)
                     .getResultList();
@@ -172,23 +178,23 @@ public class PhongDaoImpl extends AbstractGenericDaoImpl<Phong, String> implemen
     }
 
     @Override
-    public List<Phong> getRoomsByStatus(String status) {
+    public List<Phong> getRoomsByStatus(TinhTrangPhong status) {
         return doInTransaction(em -> em.createQuery("""
                 SELECT p FROM Phong p
-                WHERE p.tinhTrang = :status """ , Phong.class).setParameter("status", status).getResultList());
+                WHERE p.tinhTrang = :status """, Phong.class).setParameter("status", status).getResultList());
     }
 
     @Override
-    public boolean updateStatusRoom(String maPhong, String trangThai, String tinhTrang) {
+    public boolean updateStatusRoom(String maPhong, TrangThaiPhong trangThai, TinhTrangPhong tinhTrang) {
         EntityManager em = JPAUtil.getEntityManager();
         try {
             em.getTransaction().begin();
 
             String query = """
-                UPDATE Phong p
-                SET p.trangThai = :status, p.tinhTrang = :tinhTrang
-                WHERE p.maPhong = :maPhong
-        """;
+                            UPDATE Phong p
+                            SET p.trangThai = :status, p.tinhTrang = :tinhTrang
+                            WHERE p.maPhong = :maPhong
+                    """;
 
             int updatedRows = em.createQuery(query)
                     .setParameter("status", trangThai)

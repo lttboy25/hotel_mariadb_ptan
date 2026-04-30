@@ -8,6 +8,7 @@ package iuh.dao;
 import iuh.dto.DatPhongRequestDTO;
 import iuh.entity.PhieuDatPhong;
 import iuh.entity.Phong;
+import iuh.entity.TrangThaiChiTietPhieuDatPhong;
 import jakarta.persistence.EntityManager;
 
 import java.time.LocalDateTime;
@@ -41,7 +42,8 @@ public interface DatPhongDao {
             }
         }
 
-        // Bước 2: Phân bổ số người lớn còn lại vào các phòng cho đến khi đạt sức chứa tối đa
+        // Bước 2: Phân bổ số người lớn còn lại vào các phòng cho đến khi đạt sức chứa
+        // tối đa
         for (int i = 0; i < n && remainingAdults > 0; i++) {
             Phong room = rooms.get(i);
             int maxAdults = room.getLoaiPhong() != null ? room.getLoaiPhong().getSoNguoiLonToiDa() : 0;
@@ -73,7 +75,7 @@ public interface DatPhongDao {
 
     default String generateNextMaPhieuDatPhong(EntityManager em) {
         Number maxNumber = (Number) em.createNativeQuery(
-                        "SELECT MAX(CAST(SUBSTRING(maPhieuDatPhong, 4) AS UNSIGNED)) FROM PhieuDatPhong FOR UPDATE")
+                "SELECT MAX(CAST(SUBSTRING(maPhieuDatPhong, 4) AS UNSIGNED)) FROM PhieuDatPhong FOR UPDATE")
                 .getSingleResult();
         int nextNumber = (maxNumber == null) ? 1 : maxNumber.intValue() + 1;
         return String.format("PDP%03d", nextNumber);
@@ -81,16 +83,17 @@ public interface DatPhongDao {
 
     default boolean isRoomAvailable(EntityManager em, String maPhong, LocalDateTime checkIn, LocalDateTime checkOut) {
         Long count = em.createQuery("""
-                
+
                         SELECT COUNT(ct) FROM ChiTietPhieuDatPhong ct
                 WHERE ct.phong.maPhong = :maPhong
                 AND ct.thoiGianNhanPhong < :checkOut
                 AND ct.thoiGianTraPhong > :checkIn
-                AND ct.trangThai != 'Đã hủy'
+                AND ct.trangThai != :cancelledStatus
                 """, Long.class)
                 .setParameter("maPhong", maPhong)
                 .setParameter("checkIn", checkIn)
                 .setParameter("checkOut", checkOut)
+                .setParameter("cancelledStatus", TrangThaiChiTietPhieuDatPhong.DA_HUY)
                 .getSingleResult();
         return count == 0;
     }

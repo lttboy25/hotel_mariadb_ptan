@@ -2,6 +2,8 @@ package iuh.view;
 
 import iuh.entity.LoaiPhong;
 import iuh.entity.Phong;
+import iuh.entity.TinhTrangPhong;
+import iuh.entity.TrangThaiPhong;
 import iuh.service.impl.LoaiPhongServiceImpl;
 import iuh.service.impl.PhongServiceImpl;
 
@@ -376,8 +378,8 @@ class PhongModal extends JDialog {
     private JComboBox<Integer> cbTang;
     private JComboBox<LoaiPhong> cbLoaiPhong;
     private JTextField tfMoTa;
-    private JComboBox<String> cbTinhTrang;
-    private JComboBox<String> cbTrangThai;
+    private JComboBox<TinhTrangPhong> cbTinhTrang;
+    private JComboBox<TrangThaiPhong> cbTrangThai;
     private LoaiPhongServiceImpl loaiPhongServiceImpl = new LoaiPhongServiceImpl();
 
     PhongModal(JFrame owner, Phong phong, boolean isNew, Runnable onChanged) {
@@ -473,21 +475,19 @@ class PhongModal extends JDialog {
         tfMoTa = field(current.getMoTa(), true);
 
         cbTinhTrang = new JComboBox<>();
-        for (String tinhTrang : phongServiceImpl.getAllTinhTrang()) {
-            cbTinhTrang.addItem(tinhTrang);
-        }
+        cbTrangThai = new JComboBox<>();
+        cbTrangThai.setModel(new DefaultComboBoxModel<>(TrangThaiPhong.values()));
+        cbTinhTrang.setModel(new DefaultComboBoxModel<>(TinhTrangPhong.values()));
         styleCombo(cbTinhTrang);
         if (!isNew)
-            cbTinhTrang.setSelectedItem(current.getTinhTrang() != null ? current.getTinhTrang().toString() : "Trống");
+            cbTinhTrang.setSelectedItem(
+                    current.getTinhTrang() != null ? current.getTinhTrang().toString() : TinhTrangPhong.TRONG);
 
-        cbTrangThai = new JComboBox<>();
-        for (String trangThai : phongServiceImpl.getAllTrangThai()) {
-            cbTrangThai.addItem(trangThai);
-        }
         styleCombo(cbTrangThai);
         if (!isNew)
             cbTrangThai
-                    .setSelectedItem(current.getTrangThai() != null ? current.getTrangThai().toString() : "Sẵn sàng");
+                    .setSelectedItem(current.getTrangThai() != null ? current.getTrangThai().toString()
+                            : TrangThaiPhong.SAN_SANG);
 
         addRow2(form, g, 0, "Mã phòng", tfMa, "Số phòng", tfSo);
         addRow2(form, g, 1, "Tầng", cbTang, "Loại phòng", cbLoaiPhong);
@@ -594,8 +594,8 @@ class PhongModal extends JDialog {
         int tang = (Integer) cbTang.getSelectedItem();
         LoaiPhong loaiPhong = (LoaiPhong) cbLoaiPhong.getSelectedItem();
         String moTa = tfMoTa.getText();
-        String tinhTrang = cbTinhTrang.getSelectedItem().toString();
-        String trangThai = cbTrangThai.getSelectedItem().toString();
+        TinhTrangPhong tinhTrang = (TinhTrangPhong) cbTinhTrang.getSelectedItem();
+        TrangThaiPhong trangThai = (TrangThaiPhong) cbTrangThai.getSelectedItem();
 
         Phong phongMoi = Phong.builder()
                 .tang(tang)

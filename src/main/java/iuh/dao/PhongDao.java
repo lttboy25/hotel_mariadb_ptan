@@ -6,6 +6,8 @@
 package iuh.dao;
 
 import iuh.entity.Phong;
+import iuh.entity.TinhTrangPhong;
+import iuh.entity.TrangThaiPhong;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,7 +41,7 @@ public interface PhongDao {
 
     List<Phong> findPhongByDate(LocalDateTime ngayNhanPhong, LocalDateTime ngayTraPhong);
 
-    List<Phong> getRoomsByStatus(String status);
+    List<Phong> getRoomsByStatus(TinhTrangPhong status);
 
-    boolean updateStatusRoom(String maPhong, String trangThai, String tinhTrang);
+    boolean updateStatusRoom(String maPhong, TrangThaiPhong trangThai, TinhTrangPhong tinhTrang);
 }

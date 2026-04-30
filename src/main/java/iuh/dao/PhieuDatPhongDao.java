@@ -6,6 +6,7 @@
 package iuh.dao;
 
 import iuh.entity.PhieuDatPhong;
+import iuh.entity.TrangThaiPhieuDatPhong;
 
 import java.util.List;
 
@@ -18,11 +19,11 @@ import java.util.List;
 public interface PhieuDatPhongDao {
     List<PhieuDatPhong> getAll();
 
-    List<PhieuDatPhong> getPhieuDatPhongByStatus(String status);
+    List<PhieuDatPhong> getPhieuDatPhongByStatus(TrangThaiPhieuDatPhong status);
 
     PhieuDatPhong getPhieuDatPhongByCode(String maPhieu);
 
-    boolean updateStatusBookingTicket(String maPhieu, String trangThai);
+    boolean updateStatusBookingTicket(String maPhieu, TrangThaiPhieuDatPhong trangThai);
 
-    List<PhieuDatPhong> getPhieuDatPhongByToPayment(String status, String cccd);
+    List<PhieuDatPhong> getPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong status, String cccd);
 }

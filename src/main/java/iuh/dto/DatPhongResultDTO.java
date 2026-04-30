@@ -1,5 +1,7 @@
 package iuh.dto;
 
+import iuh.entity.TrangThaiPhieuDatPhong;
+import iuh.entity.TrangThaiPhong;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +21,7 @@ import java.util.List;
 public class DatPhongResultDTO implements Serializable {
     private String maPhieuDatPhong;
     private String maKhachHang;
-    private String trangThai;
+    private TrangThaiPhieuDatPhong trangThai;
     private long tienDatCoc;
     private LocalDate ngayTao;
     private LocalDateTime checkIn;

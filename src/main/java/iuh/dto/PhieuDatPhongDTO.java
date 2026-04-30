@@ -7,12 +7,13 @@ import java.util.List;
 
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.KhachHang;
+import iuh.entity.TrangThaiPhieuDatPhong;
 
 public class PhieuDatPhongDTO implements Serializable {
     private String maPhieuDatPhong;
 
     private LocalDate ngayTao;
-    private String trangThai;
+    private TrangThaiPhieuDatPhong trangThai;
     private long tienDatCoc;
 
     private KhachHang khachHang;

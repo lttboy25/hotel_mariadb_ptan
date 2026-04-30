@@ -20,21 +20,24 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
     private Mapper mapper = new Mapper();
 
     @Override
-    public List<Phong> getRoomsByStatus(String status) {
+    public List<Phong> getRoomsByStatus(TinhTrangPhong status) {
         return phongServiceImpl.getRoomsByStatus(status);
     }
 
     @Override
     public List<ChiTietPhieuDatPhong> getDanhSachPhieuDatPhongDeThanhToan(String cccd) {
         return chiTietPhieuDatPhongServiceImpl
-                .getChiTietPhieuDatPhongByToPayment("Đã nhận phòng", "Đã nhận phòng", cccd);
+                .getChiTietPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong.NHAN_PHONG,
+                        TrangThaiChiTietPhieuDatPhong.NHAN_PHONG, cccd);
 
     }
 
     @Override
     public boolean coTheThanhToan(double tienKhachDua, double tongTien) {
-        if (tienKhachDua < tongTien) return false;
-        else return true;
+        if (tienKhachDua < tongTien)
+            return false;
+        else
+            return true;
     }
 
     @Override
@@ -52,11 +55,11 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
 
         for (ChiTietPhieuDatPhong ctpdp : listThanhToan) {
 
-            if ("Đã thanh toán".equalsIgnoreCase(ctpdp.getTrangThai())) {
+            if (TrangThaiChiTietPhieuDatPhong.DA_THANH_TOAN.equals(ctpdp.getTrangThai())) {
                 throw new RuntimeException("Phòng " + ctpdp.getPhong().getMaPhong() + " đã thanh toán!");
             }
 
-            double tien = (ctpdp.tinhThanhTien() + ctpdp.tinhThanhTien()*0.1);
+            double tien = (ctpdp.tinhThanhTien() + ctpdp.tinhThanhTien() * 0.1);
             tongTien += tien;
 
             ChiTietHoaDon cthd = new ChiTietHoaDon();
@@ -74,7 +77,7 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
         hoaDon.setNgayDat(now);
         hoaDon.setKhachHang(phieuDatPhong.getKhachHang());
         hoaDon.setNhanVien(nv);
-        hoaDon.setTrangThai("Đã thanh toán");
+        hoaDon.setTrangThai(TrangThaiHoaDon.DA_THANH_TOAN);
         hoaDon.setNgayTao(now);
         hoaDon.setTongTien(tongTien);
         hoaDon.setTienKhachDua(tienKhachDua);
@@ -84,7 +87,6 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
         if (hoaDon == null) {
             throw new RuntimeException("Không thể tạo hóa đơn");
         }
-
 
         for (ChiTietHoaDon cthd : dsChiTietHoaDon) {
 
@@ -96,14 +98,15 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
             }
 
             boolean ktraChiTietPhieu = chiTietPhieuDatPhongServiceImpl
-                    .updateTrangThaiByMaPhong(cthd.getPhong().getMaPhong(), "Đã thanh toán");
+                    .updateTrangThaiByMaPhong(cthd.getPhong().getMaPhong(),
+                            TrangThaiChiTietPhieuDatPhong.DA_THANH_TOAN);
 
             if (!ktraChiTietPhieu) {
                 throw new RuntimeException("Lỗi cập nhật chi tiết phiếu");
             }
 
             boolean ktraPhong = phongServiceImpl
-                    .updateStatusRoom(cthd.getPhong().getMaPhong(), "Sẵn sàng", "Trống");
+                    .updateStatusRoom(cthd.getPhong().getMaPhong(), TrangThaiPhong.SAN_SANG, TinhTrangPhong.TRONG);
 
             if (!ktraPhong) {
                 throw new RuntimeException("Lỗi cập nhật phòng");
@@ -115,7 +118,7 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
 
         boolean thanhToanToanBoPhieu = true;
         for (ChiTietPhieuDatPhong ct : dsAll) {
-            if (!"Đã thanh toán".equalsIgnoreCase(ct.getTrangThai())) {
+            if (!TrangThaiChiTietPhieuDatPhong.DA_THANH_TOAN.equals(ct.getTrangThai())) {
                 thanhToanToanBoPhieu = false;
                 break;
             }
@@ -124,7 +127,7 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
         if (thanhToanToanBoPhieu) {
             phieuDatPhongServiceImpl.updateTrangThai(
                     phieuDatPhong.getMaPhieuDatPhong(),
-                    "Đã thanh toán");
+                    TrangThaiPhieuDatPhong.DA_THANH_TOAN);
         }
 
         return hoaDon;

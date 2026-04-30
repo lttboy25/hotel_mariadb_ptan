@@ -9,6 +9,7 @@ import iuh.entity.ChiTietHoaDon;
 import iuh.entity.KhachHang;
 import iuh.entity.KhuyenMai;
 import iuh.entity.NhanVien;
+import iuh.entity.TrangThaiHoaDon;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,7 +31,7 @@ public class HoaDonDTO implements Serializable {
 
     private KhuyenMai khuyenMai;
     private LocalDateTime ngayTao;
-    private String trangThai;
+    private TrangThaiHoaDon trangThai;
     private double tongTien;
     private double tienKhachDua;
     private double tienThoi;

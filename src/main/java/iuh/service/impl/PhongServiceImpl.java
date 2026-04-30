@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import iuh.dao.impl.PhongDaoImpl;
 import iuh.entity.Phong;
+import iuh.entity.TinhTrangPhong;
+import iuh.entity.TrangThaiPhong;
 
 public class PhongServiceImpl implements iuh.service.PhongService {
     private PhongDaoImpl phongDaoImpl = new PhongDaoImpl();
@@ -59,19 +61,19 @@ public class PhongServiceImpl implements iuh.service.PhongService {
     }
 
     @Override
-    public List<String> getAllTinhTrang() {
+    public List<TinhTrangPhong> getAllTinhTrang() {
         return getAllRoom()
                 .stream()
-                .map(p -> p.getTinhTrang())
+                .map(Phong::getTinhTrang)
                 .distinct()
                 .toList();
     }
 
     @Override
-    public List<String> getAllTrangThai() {
+    public List<TrangThaiPhong> getAllTrangThai() {
         return getAllRoom()
                 .stream()
-                .map(p -> p.getTrangThai())
+                .map(Phong::getTrangThai)
                 .distinct()
                 .toList();
     }
@@ -91,7 +93,7 @@ public class PhongServiceImpl implements iuh.service.PhongService {
     }
 
     @Override
-    public List<Phong> getRoomsByStatus(String status) {
+    public List<Phong> getRoomsByStatus(TinhTrangPhong status) {
         List<Phong> ketqua = phongDaoImpl.getRoomsByStatus(status);
 
         if (ketqua == null || ketqua.isEmpty()) {
@@ -102,7 +104,7 @@ public class PhongServiceImpl implements iuh.service.PhongService {
     }
 
     @Override
-    public boolean updateStatusRoom(String maPhong, String trangThai, String tinhTrang) {
+    public boolean updateStatusRoom(String maPhong, TrangThaiPhong trangThai, TinhTrangPhong tinhTrang) {
         return phongDaoImpl.updateStatusRoom(maPhong, trangThai, tinhTrang);
     }
 }

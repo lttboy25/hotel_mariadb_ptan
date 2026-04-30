@@ -6,7 +6,8 @@ import iuh.entity.*;
 public class Mapper {
 
     public static KhachHang map(KhachHangDTO dto) {
-        if (dto == null) return null;
+        if (dto == null)
+            return null;
         return KhachHang.builder()
                 .maKhachHang(dto.getMaKhachHang())
                 .CCCD(dto.getCCCD())
@@ -18,7 +19,8 @@ public class Mapper {
     }
 
     public static KhachHangDTO map(KhachHang entity) {
-        if (entity == null) return null;
+        if (entity == null)
+            return null;
         return KhachHangDTO.builder()
                 .maKhachHang(entity.getMaKhachHang())
                 .CCCD(entity.getCCCD())
@@ -30,10 +32,12 @@ public class Mapper {
     }
 
     public static DatPhongResultDTO mapToDatPhongResult(PhieuDatPhong phieuDatPhong, DatPhongRequestDTO request) {
-        if (phieuDatPhong == null) return null;
+        if (phieuDatPhong == null)
+            return null;
         return DatPhongResultDTO.builder()
                 .maPhieuDatPhong(phieuDatPhong.getMaPhieuDatPhong())
-                .maKhachHang(phieuDatPhong.getKhachHang() != null ? phieuDatPhong.getKhachHang().getMaKhachHang() : null)
+                .maKhachHang(
+                        phieuDatPhong.getKhachHang() != null ? phieuDatPhong.getKhachHang().getMaKhachHang() : null)
                 .trangThai(phieuDatPhong.getTrangThai())
                 .tienDatCoc(phieuDatPhong.getTienDatCoc())
                 .ngayTao(phieuDatPhong.getNgayTao())
@@ -44,7 +48,8 @@ public class Mapper {
     }
 
     public static KhuyenMai map(KhuyenMaiDTO dto) {
-        if (dto == null) return null;
+        if (dto == null)
+            return null;
         return KhuyenMai.builder()
                 .maKhuyenMai(dto.getMaKhuyenMai())
                 .tenKhuyenMai(dto.getTenKhuyenMai())
@@ -58,7 +63,8 @@ public class Mapper {
     }
 
     public static KhuyenMaiDTO map(KhuyenMai entity) {
-        if (entity == null) return null;
+        if (entity == null)
+            return null;
         return KhuyenMaiDTO.builder()
                 .maKhuyenMai(entity.getMaKhuyenMai())
                 .tenKhuyenMai(entity.getTenKhuyenMai())
@@ -72,7 +78,8 @@ public class Mapper {
     }
 
     public static HoaDon map(HoaDonDTO hoaDonDTO) {
-        if (hoaDonDTO == null) return null;
+        if (hoaDonDTO == null)
+            return null;
         return HoaDon
                 .builder()
                 .maHoaDon(hoaDonDTO.getMaHoaDon())
@@ -90,7 +97,8 @@ public class Mapper {
     }
 
     public static HoaDonDTO map(HoaDon hoaDon) {
-        if (hoaDon == null) return null;
+        if (hoaDon == null)
+            return null;
         return HoaDonDTO
                 .builder()
                 .maHoaDon(hoaDon.getMaHoaDon())
@@ -108,7 +116,8 @@ public class Mapper {
     }
 
     public static ChiTietHoaDonDTO map(ChiTietHoaDon entity) {
-        if (entity == null) return null;
+        if (entity == null)
+            return null;
         return ChiTietHoaDonDTO.builder()
                 .id(entity.getId())
                 .ngayTao(entity.getNgayTao())
@@ -120,7 +129,8 @@ public class Mapper {
     }
 
     public static ChiTietHoaDon map(ChiTietHoaDonDTO entity) {
-        if (entity == null) return null;
+        if (entity == null)
+            return null;
         return ChiTietHoaDon.builder()
                 .id(entity.getId())
                 .ngayTao(entity.getNgayTao())
@@ -132,7 +142,8 @@ public class Mapper {
     }
 
     public static ChiTietPhieuDatPhong map(ChiTietPhieuDatPhongDTO entity) {
-        if (entity == null) return null;
+        if (entity == null)
+            return null;
         return ChiTietPhieuDatPhong.builder()
                 .soGioLuuTru(entity.getSoGioLuuTru())
                 .soNguoi(entity.getSoNguoi())
@@ -145,7 +156,8 @@ public class Mapper {
     }
 
     public static ChiTietPhieuDatPhongDTO map(ChiTietPhieuDatPhong entity) {
-        if (entity == null) return null;
+        if (entity == null)
+            return null;
         return ChiTietPhieuDatPhongDTO.builder()
                 .soGioLuuTru(entity.getSoGioLuuTru())
                 .soNguoi(entity.getSoNguoi())

@@ -31,30 +31,30 @@ public class NhanPhongPanel extends JPanel {
     // ═══════════════════════════════════════════════════════════════════
     // HẰNG SỐ MÀU SẮC
     // ═══════════════════════════════════════════════════════════════════
-    private static final Color BG_MAIN     = new Color(0xF4F6FB);
-    private static final Color BG_WHITE    = Color.WHITE;
-    private static final Color BLUE        = new Color(0x3B6FF0);
-    private static final Color BLUE_LIGHT  = new Color(0xEBF0FF);
-    private static final Color TEXT_DARK   = new Color(0x1A1A2E);
-    private static final Color TEXT_MID    = new Color(0x4A5268);
-    private static final Color TEXT_GRAY   = new Color(0xA0A8B8);
-    private static final Color BORDER_COL  = new Color(0xE4E9F2);
-    private static final Color GREEN       = new Color(0x27AE60);
-    private static final Color GREEN_DARK  = new Color(0x1E8449);
+    private static final Color BG_MAIN = new Color(0xF4F6FB);
+    private static final Color BG_WHITE = Color.WHITE;
+    private static final Color BLUE = new Color(0x3B6FF0);
+    private static final Color BLUE_LIGHT = new Color(0xEBF0FF);
+    private static final Color TEXT_DARK = new Color(0x1A1A2E);
+    private static final Color TEXT_MID = new Color(0x4A5268);
+    private static final Color TEXT_GRAY = new Color(0xA0A8B8);
+    private static final Color BORDER_COL = new Color(0xE4E9F2);
+    private static final Color GREEN = new Color(0x27AE60);
+    private static final Color GREEN_DARK = new Color(0x1E8449);
     private static final Color GREEN_LIGHT = new Color(0xEAF9F0);
-    private static final Color ORANGE      = new Color(0xF39C12);
+    private static final Color ORANGE = new Color(0xF39C12);
 
     // ═══════════════════════════════════════════════════════════════════
     // HẰNG SỐ FONT
     // ═══════════════════════════════════════════════════════════════════
-    private static final Font F_TITLE   = new Font("Segoe UI", Font.BOLD,  18);
-    private static final Font F_LABEL   = new Font("Segoe UI", Font.PLAIN, 13);
-    private static final Font F_BOLD13  = new Font("Segoe UI", Font.BOLD,  13);
-    private static final Font F_BOLD14  = new Font("Segoe UI", Font.BOLD,  14);
-    private static final Font F_BOLD12  = new Font("Segoe UI", Font.BOLD,  12);
-    private static final Font F_TABLE   = new Font("Segoe UI", Font.PLAIN, 13);
-    private static final Font F_TABLE_H = new Font("Segoe UI", Font.BOLD,  13);
-    private static final Font F_SMALL   = new Font("Segoe UI", Font.PLAIN, 12);
+    private static final Font F_TITLE = new Font("Segoe UI", Font.BOLD, 18);
+    private static final Font F_LABEL = new Font("Segoe UI", Font.PLAIN, 13);
+    private static final Font F_BOLD13 = new Font("Segoe UI", Font.BOLD, 13);
+    private static final Font F_BOLD14 = new Font("Segoe UI", Font.BOLD, 14);
+    private static final Font F_BOLD12 = new Font("Segoe UI", Font.BOLD, 12);
+    private static final Font F_TABLE = new Font("Segoe UI", Font.PLAIN, 13);
+    private static final Font F_TABLE_H = new Font("Segoe UI", Font.BOLD, 13);
+    private static final Font F_SMALL = new Font("Segoe UI", Font.PLAIN, 12);
 
     // ═══════════════════════════════════════════════════════════════════
     // CẤU HÌNH BẢNG
@@ -70,30 +70,28 @@ public class NhanPhongPanel extends JPanel {
 
     // ── Search bar
     private JTextField tfCCCD;
-    private JButton    btnTimKiem;
-    private JButton    btnLamMoi;
+    private JButton btnTimKiem;
+    private JButton btnLamMoi;
 
     // ── Bảng
-    private JTable            bangPhong;
+    private JTable bangPhong;
     private DefaultTableModel modelBang;
-    private JCheckBox         chkTatCa;
+    private JCheckBox chkTatCa;
 
     // ── Footer info + nút xác nhận
-    private JLabel  lblSoPhongChon;
-    private JLabel  lblTenKhach;
-    private JLabel  lblMaPhieu;
+    private JLabel lblSoPhongChon;
+    private JLabel lblTenKhach;
+    private JLabel lblMaPhieu;
     private JButton btnXacNhan;
 
     // ── Service & data
     private NhanPhongServiceImpl nhanPhongServiceImpl = new NhanPhongServiceImpl();
 
     private List<ChiTietPhieuDatPhong> danhSachChiTiet = new ArrayList<>();
-    private List<ChiTietPhieuDatPhong> listNhanPhong   = new ArrayList<>();
+    private List<ChiTietPhieuDatPhong> listNhanPhong = new ArrayList<>();
 
-    private static final DateTimeFormatter FMT_DATE =
-            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-    private static final DateTimeFormatter FMT_DATE_SHORT =
-            DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter FMT_DATE = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private static final DateTimeFormatter FMT_DATE_SHORT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private final NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
 
     // ═══════════════════════════════════════════════════════════════════
@@ -136,17 +134,19 @@ public class NhanPhongPanel extends JPanel {
         tfCCCD.setForeground(TEXT_GRAY);
         tfCCCD.setBorder(new CompoundBorder(
                 new LineBorder(BORDER_COL, 1, true),
-                new EmptyBorder(6, 12, 6, 12)
-        ));
+                new EmptyBorder(6, 12, 6, 12)));
         tfCCCD.setPreferredSize(new Dimension(240, 36));
         tfCCCD.addFocusListener(new FocusAdapter() {
-            @Override public void focusGained(FocusEvent e) {
+            @Override
+            public void focusGained(FocusEvent e) {
                 if (tfCCCD.getText().equals("Nhập số CCCD...")) {
                     tfCCCD.setText("");
                     tfCCCD.setForeground(TEXT_DARK);
                 }
             }
-            @Override public void focusLost(FocusEvent e) {
+
+            @Override
+            public void focusLost(FocusEvent e) {
                 if (tfCCCD.getText().isEmpty()) {
                     tfCCCD.setText("Nhập số CCCD...");
                     tfCCCD.setForeground(TEXT_GRAY);
@@ -180,6 +180,7 @@ public class NhanPhongPanel extends JPanel {
             public Class<?> getColumnClass(int col) {
                 return col == 0 ? Boolean.class : Object.class;
             }
+
             @Override
             public boolean isCellEditable(int row, int col) {
                 return col == 0;
@@ -249,7 +250,8 @@ public class NhanPhongPanel extends JPanel {
                 super.getTableCellRendererComponent(t, val, sel, focus, row, col);
                 setHorizontalAlignment(JLabel.CENTER);
                 setBorder(new EmptyBorder(0, 8, 0, 8));
-                if (!sel) setBackground(row % 2 == 0 ? BG_WHITE : new Color(0xFAFBFD));
+                if (!sel)
+                    setBackground(row % 2 == 0 ? BG_WHITE : new Color(0xFAFBFD));
                 setForeground(TEXT_DARK);
                 setFont(F_TABLE);
                 return this;
@@ -280,6 +282,7 @@ public class NhanPhongPanel extends JPanel {
 
         bangPhong.getColumnModel().getColumn(0).setCellRenderer(new TableCellRenderer() {
             private final JCheckBox chk = new JCheckBox();
+
             @Override
             public Component getTableCellRendererComponent(
                     JTable t, Object val, boolean sel, boolean focus, int row, int col) {
@@ -293,7 +296,8 @@ public class NhanPhongPanel extends JPanel {
         });
 
         modelBang.addTableModelListener(e -> {
-            if (e.getColumn() == 0) capNhatListNhanPhong();
+            if (e.getColumn() == 0)
+                capNhatListNhanPhong();
         });
 
         bangPhong.addMouseListener(new MouseAdapter() {
@@ -374,9 +378,9 @@ public class NhanPhongPanel extends JPanel {
         btnXacNhan = buildGreenButton("Xác nhận nhận phòng", 200, 44);
         btnXacNhan.addActionListener(e -> xacNhanNhanPhong());
 
-        card.add(infoPanel,      BorderLayout.WEST);
+        card.add(infoPanel, BorderLayout.WEST);
         card.add(lblSoPhongChon, BorderLayout.CENTER);
-        card.add(btnXacNhan,     BorderLayout.EAST);
+        card.add(btnXacNhan, BorderLayout.EAST);
         return card;
     }
 
@@ -400,14 +404,16 @@ public class NhanPhongPanel extends JPanel {
         danhSachChiTiet = nhanPhongServiceImpl.getDanhSachPhongDaDatByCCCD(cccd);
 
         for (ChiTietPhieuDatPhong ct : danhSachChiTiet) {
-            modelBang.addRow(new Object[]{
+            modelBang.addRow(new Object[] {
                     false,
                     ct.getPhong().getSoPhong(),
                     ct.getPhong().getLoaiPhong(),
                     ct.getThoiGianNhanPhong() != null
-                            ? ct.getThoiGianNhanPhong().format(FMT_DATE_SHORT) : "—",
+                            ? ct.getThoiGianNhanPhong().format(FMT_DATE_SHORT)
+                            : "—",
                     ct.getThoiGianTraPhong() != null
-                            ? ct.getThoiGianTraPhong().format(FMT_DATE_SHORT) : "—",
+                            ? ct.getThoiGianTraPhong().format(FMT_DATE_SHORT)
+                            : "—",
                     ct.getTrangThai()
             });
         }
@@ -438,7 +444,7 @@ public class NhanPhongPanel extends JPanel {
     private void capNhatListNhanPhong() {
         listNhanPhong.clear();
 
-        int tongDong   = modelBang.getRowCount();
+        int tongDong = modelBang.getRowCount();
         int soDongChon = 0;
 
         for (int r = 0; r < tongDong; r++) {
@@ -482,7 +488,8 @@ public class NhanPhongPanel extends JPanel {
                 "Xác nhận nhận " + listNhanPhong.size() + " phòng đã chọn?",
                 "Xác nhận", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
-        if (confirm != JOptionPane.YES_OPTION) return;
+        if (confirm != JOptionPane.YES_OPTION)
+            return;
 
         try {
             boolean ok = nhanPhongServiceImpl.nhanPhong(listNhanPhong);
@@ -542,19 +549,19 @@ public class NhanPhongPanel extends JPanel {
         Phong phong = ct.getPhong();
         KhachHang kh = ct.getPhieuDatPhong().getKhachHang();
 
-        addDetailRow(card, "Số phòng",       phong.getSoPhong() != null ? phong.getSoPhong() : "—");
-        addDetailRow(card, "Loại phòng",     phong.getLoaiPhong() != null ? phong.getLoaiPhong().toString() : "—");
-        addDetailRow(card, "Trạng thái phòng", ct.getTrangThai() != null ? ct.getTrangThai() : "—");
-        addDetailRow(card, "Khách hàng",     kh.getTenKhachHang() != null ? kh.getTenKhachHang() : "—");
-        addDetailRow(card, "CCCD",           kh.getCCCD() != null ? kh.getCCCD() : "—");
-        addDetailRow(card, "Số điện thoại",  kh.getSoDienThoai() != null ? kh.getSoDienThoai() : "—");
+        addDetailRow(card, "Số phòng", phong.getSoPhong() != null ? phong.getSoPhong() : "—");
+        addDetailRow(card, "Loại phòng", phong.getLoaiPhong() != null ? phong.getLoaiPhong().toString() : "—");
+        addDetailRow(card, "Trạng thái phòng", ct.getTrangThai() != null ? ct.getTrangThai().toString() : "—");
+        addDetailRow(card, "Khách hàng", kh.getTenKhachHang() != null ? kh.getTenKhachHang() : "—");
+        addDetailRow(card, "CCCD", kh.getCCCD() != null ? kh.getCCCD() : "—");
+        addDetailRow(card, "Số điện thoại", kh.getSoDienThoai() != null ? kh.getSoDienThoai() : "—");
         addDetailRow(card, "Ngày nhận phòng",
                 ct.getThoiGianNhanPhong() != null ? ct.getThoiGianNhanPhong().format(FMT_DATE) : "—");
         addDetailRow(card, "Ngày trả phòng",
                 ct.getThoiGianTraPhong() != null ? ct.getThoiGianTraPhong().format(FMT_DATE) : "—");
         addDetailRow(card, "Số giờ lưu trú", ct.getSoGioLuuTru() + " giờ");
-        addDetailRow(card, "Thành tiền",     formatter.format(ct.tinhThanhTien()) + " đ");
-        addDetailRow(card, "Mã phiếu đặt",   ct.getPhieuDatPhong().getMaPhieuDatPhong());
+        addDetailRow(card, "Thành tiền", formatter.format(ct.tinhThanhTien()) + " đ");
+        addDetailRow(card, "Mã phiếu đặt", ct.getPhieuDatPhong().getMaPhieuDatPhong());
 
         content.add(card);
         content.add(Box.createVerticalStrut(20));
@@ -610,7 +617,8 @@ public class NhanPhongPanel extends JPanel {
 
     private JButton buildBlueButton(String text, int w, int h) {
         JButton btn = new JButton(text) {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
@@ -632,7 +640,8 @@ public class NhanPhongPanel extends JPanel {
 
     private JButton buildOutlineButton(String text, int w, int h) {
         JButton btn = new JButton(text) {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
@@ -660,11 +669,22 @@ public class NhanPhongPanel extends JPanel {
             private boolean hovered = false;
             {
                 addMouseListener(new MouseAdapter() {
-                    @Override public void mouseEntered(MouseEvent e) { hovered = true;  repaint(); }
-                    @Override public void mouseExited (MouseEvent e) { hovered = false; repaint(); }
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        hovered = true;
+                        repaint();
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        hovered = false;
+                        repaint();
+                    }
                 });
             }
-            @Override protected void paintComponent(Graphics g) {
+
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
@@ -695,7 +715,7 @@ public class NhanPhongPanel extends JPanel {
 
         RoundedPanel(int arc, Color bg) {
             this.arc = arc;
-            this.bg  = bg;
+            this.bg = bg;
             setOpaque(false);
         }
 

@@ -3,6 +3,7 @@ package iuh.service.impl;
 import iuh.dao.impl.PhieuDatPhongDaoImpl;
 import iuh.entity.KhachHang;
 import iuh.entity.PhieuDatPhong;
+import iuh.entity.TrangThaiPhieuDatPhong;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -21,26 +22,24 @@ public class PhieuDatPhongServiceImpl implements iuh.service.PhieuDatPhongServic
         list.add(new PhieuDatPhong(
                 "PDP001",
                 LocalDate.parse("2026-02-01"),
-                "Đã đặt",
+                TrangThaiPhieuDatPhong.DA_DAT,
                 200000,
                 kh,
-                new ArrayList<>()
-        ));
+                new ArrayList<>()));
 
         list.add(new PhieuDatPhong(
                 "PDP002",
                 LocalDate.parse("2026-02-02"),
-                "Đã nhận phòng",
+                TrangThaiPhieuDatPhong.NHAN_PHONG,
                 300000,
                 kh,
-                new ArrayList<>()
-        ));
+                new ArrayList<>()));
 
         return list;
     }
 
     @Override
-    public List<PhieuDatPhong> getByTrangThai(String trangThai) {
+    public List<PhieuDatPhong> getByTrangThai(TrangThaiPhieuDatPhong trangThai) {
         List<PhieuDatPhong> list = new ArrayList<>();
         if (trangThai == null) {
             return list;
@@ -55,19 +54,21 @@ public class PhieuDatPhongServiceImpl implements iuh.service.PhieuDatPhongServic
         }
         return phieuDatPhongDao.getPhieuDatPhongByCode(maPhieu);
     }
+
     @Override
-    public List<PhieuDatPhong> getPhieuDatPhongByToPayment(String status, String cccd) {
-        if (status == null ||  cccd == null) {
+    public List<PhieuDatPhong> getPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong status, String cccd) {
+        if (status == null || cccd == null) {
             return null;
         }
         return phieuDatPhongDao.getPhieuDatPhongByToPayment(status, cccd);
     }
 
     @Override
-    public boolean updateTrangThai(String maPhieu, String trangThai) {
-        if (trangThai == null || trangThai.isEmpty() || maPhieu == null || maPhieu.isEmpty()) {return false;}
+    public boolean updateTrangThai(String maPhieu, TrangThaiPhieuDatPhong trangThai) {
+        if (trangThai == null || maPhieu == null || maPhieu.isEmpty()) {
+            return false;
+        }
         return phieuDatPhongDao.updateStatusBookingTicket(maPhieu, trangThai);
     }
-
 
 }

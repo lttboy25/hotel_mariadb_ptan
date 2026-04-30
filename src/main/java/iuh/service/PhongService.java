@@ -6,6 +6,8 @@
 package iuh.service;
 
 import iuh.entity.Phong;
+import iuh.entity.TinhTrangPhong;
+import iuh.entity.TrangThaiPhong;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,13 +36,13 @@ public interface PhongService {
 
     List<Integer> getAllTang();
 
-    List<String> getAllTinhTrang();
+    List<TinhTrangPhong> getAllTinhTrang();
 
-    List<String> getAllTrangThai();
+    List<TrangThaiPhong> getAllTrangThai();
 
     List<Phong> getPhongByDate(LocalDateTime ngayNhan, LocalDateTime ngayTra);
 
-    List<Phong> getRoomsByStatus(String status);
+    List<Phong> getRoomsByStatus(TinhTrangPhong status);
 
-    boolean updateStatusRoom(String maPhong, String trangThai, String tinhTrang);
+    boolean updateStatusRoom(String maPhong, TrangThaiPhong trangThai, TinhTrangPhong tinhTrang);
 }

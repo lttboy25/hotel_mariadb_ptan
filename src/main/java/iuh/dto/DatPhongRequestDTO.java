@@ -1,5 +1,7 @@
 package iuh.dto;
 
+import iuh.entity.TrangThaiPhieuDatPhong;
+import iuh.entity.TrangThaiPhong;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,6 +25,6 @@ public class DatPhongRequestDTO implements Serializable {
     private int soNguoiLon;
     private int soTreEm;
     private long tienDatCoc;
-    private String trangThai;
+    private TrangThaiPhieuDatPhong trangThai;
     private List<String> maPhongs;
 }
