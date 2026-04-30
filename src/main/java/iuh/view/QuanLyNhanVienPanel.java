@@ -249,6 +249,41 @@ class NhanVienModal extends JDialog {
     private JComboBox<TrangThaiNhanVien> cbTrangThai;
     private JTextField tfDiaChi;
 
+    private void validateForm() {
+        String ten = tfHoTen.getText().trim();
+        String cccd = tfCCCD.getText().trim();
+        String sdt = tfSDT.getText().trim();
+        String email = tfEmail.getText().trim();
+
+        if (ten.isBlank()) {
+            throw new IllegalArgumentException("Tên nhân viên không được để trống");
+        }
+
+        if (cccd.isBlank()) {
+            throw new IllegalArgumentException("CCCD không được để trống");
+        }
+
+        if (!cccd.matches("\\d{12}")) {
+            throw new IllegalArgumentException("CCCD phải gồm đúng 12 số");
+        }
+
+        if (sdt.isBlank()) {
+            throw new IllegalArgumentException("Số điện thoại không được để trống");
+        }
+
+        if (!sdt.matches("0\\d{9}")) {
+            throw new IllegalArgumentException("SĐT phải 10 số và bắt đầu bằng 0");
+        }
+
+        if (email.isBlank()) {
+            throw new IllegalArgumentException("Email không được để trống");
+        }
+
+        if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            throw new IllegalArgumentException("Email không hợp lệ");
+        }
+    }
+
     NhanVienModal(JFrame owner, NhanVien nhanVien, boolean isNew) {
         super(owner, isNew ? "Thêm nhân viên" : "Cập nhật nhân viên", true);
         this.isNew = isNew;
@@ -362,6 +397,7 @@ class NhanVienModal extends JDialog {
 
     private void onSave() {
         try {
+            validateForm();
             NhanVien saved = nhanVienServiceImpl.addNhanVienAutoCode(collectFormData());
             String matKhauMacDinh = nhanVienServiceImpl.taoMatKhauMacDinh(saved.getMaNhanVien());
             notifyChangedAndClose("Đã thêm nhân viên. Mật khẩu mặc định: " + matKhauMacDinh);
@@ -372,6 +408,7 @@ class NhanVienModal extends JDialog {
 
     private void onUpdate() {
         try {
+            validateForm();
             nhanVienServiceImpl.updateNhanVien(collectFormData());
             notifyChangedAndClose("Đã cập nhật nhân viên.");
         } catch (Exception ex) {

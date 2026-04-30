@@ -20,6 +20,32 @@ import java.util.Optional;
 public interface NhanVienService {
     String VAI_TRO_MAC_DINH = "employee";
 
+    default void validateNhanVien(NhanVien nv, boolean isUpdate) {
+        if (nv == null) {
+            throw new IllegalArgumentException("Dữ liệu nhân viên không hợp lệ");
+        }
+
+        if (isBlank(nv.getTenNhanVien())) {
+            throw new IllegalArgumentException("Tên nhân viên không được để trống");
+        }
+
+        if (isBlank(nv.getCCCD())) {
+            throw new IllegalArgumentException("CCCD không được để trống");
+        }
+
+        if (isBlank(nv.getSoDienThoai())) {
+            throw new IllegalArgumentException("Số điện thoại không được để trống");
+        }
+
+        if (isBlank(nv.getEmail())) {
+            throw new IllegalArgumentException("Email không được để trống");
+        }
+    }
+
+    default boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
     List<NhanVien> getAllNhanVien();
 
     Optional<NhanVien> getNhanVienById(String maNhanVien);

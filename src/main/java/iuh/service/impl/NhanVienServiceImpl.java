@@ -85,6 +85,10 @@ public class NhanVienServiceImpl implements iuh.service.NhanVienService {
 
     @Override
     public NhanVien addNhanVienAutoCode(NhanVien nhanVien) {
+
+        validateNhanVien(nhanVien, false);
+        validateDuplicate(nhanVien, false);
+
         for (int i = 0; i < 10; i++) {
             String maNhanVien = nhanVienDao.generateMaNV();
 
@@ -94,17 +98,20 @@ public class NhanVienServiceImpl implements iuh.service.NhanVienService {
 
             nhanVien.setMaNhanVien(maNhanVien);
             String matKhauMacDinh = taoMatKhauMacDinh(maNhanVien);
+
             TaiKhoan taiKhoan = TaiKhoan.builder()
                     .maNhanVien(maNhanVien)
                     .matKhau(matKhauMacDinh)
                     .vaiTro(VAI_TRO_MAC_DINH)
                     .nhanVien(nhanVien)
                     .build();
+
             nhanVien.setTaiKhoan(taiKhoan);
+
             return nhanVienDao.save(nhanVien);
         }
 
-        throw new IllegalStateException("Khong the tao ma nhan vien duy nhat. Vui long thu lai.");
+        throw new IllegalStateException("Khong the tao ma nhan vien duy nhat.");
     }
 
     @Override
@@ -139,4 +146,26 @@ public class NhanVienServiceImpl implements iuh.service.NhanVienService {
     public String taoMatKhauMacDinh(String maNhanVien) {
         return maNhanVien;
     }
+
+    public void validateDuplicate(NhanVien nv, boolean isUpdate) {
+        // check CCCD trùng
+        boolean isCCCDExist = getAllNhanVien().stream()
+                .anyMatch(x -> x.getCCCD().equals(nv.getCCCD())
+                        && (!isUpdate || !x.getMaNhanVien().equals(nv.getMaNhanVien())));
+
+        if (isCCCDExist) {
+            throw new IllegalArgumentException("CCCD đã tồn tại");
+        }
+
+        // check email trùng
+        boolean isEmailExist = getAllNhanVien().stream()
+                .anyMatch(x -> x.getEmail().equals(nv.getEmail())
+                        && (!isUpdate || !x.getMaNhanVien().equals(nv.getMaNhanVien())));
+
+        if (isEmailExist) {
+            throw new IllegalArgumentException("Email đã tồn tại");
+        }
+    }
+
+
 }
