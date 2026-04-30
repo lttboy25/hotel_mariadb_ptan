@@ -337,8 +337,8 @@ public class TaiKhoanPanel extends JPanel {
         nameLbl.setText(hoTen.isBlank() ? "Nhan vien" : hoTen);
         emailLbl.setText(email + (maNV.isBlank() ? "" : " · " + maNV));
 
-        if ("DANG_LAM".equals(trangThai)) {
-            statusBadge.setText("Dang lam viec");
+        if ("Đang làm việc".equalsIgnoreCase(trangThai)) {
+            statusBadge.setText(trangThai);
             statusBadge.setForeground(SUCCESS_FG);
             statusBadge.setBackground(SUCCESS_BG);
         } else {

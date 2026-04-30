@@ -51,7 +51,7 @@ public interface NhanVienService {
                 .email(nv.getEmail())
                 .soDienThoai(nv.getSoDienThoai())
                 .ngayBatDau(nv.getNgayBatDau())
-                .trangThai(nv.getTrangThai() != null ? nv.getTrangThai().toString() : "")
+                .trangThai(nv.getTrangThai() != null ? nv.getTrangThai().getDisplay() : "")
                 .diaChi(nv.getDiaChi())
                 .build();
     }

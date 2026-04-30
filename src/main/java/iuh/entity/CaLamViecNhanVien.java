@@ -17,6 +17,7 @@ import lombok.ToString;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -34,7 +35,7 @@ public class CaLamViecNhanVien implements Serializable {
     private String maCaLamViec;
 
     @Column(name = "tienMoCa")
-    private float tienMoCa;
+    private double tienMoCa;
 
     @Column(name = "tienKetCa")
     private double tienKetCa;
@@ -60,4 +61,10 @@ public class CaLamViecNhanVien implements Serializable {
 
     @Column(name = "ngay", nullable = false)
     private LocalDate ngay;
+
+    @Column(name = "thoiGianBatDau")
+    private LocalDateTime thoiGianBatDau;
+
+    @Column(name = "thoiGianKetThuc")
+    private LocalDateTime thoiGianKetThuc;
 }

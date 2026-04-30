@@ -5,6 +5,8 @@ import iuh.entity.NhanVien;
 
 import javax.swing.*;
 import javax.swing.border.*;
+import iuh.service.impl.CaLamViecNhanVienServiceImpl;
+import iuh.dto.CaLamViecNhanVienDTO;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
@@ -80,6 +82,7 @@ public class VictoryaDashboard extends JFrame {
         contentCards.add(new QuanLyPhongPanel(), "quanlyphong");
         contentCards.add(new ThanhToanPanel(), "thanhtoan");
         contentCards.add(new NhanPhongPanel(), "nhanphong");
+        contentCards.add(new CaLamViecPanel(), "calamviec");
 
         // Sidebar (built after contentCards so it can reference it)
         JPanel sidebar = buildSidebar();
@@ -121,7 +124,7 @@ public class VictoryaDashboard extends JFrame {
         sidebar.add(buildPhongGroup(sidebar));
         sidebar.add(navRow(NavIcon.KHUYEN_MAI, "Khuyến Mãi", 0, false, "quanlykhuyenmai"));
         sidebar.add(navRow(NavIcon.THONG_KE, "Thống Kê", 0, false, "thongke"));
-        sidebar.add(navRow(NavIcon.CA_LAM_VIEC, "Ca làm việc", 0, false, null));
+        sidebar.add(navRow(NavIcon.CA_LAM_VIEC, "Ca làm việc", 0, false, "calamviec"));
         sidebar.add(navRow(NavIcon.TAI_KHOAN, "Tài Khoản", 0, false, "taikhoan"));
         sidebar.add(navRow(NavIcon.KHACH_HANG, "Quản lý Khách hàng", 0, false, "quanlykhachhang"));
         sidebar.add(navRow(NavIcon.NHAN_VIEN, "Quản lý nhân viên", 0, false, "quanlynhanvien"));
@@ -352,6 +355,19 @@ public class VictoryaDashboard extends JFrame {
             MouseAdapter navHandler = new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
+                    // Kiểm tra ca làm việc cho các trang bị giới hạn
+                    if (!cardKey.equals("trangchu") && !cardKey.equals("calamviec") && !cardKey.equals("taikhoan")) {
+                        String maNV = CurrentUser.getInstance().getMaNhanVien();
+                        CaLamViecNhanVienServiceImpl shiftService = new CaLamViecNhanVienServiceImpl();
+                        CaLamViecNhanVienDTO activeShift = shiftService.getActiveShift(maNV);
+                        if (activeShift == null) {
+                            JOptionPane.showMessageDialog(VictoryaDashboard.this,
+                                    "Bạn phải MỞ CA LÀM VIỆC trước khi thực hiện các nghiệp vụ này!",
+                                    "Yêu cầu mở ca", JOptionPane.WARNING_MESSAGE);
+                            return;
+                        }
+                    }
+
                     // Deactivate all
                     for (NavRowEntry entry : navRows) {
                         entry.active[0] = false;

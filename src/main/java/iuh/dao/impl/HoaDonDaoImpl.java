@@ -61,6 +61,17 @@ public class HoaDonDaoImpl extends AbstractGenericDaoImpl<HoaDon, String> implem
 
         return create(hoaDon);
     }
-
+    @Override
+    public double calculateRevenue(String maNhanVien, java.time.LocalDateTime start, java.time.LocalDateTime end) {
+        return doInTransaction(em -> {
+            Double total = em.createQuery(
+                "SELECT SUM(h.tongTien) FROM HoaDon h WHERE h.nhanVien.maNhanVien = :maNhanVien AND h.ngayTao BETWEEN :start AND :end", Double.class)
+                .setParameter("maNhanVien", maNhanVien)
+                .setParameter("start", start)
+                .setParameter("end", end)
+                .getSingleResult();
+            return total != null ? total : 0.0;
+        });
+    }
 
 }

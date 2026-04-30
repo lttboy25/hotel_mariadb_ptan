@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import static iuh.entity.TrangThaiChiTietPhieuDatPhong.NHAN_PHONG;
+
 public class ThongKeDaoImpl implements iuh.dao.ThongKeDao {
 
     @Override
@@ -39,10 +41,8 @@ public class ThongKeDaoImpl implements iuh.dao.ThongKeDao {
                     SELECT COUNT(DISTINCT ct.phong.maPhong)
                     FROM ChiTietPhieuDatPhong ct
                     WHERE ct.trangThai = :daNhan
-                      AND ct.thoiGianTraPhong >= :thoiDiem
                     """, Long.class)
-                    .setParameter("thoiDiem", thoiDiem)
-                    .setParameter("daNhan", TrangThaiChiTietPhieuDatPhong.NHAN_PHONG)
+                    .setParameter("daNhan", NHAN_PHONG)
                     .getSingleResult();
             return result == null ? 0L : result;
         }
@@ -55,10 +55,8 @@ public class ThongKeDaoImpl implements iuh.dao.ThongKeDao {
                     SELECT SUM(ct.soNguoi)
                     FROM ChiTietPhieuDatPhong ct
                     WHERE ct.trangThai = :daNhan
-                      AND ct.thoiGianTraPhong >= :thoiDiem
                     """, Long.class)
-                    .setParameter("thoiDiem", thoiDiem)
-                    .setParameter("daNhan", TrangThaiChiTietPhieuDatPhong.NHAN_PHONG)
+                    .setParameter("daNhan", NHAN_PHONG)
                     .getSingleResult();
             return result == null ? 0L : result;
         }

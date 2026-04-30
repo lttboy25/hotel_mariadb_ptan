@@ -9,6 +9,8 @@ import iuh.entity.HoaDon;
 import iuh.service.impl.ChiTietPhieuDatPhongServiceImpl;
 import iuh.service.impl.PhieuDatPhongServiceImpl;
 import iuh.service.impl.ThanhToanServiceImpl;
+import iuh.service.impl.CaLamViecNhanVienServiceImpl;
+import iuh.dto.CaLamViecNhanVienDTO;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -96,6 +98,7 @@ public class ThanhToanPanel extends JPanel {
     private ThanhToanServiceImpl thanhToanServiceImpl = new ThanhToanServiceImpl();
     private ChiTietPhieuDatPhongServiceImpl chiTietPhieuDatPhongServiceImpl = new ChiTietPhieuDatPhongServiceImpl();
     private PhieuDatPhongServiceImpl phieuDatPhongServiceImpl = new PhieuDatPhongServiceImpl();
+    private CaLamViecNhanVienServiceImpl shiftService = new CaLamViecNhanVienServiceImpl();
 
     // Danh sách song song với bảng (index i <=> row i)
     private List<ChiTietPhieuDatPhong> danhSachPhong = new ArrayList<>();
@@ -582,6 +585,15 @@ public class ThanhToanPanel extends JPanel {
         btnThanhToan.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
         btnThanhToan.setPreferredSize(new Dimension(Integer.MAX_VALUE, 48));
         btnThanhToan.addActionListener(e -> {
+            // Kiểm tra ca làm việc trước khi thanh toán
+            String maNV = CurrentUser.getInstance().getMaNhanVien();
+            CaLamViecNhanVienDTO activeShift = shiftService.getActiveShift(maNV);
+            if (activeShift == null) {
+                JOptionPane.showMessageDialog(this,
+                        "Bạn phải MỞ CA LÀM VIỆC trước khi thực hiện thanh toán!",
+                        "Yêu cầu mở ca", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
             boolean isThanhToan = thanhToanServiceImpl.coTheThanhToan(tienKhachDua, tongTien);
             if (!isThanhToan || tfKhachDua.getText().equals("")) {

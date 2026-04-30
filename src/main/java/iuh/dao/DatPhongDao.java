@@ -74,11 +74,15 @@ public interface DatPhongDao {
     }
 
     default String generateNextMaPhieuDatPhong(EntityManager em) {
-        Number maxNumber = (Number) em.createNativeQuery(
-                "SELECT MAX(CAST(SUBSTRING(maPhieuDatPhong, 4) AS UNSIGNED)) FROM PhieuDatPhong FOR UPDATE")
-                .getSingleResult();
-        int nextNumber = (maxNumber == null) ? 1 : maxNumber.intValue() + 1;
-        return String.format("PDP%03d", nextNumber);
+        List<String> ids = em.createQuery("SELECT p.maPhieuDatPhong FROM PhieuDatPhong p", String.class).getResultList();
+        int maxNumber = ids.stream()
+                .map(id -> {
+                    String numberOnly = id.replaceAll("[^0-9]", "");
+                    return numberOnly.isEmpty() ? 0 : Integer.parseInt(numberOnly);
+                })
+                .max(Integer::compare)
+                .orElse(0);
+        return String.format("PDP%03d", maxNumber + 1);
     }
 
     default boolean isRoomAvailable(EntityManager em, String maPhong, LocalDateTime checkIn, LocalDateTime checkOut) {

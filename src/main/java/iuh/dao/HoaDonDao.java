@@ -18,4 +18,5 @@ public interface HoaDonDao {
     String generateMaHoaDon();
 
     HoaDon save(HoaDonDTO hoaDonDTO);
+    double calculateRevenue(String maNhanVien, java.time.LocalDateTime start, java.time.LocalDateTime end);
 }

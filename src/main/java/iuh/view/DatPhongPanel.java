@@ -4,9 +4,13 @@ import iuh.dto.DatPhongRequestDTO;
 import iuh.dto.DatPhongResultDTO;
 import iuh.dto.KhachHangDTO;
 import iuh.entity.Phong;
+import iuh.entity.TinhTrangPhong;
 import iuh.entity.TrangThaiPhieuDatPhong;
+import iuh.entity.TrangThaiPhong;
 import iuh.service.impl.DatPhongServiceImpl;
 import iuh.service.impl.KhachHangServiceImpl;
+import iuh.service.impl.CaLamViecNhanVienServiceImpl;
+import iuh.dto.CaLamViecNhanVienDTO;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -90,6 +94,7 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
     // Gom logic backend qua service + DTO
     private final KhachHangServiceImpl khachHangServiceImpl = new KhachHangServiceImpl();
     private final DatPhongServiceImpl datPhongServiceImpl = new DatPhongServiceImpl();
+    private final CaLamViecNhanVienServiceImpl shiftService = new CaLamViecNhanVienServiceImpl();
 
     public DatPhongPanel() {
         setLayout(new BorderLayout());
@@ -137,10 +142,10 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
                 ? "Chưa xác định"
                 : p.getLoaiPhong().getTenLoaiPhong();
         String floor = (p.getTang() <= 0) ? "" : "Tầng " + p.getTang();
-        String tinhTrang = p.getTinhTrang().toString();
-        String trangThai = p.getTrangThai().toString();
-        boolean available = "Trống".equalsIgnoreCase(tinhTrang)
-                || "Sẵn sàng".equalsIgnoreCase(trangThai);
+        String tinhTrang = p.getTinhTrang() != null ? p.getTinhTrang().toString() : "";
+        String trangThai = p.getTrangThai() != null ? p.getTrangThai().toString() : "";
+        boolean available = TinhTrangPhong.TRONG.equals(p.getTinhTrang())
+                || TrangThaiPhong.SAN_SANG.equals(p.getTrangThai());
         int maxAdults = (p.getLoaiPhong() == null) ? 0 : p.getLoaiPhong().getSoNguoiLonToiDa();
         int maxChildren = (p.getLoaiPhong() == null) ? 0 : p.getLoaiPhong().getSoTreEmToiDa();
         return new Room(id, type, floor, available, maxAdults, maxChildren);
@@ -714,8 +719,6 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
         btn.setBorderPainted(false);
         btn.setForeground(WHITE);
         btn.setPreferredSize(new Dimension(0, 48));
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
         btn.addActionListener(e -> {
             if (selectedRooms.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
@@ -725,6 +728,16 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
             }
             if (checkInPicker == null || checkOutPicker == null)
                 return;
+
+            // Kiểm tra ca làm việc trước khi cho phép đặt phòng
+            String maNV = CurrentUser.getInstance().getMaNhanVien();
+            CaLamViecNhanVienDTO activeShift = shiftService.getActiveShift(maNV);
+            if (activeShift == null) {
+                JOptionPane.showMessageDialog(this,
+                        "Bạn phải MỞ CA LÀM VIỆC trước khi thực hiện thực hiện các nghiệp vụ!",
+                        "Yêu cầu mở ca", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
             // Mở dialog nhập thông tin khách hàng
             openKhachHangDialog(

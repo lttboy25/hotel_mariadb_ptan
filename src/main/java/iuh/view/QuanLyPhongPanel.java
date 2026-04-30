@@ -481,12 +481,12 @@ class PhongModal extends JDialog {
         styleCombo(cbTinhTrang);
         if (!isNew)
             cbTinhTrang.setSelectedItem(
-                    current.getTinhTrang() != null ? current.getTinhTrang().toString() : TinhTrangPhong.TRONG);
+                    current.getTinhTrang() != null ? current.getTinhTrang() : TinhTrangPhong.TRONG);
 
         styleCombo(cbTrangThai);
         if (!isNew)
             cbTrangThai
-                    .setSelectedItem(current.getTrangThai() != null ? current.getTrangThai().toString()
+                    .setSelectedItem(current.getTrangThai() != null ? current.getTrangThai()
                             : TrangThaiPhong.SAN_SANG);
 
         addRow2(form, g, 0, "Mã phòng", tfMa, "Số phòng", tfSo);

@@ -1133,8 +1133,8 @@ VALUES (
         N'View sân vườn',
         '101',
         1,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP001'
     ),
     (
@@ -1142,8 +1142,8 @@ VALUES (
         N'Gần thang máy',
         '102',
         1,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP001'
     ),
     (
@@ -1151,8 +1151,8 @@ VALUES (
         N'View phố',
         '103',
         1,
-        N'Trống',
-        N'Đang sửa chữa',
+        'TRONG',
+        'DANG_SUA_CHUA',
         'LP001'
     ),
     (
@@ -1160,8 +1160,8 @@ VALUES (
         N'Ban công rộng',
         '201',
         2,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP002'
     ),
     (
@@ -1169,8 +1169,8 @@ VALUES (
         N'Cửa sổ lớn',
         '202',
         2,
-        N'Đang thuê',
-        N'Sẵn sàng',
+        'DANG_THUE',
+        'SAN_SANG',
         'LP002'
     ),
     (
@@ -1178,8 +1178,8 @@ VALUES (
         N'Yên tĩnh',
         '203',
         2,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP002'
     ),
     (
@@ -1187,8 +1187,8 @@ VALUES (
         N'Phòng VIP tầng cao',
         '301',
         3,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP003'
     ),
     (
@@ -1196,8 +1196,8 @@ VALUES (
         N'Nội thất gỗ',
         '302',
         3,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP003'
     ),
     (
@@ -1205,8 +1205,8 @@ VALUES (
         N'Cận sân thượng',
         '303',
         3,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP003'
     ),
     (
@@ -1214,8 +1214,8 @@ VALUES (
         N'View biển',
         '304',
         3,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP003'
     );
 -- =========================
@@ -1293,42 +1293,42 @@ INSERT INTO
 VALUES (
         'PDP001',
         '2026-04-01',
-        'Đã thanh toán',
+        'DA_THANH_TOAN',
         500000,
         'KH001'
     ),
     (
         'PDP002',
         '2026-04-05',
-        'Đã thanh toán',
+        'DA_THANH_TOAN',
         850000,
         'KH002'
     ),
     (
         'PDP003',
         '2026-04-10',
-        'Đã đặt',
+        'DA_DAT',
         1500000,
         'KH003'
     ),
     (
         'PDP004',
         '2026-04-15',
-        'Đã nhận phòng',
+        'NHAN_PHONG',
         500000,
         'KH004'
     ),
     (
         'PDP005',
         '2026-04-18',
-        'Đã hủy',
+        'DA_HUY',
         0,
         'KH005'
     ),
     (
         'PDP006',
         '2026-04-22',
-        'Đã đặt',
+        'DA_DAT',
         850000,
         'KH006'
     );
@@ -1350,7 +1350,7 @@ INSERT INTO
 VALUES (
         'PDP001',
         'P101',
-        'Đã thanh toán',
+        'DA_THANH_TOAN',
         46,
         '2026-04-20 14:00:00',
         '2026-04-22 12:00:00',
@@ -1359,7 +1359,7 @@ VALUES (
     (
         'PDP002',
         'P201',
-        'Đã thanh toán',
+        'DA_THANH_TOAN',
         70,
         '2026-04-21 14:00:00',
         '2026-04-24 12:00:00',
@@ -1368,7 +1368,7 @@ VALUES (
     (
         'PDP003',
         'P301',
-        'Chưa thanh toán',
+        'CHUA_THANH_TOAN',
         46,
         '2026-04-30 14:00:00',
         '2026-05-02 12:00:00',
@@ -1377,7 +1377,7 @@ VALUES (
     (
         'PDP004',
         'P202',
-        'Chưa thanh toán',
+        'CHUA_THANH_TOAN',
         46,
         '2026-04-27 14:00:00',
         '2026-04-29 12:00:00',
@@ -1386,7 +1386,7 @@ VALUES (
     (
         'PDP005',
         'P203',
-        'Đã hủy',
+        'DA_HUY',
         22,
         '2026-04-23 14:00:00',
         '2026-04-24 12:00:00',
@@ -1395,7 +1395,7 @@ VALUES (
     (
         'PDP006',
         'P302',
-        'Chưa thanh toán',
+        'CHUA_THANH_TOAN',
         22,
         '2026-05-03 14:00:00',
         '2026-05-04 12:00:00',
@@ -1444,7 +1444,7 @@ VALUES (
         'NV001',
         'KM005',
         '2026-04-22 12:15:00',
-        'Đã thanh toán',
+        'DA_THANH_TOAN',
         990000,
         1000000,
         10000
@@ -1456,7 +1456,7 @@ VALUES (
         'NV002',
         NULL,
         '2026-04-24 12:20:00',
-        'Đã thanh toán',
+        'DA_THANH_TOAN',
         1870000,
         2000000,
         130000
@@ -1486,8 +1486,8 @@ VALUES (
         N'Phòng Standard yên tĩnh',
         '401',
         4,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP001'
     ),
     (
@@ -1495,8 +1495,8 @@ VALUES (
         N'Phòng Standard view phố',
         '402',
         4,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP001'
     ),
     (
@@ -1504,8 +1504,8 @@ VALUES (
         N'Phòng Deluxe ban công',
         '403',
         4,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP002'
     ),
     (
@@ -1513,8 +1513,8 @@ VALUES (
         N'Phòng Deluxe tầng cao',
         '501',
         5,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP002'
     ),
     (
@@ -1522,8 +1522,8 @@ VALUES (
         N'Phòng Deluxe rộng rãi',
         '502',
         5,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP002'
     ),
     (
@@ -1531,8 +1531,8 @@ VALUES (
         N'Phòng Suite sang trọng',
         '503',
         5,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP003'
     ),
     (
@@ -1540,8 +1540,8 @@ VALUES (
         N'Penthouse Suite đặc biệt',
         '601',
         6,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP003'
     ),
     (
@@ -1549,8 +1549,8 @@ VALUES (
         N'Phòng Suite view toàn cảnh',
         '602',
         6,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP003'
     ),
     (
@@ -1558,8 +1558,8 @@ VALUES (
         N'Phòng Standard tiết kiệm',
         '603',
         6,
-        N'Trống',
-        N'Đang sửa chữa',
+        'TRONG',
+        'DANG_SUA_CHUA',
         'LP001'
     ),
     (
@@ -1567,8 +1567,8 @@ VALUES (
         N'Phòng Deluxe hiện đại',
         '604',
         6,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP002'
     );
 
@@ -1590,8 +1590,8 @@ VALUES (
         N'Phòng Standard hướng đông',
         '701',
         7,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP001'
     ),
     (
@@ -1599,8 +1599,8 @@ VALUES (
         N'Phòng Standard hướng tây',
         '702',
         7,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP001'
     ),
     (
@@ -1608,8 +1608,8 @@ VALUES (
         N'Phòng Deluxe có bồn tắm',
         '801',
         8,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP002'
     ),
     (
@@ -1617,8 +1617,8 @@ VALUES (
         N'Phòng Deluxe máy chiếu',
         '802',
         8,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP002'
     ),
     (
@@ -1626,8 +1626,8 @@ VALUES (
         N'Phòng Deluxe yên tĩnh',
         '803',
         8,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP002'
     ),
     (
@@ -1635,8 +1635,8 @@ VALUES (
         N'Phòng Suite gia đình lớn',
         '901',
         9,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP003'
     ),
     (
@@ -1644,8 +1644,8 @@ VALUES (
         N'Phòng Suite quầy bar mini',
         '902',
         9,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP003'
     ),
     (
@@ -1653,8 +1653,8 @@ VALUES (
         N'Presidential Suite',
         '1001',
         10,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP003'
     ),
     (
@@ -1662,8 +1662,8 @@ VALUES (
         N'Phòng Suite tầng thượng',
         '1002',
         10,
-        N'Trống',
-        N'Sẵn sàng',
+        'TRONG',
+        'SAN_SANG',
         'LP003'
     ),
     (
@@ -1671,7 +1671,7 @@ VALUES (
         N'Phòng Standard nhỏ',
         '1003',
         10,
-        N'Trống',
-        N'Đang dọn dẹp',
+        'TRONG',
+        'DANG_DON_DEP',
         'LP001'
     );

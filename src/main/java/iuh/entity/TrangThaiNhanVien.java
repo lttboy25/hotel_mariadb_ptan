@@ -14,4 +14,9 @@ public enum TrangThaiNhanVien {
     TrangThaiNhanVien(String display) {
         this.display = display;
     }
+
+    @Override
+    public String toString() {
+        return display;
+    }
 }

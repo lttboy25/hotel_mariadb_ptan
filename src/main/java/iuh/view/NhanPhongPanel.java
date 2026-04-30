@@ -3,7 +3,10 @@ package iuh.view;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.KhachHang;
 import iuh.entity.Phong;
+import iuh.entity.TrangThaiChiTietPhieuDatPhong;
 import iuh.service.impl.NhanPhongServiceImpl;
+import iuh.service.impl.CaLamViecNhanVienServiceImpl;
+import iuh.dto.CaLamViecNhanVienDTO;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -86,6 +89,7 @@ public class NhanPhongPanel extends JPanel {
 
     // ── Service & data
     private NhanPhongServiceImpl nhanPhongServiceImpl = new NhanPhongServiceImpl();
+    private CaLamViecNhanVienServiceImpl shiftService = new CaLamViecNhanVienServiceImpl();
 
     private List<ChiTietPhieuDatPhong> danhSachChiTiet = new ArrayList<>();
     private List<ChiTietPhieuDatPhong> listNhanPhong = new ArrayList<>();
@@ -264,14 +268,17 @@ public class NhanPhongPanel extends JPanel {
                     JTable t, Object val, boolean sel, boolean focus, int row, int col) {
                 super.getTableCellRendererComponent(t, val, sel, focus, row, col);
                 String trangThai = val == null ? "" : val.toString();
+                TrangThaiChiTietPhieuDatPhong enumTrangThai =
+                        val instanceof TrangThaiChiTietPhieuDatPhong ? (TrangThaiChiTietPhieuDatPhong) val : null;
                 setHorizontalAlignment(JLabel.CENTER);
                 setFont(F_BOLD12);
                 if (!sel) {
                     setBackground(row % 2 == 0 ? BG_WHITE : new Color(0xFAFBFD));
                 }
-                if (trangThai.contains("Đã đặt")) {
+                if (TrangThaiChiTietPhieuDatPhong.DA_DAT.equals(enumTrangThai) || trangThai.contains("Đã đặt")) {
                     setForeground(ORANGE);
-                } else if (trangThai.contains("Đã nhận")) {
+                } else if (TrangThaiChiTietPhieuDatPhong.NHAN_PHONG.equals(enumTrangThai)
+                        || trangThai.contains("Nhận phòng")) {
                     setForeground(GREEN);
                 } else {
                     setForeground(TEXT_MID);
@@ -477,6 +484,16 @@ public class NhanPhongPanel extends JPanel {
     // LOGIC XÁC NHẬN NHẬN PHÒNG
     // ═══════════════════════════════════════════════════════════════════
     private void xacNhanNhanPhong() {
+        // Kiểm tra ca làm việc
+        String maNV = CurrentUser.getInstance().getMaNhanVien();
+        CaLamViecNhanVienDTO activeShift = shiftService.getActiveShift(maNV);
+        if (activeShift == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Bạn phải MỞ CA LÀM VIỆC trước khi thực hiện nhận phòng!",
+                    "Yêu cầu mở ca", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         if (listNhanPhong.isEmpty()) {
             JOptionPane.showMessageDialog(this,
                     "Vui lòng chọn ít nhất 1 phòng để nhận.",
