@@ -83,6 +83,38 @@ public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietP
     }
 
     @Override
+    public boolean updateStatusDetail(Long id, TrangThaiChiTietPhieuDatPhong status) {
+        EntityManager em = JPAUtil.getEntityManager();
+
+        try {
+            em.getTransaction().begin();
+
+            String query = """
+                            UPDATE ChiTietPhieuDatPhong ctpdp
+                            SET ctpdp.trangThai = :status
+                            WHERE ctpdp.id = :id
+                    """;
+
+            int updatedRows = em.createQuery(query)
+                    .setParameter("status", status)
+                    .setParameter("id", id)
+                    .executeUpdate();
+
+            em.getTransaction().commit();
+
+            return updatedRows > 0;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RuntimeException(e);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    @Deprecated
     public boolean updateStatusDetailTicketByRoomCode(String maPhong, TrangThaiChiTietPhieuDatPhong status) {
         EntityManager em = JPAUtil.getEntityManager();
 
@@ -139,7 +171,7 @@ public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietP
                 """, ChiTietPhieuDatPhong.class)
 
                 .setParameter("status", TrangThaiPhieuDatPhong.DA_DAT)
-                .setParameter("cancelledStatus", TrangThaiChiTietPhieuDatPhong.DA_HUY)
+                .setParameter("cancelledStatus", TrangThaiChiTietPhieuDatPhong.CHUA_THANH_TOAN)
                 .setParameter("cccd", cccd.trim())
                 .getResultList());
     }
@@ -151,7 +183,7 @@ public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietP
                 WHERE ct.phieuDatPhong.khachHang.CCCD = :cccd
                 AND ct.phieuDatPhong.trangThai = :dadat
                 """, ChiTietPhieuDatPhong.class)
-                .setParameter("dadat", TrangThaiChiTietPhieuDatPhong.DA_DAT)
+                .setParameter("dadat", TrangThaiPhieuDatPhong.DA_DAT)
                 .setParameter("cccd", cccd.trim())
                 .getResultList());
     }

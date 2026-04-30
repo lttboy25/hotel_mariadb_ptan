@@ -24,6 +24,9 @@ import java.util.Map;
 public interface ChiTietPhieuDatPhongService {
     List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByMaPDP(String maPDP);
 
+    boolean updateStatusDetail(Long id, TrangThaiChiTietPhieuDatPhong status);
+
+    @Deprecated
     boolean updateTrangThaiByMaPhong(String maPhong, TrangThaiChiTietPhieuDatPhong trangThai);
 
     List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong statusTicket,

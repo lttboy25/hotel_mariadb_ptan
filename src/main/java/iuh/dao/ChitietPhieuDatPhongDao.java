@@ -30,6 +30,9 @@ public interface ChitietPhieuDatPhongDao {
 
     ChiTietPhieuDatPhong findChiTietPhieuDatPhongByMaPhong(String maPhong);
 
+    boolean updateStatusDetail(Long id, TrangThaiChiTietPhieuDatPhong status);
+
+    @Deprecated
     boolean updateStatusDetailTicketByRoomCode(String maPhong, TrangThaiChiTietPhieuDatPhong status);
 
     List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong statusTicket,

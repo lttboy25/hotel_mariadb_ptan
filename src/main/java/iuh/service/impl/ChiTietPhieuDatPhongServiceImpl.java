@@ -27,6 +27,15 @@ public class ChiTietPhieuDatPhongServiceImpl implements ChiTietPhieuDatPhongServ
     }
 
     @Override
+    public boolean updateStatusDetail(Long id, TrangThaiChiTietPhieuDatPhong status) {
+        if (id == null || status == null) {
+            return false;
+        }
+        return chitietPhieuDatPhongDao.updateStatusDetail(id, status);
+    }
+
+    @Override
+    @Deprecated
     public boolean updateTrangThaiByMaPhong(String maPhong, TrangThaiChiTietPhieuDatPhong trangThai) {
         if (maPhong == null || trangThai == null) {
             return false;

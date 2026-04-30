@@ -27,14 +27,14 @@ public class Phong implements Serializable {
     @JoinColumn(name = "maLoaiPhong", nullable = false)
     private LoaiPhong loaiPhong;
 
-    @Column(name = "trangThai")
+    @Column(name = "trangThai", length = 20)
     @Enumerated(EnumType.STRING)
     private TrangThaiPhong trangThai;
 
     @Column(name = "tang")
     private int tang;
 
-    @Column(name = "tinhTrang")
+    @Column(name = "tinhTrang", length = 20)
     @Enumerated(EnumType.STRING)
     private TinhTrangPhong tinhTrang;
 

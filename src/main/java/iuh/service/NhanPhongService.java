@@ -18,5 +18,7 @@ import java.util.List;
 public interface NhanPhongService {
     List<ChiTietPhieuDatPhong> getDanhSachPhongDaDatByCCCD(String cccd);
 
+
+
     boolean nhanPhong(List<ChiTietPhieuDatPhong> listNhanPhong);
 }

@@ -33,17 +33,15 @@ public class NhanPhongServiceImpl implements iuh.service.NhanPhongService {
                         "Phòng " + ctpdp.getPhong().getMaPhong() + " không ở trạng thái hợp lệ để nhận!");
             }
 
-            // Đổi trạng thái chi tiết phiếu → Đã nhận phòng
             boolean ktraChiTietPhieu = chiTietPhieuDatPhongServiceImpl
-                    .updateTrangThaiByMaPhong(ctpdp.getPhong().getMaPhong(), TrangThaiChiTietPhieuDatPhong.NHAN_PHONG);
+                    .updateStatusDetail(ctpdp.getId(), TrangThaiChiTietPhieuDatPhong.NHAN_PHONG);
             if (!ktraChiTietPhieu) {
                 throw new RuntimeException(
                         "Lỗi cập nhật chi tiết phiếu đặt phòng: " + ctpdp.getPhong().getMaPhong());
             }
 
-            // Đổi trạng thái phòng → Đang ở
             boolean ktraPhong = phongServiceImpl
-                    .updateStatusRoom(ctpdp.getPhong().getMaPhong(), TrangThaiPhong.TOT, TinhTrangPhong.DANG_O);
+                    .updateStatusRoom(ctpdp.getPhong().getMaPhong(), TrangThaiPhong.SAN_SANG, TinhTrangPhong.DANG_O);
             if (!ktraPhong) {
                 throw new RuntimeException(
                         "Lỗi cập nhật trạng thái phòng: " + ctpdp.getPhong().getMaPhong());
