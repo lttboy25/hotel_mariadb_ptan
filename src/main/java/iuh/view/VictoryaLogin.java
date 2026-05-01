@@ -1,6 +1,11 @@
 package iuh.view;
 
+import iuh.dto.LoginRequest;
 import iuh.dto.NhanVienDTO;
+import iuh.network.ClientConnection;
+import iuh.network.CommandType;
+import iuh.network.Request;
+import iuh.network.Response;
 import iuh.service.impl.NhanVienServiceImpl;
 
 import javax.swing.*;
@@ -24,8 +29,6 @@ public class VictoryaLogin extends JFrame {
     private static final Font FONT_INPUT = new Font("Segoe UI", Font.PLAIN, 14);
     private static final Font FONT_BUTTON = new Font("Segoe UI", Font.BOLD, 15);
     private static final Font FONT_LINK = new Font("Segoe UI", Font.PLAIN, 13);
-
-    private final NhanVienServiceImpl nhanVienServiceImpl = new NhanVienServiceImpl();
 
     public VictoryaLogin() {
         setTitle("Victorya - Đăng nhập");
@@ -376,8 +379,14 @@ public class VictoryaLogin extends JFrame {
                         "Thông báo", JOptionPane.WARNING_MESSAGE);
                 return;
             }
+            LoginRequest loginRequest = LoginRequest.builder().maNhanVien(maNhanVien).matKhau(matKhau).build();
 
-            NhanVienDTO nhanVien = nhanVienServiceImpl.xacThucDangNhap(maNhanVien, matKhau);
+            Request request = Request.builder().commandType(CommandType.XAC_THUC_TAI_KHOAN)
+                    .object(loginRequest)
+                    .build();
+
+            Response response = ClientConnection.getInstance().sendRequest(request);
+            NhanVienDTO nhanVien = (NhanVienDTO) response.getObject();
 
             if (nhanVien != null) {
                 CurrentUser.getInstance().setNhanVien(nhanVien);

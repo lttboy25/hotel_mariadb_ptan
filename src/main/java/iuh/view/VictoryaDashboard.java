@@ -452,14 +452,6 @@ public class VictoryaDashboard extends JFrame {
             this.cardKey = cardKey;
         }
     }
-
-    public static void main(String[] args) {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception ignored) {
-        }
-        SwingUtilities.invokeLater(VictoryaLogin::new);
-    }
 }
 
 // =============================================================================
