@@ -5,6 +5,7 @@
  */
 package iuh.service;
 
+import iuh.dto.LoaiPhongDTO;
 import iuh.entity.LoaiPhong;
 
 import java.util.List;
@@ -16,5 +17,5 @@ import java.util.List;
  * @version:    1.0
  */
 public interface LoaiPhongService {
-    List<LoaiPhong> getAll();
+    List<LoaiPhongDTO> getAll();
 }

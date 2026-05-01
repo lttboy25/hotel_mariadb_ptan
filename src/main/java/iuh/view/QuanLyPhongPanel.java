@@ -1,18 +1,24 @@
 package iuh.view;
 
+import iuh.dto.LoaiPhongDTO;
 import iuh.dto.PhongDTO;
 import iuh.entity.LoaiPhong;
 import iuh.entity.Phong;
 import iuh.entity.TinhTrangPhong;
 import iuh.entity.TrangThaiPhong;
-import iuh.service.impl.LoaiPhongServiceImpl;
-import iuh.service.impl.PhongServiceImpl;
+import iuh.mapper.Mapper;
+import iuh.network.ClientConnection;
+import iuh.network.CommandType;
+import iuh.network.Request;
+import iuh.network.Response;
 
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
 import java.awt.*;
+import java.util.*;
 import java.awt.event.*;
+import java.util.List;
 
 public class QuanLyPhongPanel extends JPanel {
 
@@ -42,8 +48,8 @@ public class QuanLyPhongPanel extends JPanel {
 
     private static final String SEARCH_PLACEHOLDER = "Tìm theo mã phòng, số phòng, loại...";
 
-    private final PhongServiceImpl phongServiceImpl = new PhongServiceImpl();
-    private final LoaiPhongServiceImpl loaiPhongServiceImpl = new LoaiPhongServiceImpl();
+    private ClientConnection clientConnection = ClientConnection.getInstance();
+    private Mapper mapper = new Mapper();
 
     private DefaultTableModel tableModel;
     private JTable table;
@@ -256,7 +262,12 @@ public class QuanLyPhongPanel extends JPanel {
                     int row = table.getSelectedRow();
                     if (row >= 0) {
                         String maPhong = String.valueOf(tableModel.getValueAt(row, 0));
-                        PhongDTO phongOpt = phongServiceImpl.getRoomById(maPhong);
+                        Request request = Request.builder().commandType(CommandType.GET_ROOM_BY_ID).object(maPhong)
+                                .build();
+
+                        Response response = clientConnection.sendRequest(request);
+
+                        PhongDTO phongOpt = (PhongDTO) response.getObject();
                         if (phongOpt != null) {
                             openModal(phongOpt, false);
                         }
@@ -280,12 +291,19 @@ public class QuanLyPhongPanel extends JPanel {
         }
     }
 
-    private java.util.List<PhongDTO> getCurrentData() {
+    private List<PhongDTO> getCurrentData() {
         String keyword = getSearchKeyword();
+        Request request = new Request();
         if (keyword.isBlank()) {
-            return phongServiceImpl.getAllRoom();
+            request = Request.builder().commandType(CommandType.GET_ALL_ROOMS).build();
+        } else {
+            request = Request.builder().commandType(CommandType.GET_ROOMS_BY_KEYWORD).object(keyword).build();
         }
-        return phongServiceImpl.getRoomByKeyword(keyword);
+        Response response = clientConnection.sendRequest(request);
+        @SuppressWarnings("unchecked")
+        List<PhongDTO> ds = (List<PhongDTO>) response.getObject();
+        return ds;
+
     }
 
     private String getSearchKeyword() {
@@ -369,7 +387,6 @@ class PhongModal extends JDialog {
     private static final Color RED = QuanLyNhanVienPanel.RED;
     private static final Color BLUE_LIGHT = QuanLyNhanVienPanel.BLUE_LIGHT;
 
-    private final PhongServiceImpl phongServiceImpl = new PhongServiceImpl();
     private final Runnable onChanged;
     private final boolean isNew;
     private final PhongDTO current;
@@ -377,11 +394,11 @@ class PhongModal extends JDialog {
     private JTextField tfMa;
     private JTextField tfSo;
     private JComboBox<Integer> cbTang;
-    private JComboBox<LoaiPhong> cbLoaiPhong;
+    private JComboBox<LoaiPhongDTO> cbLoaiPhong;
     private JTextField tfMoTa;
     private JComboBox<TinhTrangPhong> cbTinhTrang;
     private JComboBox<TrangThaiPhong> cbTrangThai;
-    private LoaiPhongServiceImpl loaiPhongServiceImpl = new LoaiPhongServiceImpl();
+    private ClientConnection clientConnection = ClientConnection.getInstance();
 
     PhongModal(JFrame owner, PhongDTO phong, boolean isNew, Runnable onChanged) {
         super(owner, isNew ? "Thêm phòng" : "Chi tiết phòng", true);
@@ -464,10 +481,22 @@ class PhongModal extends JDialog {
         cbTinhTrang = new JComboBox<>();
         cbTrangThai = new JComboBox<>();
 
-        for (int t : phongServiceImpl.getAllTang()) {
+        List<Integer> dsTang = new ArrayList<>();
+        List<LoaiPhongDTO> dsLoaiPhong = new ArrayList<>();
+
+        Request request1 = Request.builder().commandType(CommandType.GET_ALL_TANG).build();
+        Request request2 = Request.builder().commandType(CommandType.GET_ALL_LOAI_PHONG).build();
+
+        Response response1 = clientConnection.sendRequest(request1);
+        Response response2 = clientConnection.sendRequest(request2);
+
+        dsTang = (List<Integer>) response1.getObject();
+        dsLoaiPhong = (List<LoaiPhongDTO>) response2.getObject();
+
+        for (int t : dsTang) {
             cbTang.addItem(t);
         }
-        for (LoaiPhong lp : loaiPhongServiceImpl.getAll()) {
+        for (LoaiPhongDTO lp : dsLoaiPhong) {
             cbLoaiPhong.addItem(lp);
         }
 
@@ -589,32 +618,44 @@ class PhongModal extends JDialog {
 
     public PhongDTO getThisForm() {
         int tang = (Integer) cbTang.getSelectedItem();
-        LoaiPhong loaiPhong = (LoaiPhong) cbLoaiPhong.getSelectedItem();
+        LoaiPhongDTO loaiPhongDTO = (LoaiPhongDTO) cbLoaiPhong.getSelectedItem();
         String moTa = tfMoTa.getText();
         TinhTrangPhong tinhTrang = (TinhTrangPhong) cbTinhTrang.getSelectedItem();
         TrangThaiPhong trangThai = (TrangThaiPhong) cbTrangThai.getSelectedItem();
 
-        PhongDTO phongMoi = PhongDTO.builder()
+        if (tang == 0 || loaiPhongDTO == null || tinhTrang == null || trangThai == null) {
+            JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin!", "Lỗi", JOptionPane.WARNING_MESSAGE);
+            return null;
+        }
+
+        return PhongDTO.builder()
                 .tang(tang)
                 .moTa(moTa)
-                .loaiPhong(loaiPhong)
+                .loaiPhong(loaiPhongDTO)
                 .tinhTrang(tinhTrang)
                 .trangThai(trangThai)
                 .build();
-        if (phongServiceImpl.checkNull(phongMoi)) {
-            return phongMoi;
-        }
-        return null;
     }
 
     private void onSave() {
         try {
             PhongDTO phongMoi = getThisForm();
-            phongServiceImpl.createPhong(phongMoi);
-            JOptionPane.showMessageDialog(this, "Đã thêm phòng.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            if (onChanged != null)
-                onChanged.run();
-            dispose();
+            Response res = clientConnection.sendRequest(
+                    Request
+                            .builder()
+                            .commandType(CommandType.CREATE_PHONG)
+                            .object(phongMoi)
+                            .build());
+            iuh.dto.PhongDTO phong = (PhongDTO) res.getObject();
+
+            if (phong != null) {
+                JOptionPane.showMessageDialog(this, "Đã thêm phòng.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                if (onChanged != null)
+                    onChanged.run();
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Thêm phòng thất bại", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
         } catch (Exception ex) {
             showError(ex);
         }
@@ -627,13 +668,21 @@ class PhongModal extends JDialog {
             PhongDTO phongMoi = getThisForm();
             phongMoi.setMaPhong(maPhong);
             phongMoi.setSoPhong(soPhong);
-            phongServiceImpl.updatePhong(phongMoi);
-
-            // TODO: Validate and update
-            JOptionPane.showMessageDialog(this, "Đã cập nhật phòng.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            if (onChanged != null)
-                onChanged.run();
-            dispose();
+            Response res = clientConnection.sendRequest(
+                    Request
+                            .builder()
+                            .commandType(CommandType.UPDATE_PHONG)
+                            .object(phongMoi)
+                            .build());
+            iuh.dto.PhongDTO phong = (PhongDTO) res.getObject();
+            if (phong != null) {
+                JOptionPane.showMessageDialog(this, "Đã cập nhật phòng.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                if (onChanged != null)
+                    onChanged.run();
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Cập nhật phòng thất bại", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
         } catch (Exception ex) {
             showError(ex);
         }
@@ -644,9 +693,13 @@ class PhongModal extends JDialog {
         if (result != JOptionPane.YES_OPTION)
             return;
         try {
-            // TODO: Delete room
             String maPhong = tfMa.getText().trim();
-            if (phongServiceImpl.deletePhong(maPhong))
+            Response res = clientConnection.sendRequest(
+                    Request.builder()
+                            .commandType(CommandType.DELETE_PHONG)
+                            .object(maPhong)
+                            .build());
+            if ((boolean) res.getObject())
                 JOptionPane.showMessageDialog(this, "Đã xóa phòng.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             else
                 JOptionPane.showMessageDialog(this, "Đã xóa phòng thất bại!.", "Thông báo", JOptionPane.ERROR_MESSAGE);

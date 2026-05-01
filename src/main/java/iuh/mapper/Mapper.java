@@ -50,23 +50,29 @@ public class Mapper {
     public static Phong map(PhongDTO dto) {
         if (dto == null)
             return null;
+
+        LoaiPhong lp = map(dto.getLoaiPhong());
         return Phong.builder()
                 .maPhong(dto.getMaPhong())
                 .soPhong(dto.getSoPhong())
-                .loaiPhong(dto.getLoaiPhong())
+                .loaiPhong(lp)
                 .trangThai(dto.getTrangThai())
                 .tang(dto.getTang())
                 .tinhTrang(dto.getTinhTrang())
                 .moTa(dto.getMoTa())
                 .build();
     }
+
     public static PhongDTO map(Phong dto) {
         if (dto == null)
             return null;
+
+        LoaiPhongDTO lp =  map(dto.getLoaiPhong());
+
         return PhongDTO.builder()
                 .maPhong(dto.getMaPhong())
                 .soPhong(dto.getSoPhong())
-                .loaiPhong(dto.getLoaiPhong())
+                .loaiPhong(lp)
                 .trangThai(dto.getTrangThai())
                 .tang(dto.getTang())
                 .tinhTrang(dto.getTinhTrang())
@@ -101,6 +107,32 @@ public class Mapper {
                 .heSo(entity.getHeSo())
                 .tongTienToiThieu(entity.getTongTienToiThieu())
                 .tongKhuyenMaiToiDa(entity.getTongKhuyenMaiToiDa())
+                .build();
+    }
+
+    public static LoaiPhongDTO map(LoaiPhong entity) {
+        if (entity == null)
+            return null;
+        return LoaiPhongDTO.builder()
+                .maLoaiPhong(entity.getMaLoaiPhong())
+                .tenLoaiPhong(entity.getTenLoaiPhong())
+                .gia(entity.getGia())
+                .ngayTao(entity.getNgayTao())
+                .soNguoiLonToiDa(entity.getSoNguoiLonToiDa())
+                .soTreEmToiDa(entity.getSoTreEmToiDa())
+                .build();
+    }
+
+    public static LoaiPhong map(LoaiPhongDTO entity) {
+        if (entity == null)
+            return null;
+        return LoaiPhong.builder()
+                .maLoaiPhong(entity.getMaLoaiPhong())
+                .tenLoaiPhong(entity.getTenLoaiPhong())
+                .gia(entity.getGia())
+                .ngayTao(entity.getNgayTao())
+                .soNguoiLonToiDa(entity.getSoNguoiLonToiDa())
+                .soTreEmToiDa(entity.getSoTreEmToiDa())
                 .build();
     }
 

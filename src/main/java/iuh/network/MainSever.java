@@ -1,6 +1,8 @@
 package iuh.network;
 
+import iuh.service.impl.LoaiPhongServiceImpl;
 import iuh.service.impl.NhanVienServiceImpl;
+import iuh.service.impl.PhongServiceImpl;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -12,8 +14,14 @@ public class MainSever {
         try (ServerSocket serverSocket = new ServerSocket(5000);) {
             ExecutorService executorService = Executors.newFixedThreadPool(10);
             while (true) {
+                System.out.println("Sever running...");
                 Socket client = serverSocket.accept();
-                executorService.execute(new ClientHanler(client, new NhanVienServiceImpl()));
+                executorService.execute(new ClientHanler(
+                        client,
+                        new NhanVienServiceImpl(),
+                        new PhongServiceImpl(),
+                        new LoaiPhongServiceImpl()
+                        ));
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

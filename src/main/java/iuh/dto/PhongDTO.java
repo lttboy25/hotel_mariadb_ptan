@@ -15,13 +15,13 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PhongDTO  {
+public class PhongDTO implements Serializable {
 
     private String maPhong;
 
     private String soPhong;
 
-    private LoaiPhong loaiPhong;
+    private LoaiPhongDTO loaiPhong;
 
     private TrangThaiPhong trangThai;
 
