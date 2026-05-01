@@ -1,0 +1,34 @@
+package iuh.dto;
+
+import iuh.entity.LoaiPhong;
+import iuh.entity.TinhTrangPhong;
+import iuh.entity.TrangThaiPhong;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import java.io.Serializable;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class PhongDTO  {
+
+    private String maPhong;
+
+    private String soPhong;
+
+    private LoaiPhong loaiPhong;
+
+    private TrangThaiPhong trangThai;
+
+    private int tang;
+
+    private TinhTrangPhong tinhTrang;
+
+    private String moTa;
+
+}

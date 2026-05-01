@@ -1,5 +1,6 @@
 package iuh.view;
 
+import iuh.dto.PhongDTO;
 import iuh.entity.LoaiPhong;
 import iuh.entity.Phong;
 import iuh.entity.TinhTrangPhong;
@@ -255,9 +256,9 @@ public class QuanLyPhongPanel extends JPanel {
                     int row = table.getSelectedRow();
                     if (row >= 0) {
                         String maPhong = String.valueOf(tableModel.getValueAt(row, 0));
-                        java.util.Optional<Phong> phongOpt = phongServiceImpl.getRoomById(maPhong);
-                        if (phongOpt.isPresent()) {
-                            openModal(phongOpt.get(), false);
+                        PhongDTO phongOpt = phongServiceImpl.getRoomById(maPhong);
+                        if (phongOpt != null) {
+                            openModal(phongOpt, false);
                         }
                     }
                 }
@@ -272,14 +273,14 @@ public class QuanLyPhongPanel extends JPanel {
     }
 
     private void refreshTable() {
-        java.util.List<Phong> list = getCurrentData();
+        java.util.List<PhongDTO> list = getCurrentData();
         tableModel.setRowCount(0);
-        for (Phong p : list) {
+        for (PhongDTO p : list) {
             tableModel.addRow(toRow(p));
         }
     }
 
-    private java.util.List<Phong> getCurrentData() {
+    private java.util.List<PhongDTO> getCurrentData() {
         String keyword = getSearchKeyword();
         if (keyword.isBlank()) {
             return phongServiceImpl.getAllRoom();
@@ -292,7 +293,7 @@ public class QuanLyPhongPanel extends JPanel {
         return SEARCH_PLACEHOLDER.equals(text) ? "" : text;
     }
 
-    private Object[] toRow(Phong p) {
+    private Object[] toRow(PhongDTO p) {
         return new Object[] {
                 p.getMaPhong(),
                 p.getSoPhong(),
@@ -304,7 +305,7 @@ public class QuanLyPhongPanel extends JPanel {
         };
     }
 
-    private void openModal(Phong phong, boolean isNew) {
+    private void openModal(PhongDTO phong, boolean isNew) {
         JFrame top = (JFrame) SwingUtilities.getWindowAncestor(this);
         new PhongModal(top, phong, isNew, this::refreshTable).setVisible(true);
     }
@@ -371,7 +372,7 @@ class PhongModal extends JDialog {
     private final PhongServiceImpl phongServiceImpl = new PhongServiceImpl();
     private final Runnable onChanged;
     private final boolean isNew;
-    private final Phong current;
+    private final PhongDTO current;
 
     private JTextField tfMa;
     private JTextField tfSo;
@@ -382,10 +383,10 @@ class PhongModal extends JDialog {
     private JComboBox<TrangThaiPhong> cbTrangThai;
     private LoaiPhongServiceImpl loaiPhongServiceImpl = new LoaiPhongServiceImpl();
 
-    PhongModal(JFrame owner, Phong phong, boolean isNew, Runnable onChanged) {
+    PhongModal(JFrame owner, PhongDTO phong, boolean isNew, Runnable onChanged) {
         super(owner, isNew ? "Thêm phòng" : "Chi tiết phòng", true);
         this.isNew = isNew;
-        this.current = phong == null ? new Phong() : phong;
+        this.current = phong == null ? PhongDTO.builder().build() : phong;
         this.onChanged = onChanged;
 
         setSize(560, 600);
@@ -457,37 +458,33 @@ class PhongModal extends JDialog {
 
         tfMa = field(current.getMaPhong(), false);
         tfSo = field(current.getSoPhong(), false);
-
+        tfMoTa = field(current.getMoTa(), true);
         cbTang = new JComboBox<>();
+        cbLoaiPhong = new JComboBox<>();
+        cbTinhTrang = new JComboBox<>();
+        cbTrangThai = new JComboBox<>();
+
         for (int t : phongServiceImpl.getAllTang()) {
             cbTang.addItem(t);
         }
-        styleCombo(cbTang);
-        if (!isNew)
-            cbTang.setSelectedItem(current.getTang());
-
-        cbLoaiPhong = new JComboBox<>();
         for (LoaiPhong lp : loaiPhongServiceImpl.getAll()) {
             cbLoaiPhong.addItem(lp);
         }
+
+        styleCombo(cbTang);
         styleCombo(cbLoaiPhong);
-
-        tfMoTa = field(current.getMoTa(), true);
-
-        cbTinhTrang = new JComboBox<>();
-        cbTrangThai = new JComboBox<>();
         cbTrangThai.setModel(new DefaultComboBoxModel<>(TrangThaiPhong.values()));
         cbTinhTrang.setModel(new DefaultComboBoxModel<>(TinhTrangPhong.values()));
         styleCombo(cbTinhTrang);
-        if (!isNew)
-            cbTinhTrang.setSelectedItem(
-                    current.getTinhTrang() != null ? current.getTinhTrang() : TinhTrangPhong.TRONG);
-
         styleCombo(cbTrangThai);
-        if (!isNew)
+
+        if (!isNew) {
+            cbTang.setSelectedItem(current.getTang());
+            cbLoaiPhong.setSelectedItem(current.getLoaiPhong());
+            cbTinhTrang.setSelectedItem(current.getTinhTrang() != null ? current.getTinhTrang() : TinhTrangPhong.TRONG);
             cbTrangThai
-                    .setSelectedItem(current.getTrangThai() != null ? current.getTrangThai()
-                            : TrangThaiPhong.SAN_SANG);
+                    .setSelectedItem(current.getTrangThai() != null ? current.getTrangThai() : TrangThaiPhong.SAN_SANG);
+        }
 
         addRow2(form, g, 0, "Mã phòng", tfMa, "Số phòng", tfSo);
         addRow2(form, g, 1, "Tầng", cbTang, "Loại phòng", cbLoaiPhong);
@@ -590,14 +587,14 @@ class PhongModal extends JDialog {
         return f;
     }
 
-    public Phong getThisForm() {
+    public PhongDTO getThisForm() {
         int tang = (Integer) cbTang.getSelectedItem();
         LoaiPhong loaiPhong = (LoaiPhong) cbLoaiPhong.getSelectedItem();
         String moTa = tfMoTa.getText();
         TinhTrangPhong tinhTrang = (TinhTrangPhong) cbTinhTrang.getSelectedItem();
         TrangThaiPhong trangThai = (TrangThaiPhong) cbTrangThai.getSelectedItem();
 
-        Phong phongMoi = Phong.builder()
+        PhongDTO phongMoi = PhongDTO.builder()
                 .tang(tang)
                 .moTa(moTa)
                 .loaiPhong(loaiPhong)
@@ -612,7 +609,7 @@ class PhongModal extends JDialog {
 
     private void onSave() {
         try {
-            Phong phongMoi = getThisForm();
+            PhongDTO phongMoi = getThisForm();
             phongServiceImpl.createPhong(phongMoi);
             JOptionPane.showMessageDialog(this, "Đã thêm phòng.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             if (onChanged != null)
@@ -627,7 +624,7 @@ class PhongModal extends JDialog {
         try {
             String maPhong = tfMa.getText().trim();
             String soPhong = tfSo.getText().trim();
-            Phong phongMoi = getThisForm();
+            PhongDTO phongMoi = getThisForm();
             phongMoi.setMaPhong(maPhong);
             phongMoi.setSoPhong(soPhong);
             phongServiceImpl.updatePhong(phongMoi);

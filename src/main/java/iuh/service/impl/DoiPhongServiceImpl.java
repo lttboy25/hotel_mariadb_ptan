@@ -8,6 +8,7 @@ package iuh.service.impl;
 
 import iuh.dao.impl.ChitietPhieuDatPhongDaoImpl;
 import iuh.dao.impl.PhongDaoImpl;
+import iuh.dto.PhongDTO;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.Phong;
 import iuh.service.DoiPhongService;
@@ -71,7 +72,7 @@ public class DoiPhongServiceImpl implements DoiPhongService {
             throw new RuntimeException("Phòng mới đã có người đặt!");
         }
         //lay phong moi
-        Phong phongMoi = phongDaoImpl.findById(maPhongMoi).get();
+        Phong phongMoi = phongDaoImpl.findById(maPhongMoi);
 
         if(phongMoi == null){
             throw new RuntimeException("Phòng mới không tồn tại!");
@@ -98,8 +99,8 @@ public class DoiPhongServiceImpl implements DoiPhongService {
 
     @Override
     public double tinhPhiChenhLech(String maPhongCu, String maPhongMoi) {
-        Phong cu  = phongDaoImpl.findById(maPhongCu).orElseThrow();
-        Phong moi = phongDaoImpl.findById(maPhongMoi).orElseThrow();
+        Phong cu  = phongDaoImpl.findById(maPhongCu);
+        Phong moi = phongDaoImpl.findById(maPhongMoi);
         return moi.getLoaiPhong().getGia() - cu.getLoaiPhong().getGia();
     }
 

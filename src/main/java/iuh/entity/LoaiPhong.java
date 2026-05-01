@@ -48,6 +48,7 @@ public class LoaiPhong implements Serializable {
 
     @OneToMany(mappedBy = "loaiPhong")
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<Phong> phongs;
 
     @Override

@@ -22,7 +22,7 @@ import java.util.Optional;
 public interface PhongDao {
     List<Phong> findAll();
 
-    Optional<Phong> findById(String maPhong);
+    Phong findById(String maPhong);
 
     List<Phong> findByKeyword(String keyword);
 

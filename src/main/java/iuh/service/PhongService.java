@@ -5,6 +5,7 @@
  */
 package iuh.service;
 
+import iuh.dto.PhongDTO;
 import iuh.entity.Phong;
 import iuh.entity.TinhTrangPhong;
 import iuh.entity.TrangThaiPhong;
@@ -20,19 +21,19 @@ import java.util.Optional;
  * @version:    1.0
  */
 public interface PhongService {
-    List<Phong> getAllRoom();
+    List<PhongDTO> getAllRoom();
 
-    Optional<Phong> getRoomById(String maPhong);
+    PhongDTO getRoomById(String maPhong);
 
-    List<Phong> getRoomByKeyword(String keyword);
+    List<PhongDTO> getRoomByKeyword(String keyword);
 
-    Phong createPhong(Phong phong);
+    PhongDTO createPhong(PhongDTO phong);
 
-    Phong updatePhong(Phong phong);
+    PhongDTO updatePhong(PhongDTO phong);
 
     boolean deletePhong(String maPhong);
 
-    boolean checkNull(Phong phong);
+    boolean checkNull(PhongDTO phong);
 
     List<Integer> getAllTang();
 

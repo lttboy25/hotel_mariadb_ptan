@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import iuh.db.JPAUtil;
+import iuh.dto.PhongDTO;
 import iuh.entity.Phong;
 import iuh.entity.TinhTrangPhong;
 import iuh.entity.TrangThaiChiTietPhieuDatPhong;
@@ -23,12 +24,12 @@ public class PhongDaoImpl extends AbstractGenericDaoImpl<Phong, String> implemen
     }
 
     @Override
-    public Optional<Phong> findById(String maPhong) {
+    public Phong findById(String maPhong) {
         if (maPhong == null || maPhong.isEmpty()) {
-            return Optional.empty();
+            return null;
         }
         try (EntityManager em = JPAUtil.getEntityManager()) {
-            return Optional.ofNullable(em.find(Phong.class, maPhong));
+            return em.find(Phong.class, maPhong);
         }
     }
 
@@ -40,6 +41,7 @@ public class PhongDaoImpl extends AbstractGenericDaoImpl<Phong, String> implemen
                     WHERE LOWER(p.maPhong) LIKE LOWER(CONCAT('%', :keyword, '%'))
                     OR LOWER(p.soPhong) LIKE LOWER(CONCAT('%', :keyword, '%'))
                     OR LOWER(p.loaiPhong.tenLoaiPhong) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                    OR LOWER(p.moTa) LIKE LOWER(CONCAT('%', :keyword, '%'))
                     ORDER BY p.maPhong
                     """;
 

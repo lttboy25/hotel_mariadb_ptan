@@ -47,6 +47,33 @@ public class Mapper {
                 .build();
     }
 
+    public static Phong map(PhongDTO dto) {
+        if (dto == null)
+            return null;
+        return Phong.builder()
+                .maPhong(dto.getMaPhong())
+                .soPhong(dto.getSoPhong())
+                .loaiPhong(dto.getLoaiPhong())
+                .trangThai(dto.getTrangThai())
+                .tang(dto.getTang())
+                .tinhTrang(dto.getTinhTrang())
+                .moTa(dto.getMoTa())
+                .build();
+    }
+    public static PhongDTO map(Phong dto) {
+        if (dto == null)
+            return null;
+        return PhongDTO.builder()
+                .maPhong(dto.getMaPhong())
+                .soPhong(dto.getSoPhong())
+                .loaiPhong(dto.getLoaiPhong())
+                .trangThai(dto.getTrangThai())
+                .tang(dto.getTang())
+                .tinhTrang(dto.getTinhTrang())
+                .moTa(dto.getMoTa())
+                .build();
+    }
+
     public static KhuyenMai map(KhuyenMaiDTO dto) {
         if (dto == null)
             return null;
