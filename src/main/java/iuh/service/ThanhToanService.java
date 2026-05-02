@@ -5,6 +5,7 @@
  */
 package iuh.service;
 
+import iuh.dto.KhuyenMaiDTO;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.HoaDon;
 import iuh.entity.Phong;
@@ -26,4 +27,10 @@ public interface ThanhToanService {
     boolean coTheThanhToan(double tienKhachDua, double tongTien);
 
     HoaDon thanhToan(List<ChiTietPhieuDatPhong> listThanhToan, double tienKhachDua, double tienThua);
+
+    List<KhuyenMaiDTO> getDsKhuyenMai();
+
+    double tienSauKhiApGiamGia(double tongTien, KhuyenMaiDTO KhuyenMai);
+
+
 }

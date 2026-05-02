@@ -3,9 +3,11 @@ package iuh.service.impl;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import iuh.dao.impl.ChiTietHoaDonDaoImpl;
 import iuh.dao.impl.HoaDonDaoImpl;
+import iuh.dto.KhuyenMaiDTO;
 import iuh.entity.*;
 import iuh.enums.*;
 import iuh.mapper.Mapper;
@@ -17,6 +19,7 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
     private ChiTietHoaDonDaoImpl chiTietHoaDonDao = new ChiTietHoaDonDaoImpl();
     private PhieuDatPhongServiceImpl phieuDatPhongServiceImpl = new PhieuDatPhongServiceImpl();
     private NhanVienServiceImpl nhanVienServiceImpl = new NhanVienServiceImpl();
+    private KhuyenMaiServiceImpl khuyenMaiServiceImpl = new KhuyenMaiServiceImpl();
 
     private Mapper mapper = new Mapper();
 
@@ -37,8 +40,8 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
     public boolean coTheThanhToan(double tienKhachDua, double tongTien) {
         if (tienKhachDua < tongTien)
             return false;
-        else
-            return true;
+
+        return true;
     }
 
     @Override
@@ -133,4 +136,16 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
 
         return hoaDon;
     }
+
+    @Override
+    public List<KhuyenMaiDTO> getDsKhuyenMai() {
+        return khuyenMaiServiceImpl.getKhuyenMaiByTrangThai(TrangThai.DANG_AP_DUNG);
+    }
+
+    @Override
+    public double tienSauKhiApGiamGia(double tongTien, KhuyenMaiDTO khuyenMai) {
+        return tongTien - khuyenMai.getHeSo()*tongTien;
+    }
+
+
 }
