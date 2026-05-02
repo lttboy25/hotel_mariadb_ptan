@@ -27,13 +27,14 @@ public class ClientHanler implements Runnable {
     private final KhuyenMaiServiceImpl khuyenMaiServiceImpl;
     private final CaLamViecNhanVienServiceImpl caLamViecNhanVienServiceImpl;
     private final ThanhToanServiceImpl thanhToanServiceImpl;
+    private final PhieuHuyPhongServiceImpl phieuHuyPhongService;
+    private final ChiTietPhieuDatPhongServiceImpl chiTietPhieuDatPhongService;
 
     @Override
     public void run() {
         try (
                 ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-                ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-        ) {
+                ObjectInputStream in = new ObjectInputStream(socket.getInputStream());) {
             while (true) {
                 Request request = (Request) in.readObject();
                 Response response = null;
@@ -41,7 +42,8 @@ public class ClientHanler implements Runnable {
                 switch (request.getCommandType()) {
                     case XAC_THUC_TAI_KHOAN -> {
                         LoginRequest loginRequest = (LoginRequest) request.getObject();
-                        var rs = nhanVienServiceImpl.xacThucDangNhap(loginRequest.getMaNhanVien(), loginRequest.getMatKhau());
+                        var rs = nhanVienServiceImpl.xacThucDangNhap(loginRequest.getMaNhanVien(),
+                                loginRequest.getMatKhau());
                         response = Response.builder().object((NhanVienDTO) rs).build();
                     }
                     case GET_ROOM_BY_ID -> {
@@ -112,6 +114,20 @@ public class ClientHanler implements Runnable {
                         String code = khachHangServiceImpl.generateNextMaKH();
                         response = Response.builder().object(code).build();
                     }
+                    case GET_ALL_KHACH_HANG -> {
+                        List<KhachHangDTO> list = khachHangServiceImpl.loadAll();
+                        response = Response.builder().object(list).build();
+                    }
+                    case TIM_KHACH_HANG_THEO_KEYWORD -> {
+                        String kw = (String) request.getObject();
+                        List<KhachHangDTO> list = khachHangServiceImpl.timKiem(kw);
+                        response = Response.builder().object(list).build();
+                    }
+                    case XOA_KHACH_HANG_MA -> {
+                        String maKH = (String) request.getObject();
+                        boolean rs = khachHangServiceImpl.xoaKhachHang(maKH);
+                        response = Response.builder().object(rs).build();
+                    }
 
                     // ===== THỐNG KÊ =====
                     case LAY_THONG_KE -> {
@@ -163,7 +179,8 @@ public class ClientHanler implements Runnable {
                     }
                     case MO_CA -> {
                         Object[] params = (Object[]) request.getObject();
-                        var shift = caLamViecNhanVienServiceImpl.openShift((String) params[0], (String) params[1], (Double) params[2]);
+                        var shift = caLamViecNhanVienServiceImpl.openShift((String) params[0], (String) params[1],
+                                (Double) params[2]);
                         response = Response.builder().object(shift).build();
                     }
                     case KET_CA -> {
@@ -178,13 +195,14 @@ public class ClientHanler implements Runnable {
                     }
                     case GET_DANH_SACH_DE_THANH_TOAN -> {
                         String cccd = (String) request.getObject();
-                        List<ChiTietPhieuDatPhongDTO> ds = thanhToanServiceImpl.getDanhSachPhieuDatPhongDeThanhToan(cccd);
+                        List<ChiTietPhieuDatPhongDTO> ds = thanhToanServiceImpl
+                                .getDanhSachPhieuDatPhongDeThanhToan(cccd);
                         response = Response.builder().object(ds).build();
                     }
                     case CO_THE_THANH_TOAN -> {
                         Map<String, Object> params = (Map<String, Object>) request.getObject();
                         double tienKhachDua = (double) params.get("tienKhachDua");
-                        double tongTien     = (double) params.get("tongTien");
+                        double tongTien = (double) params.get("tongTien");
                         response = Response.builder()
                                 .object(thanhToanServiceImpl.coTheThanhToan(tienKhachDua, tongTien))
                                 .build();
@@ -200,11 +218,22 @@ public class ClientHanler implements Runnable {
                     }
                     case TIEN_SAU_KHI_AP_GIAM_GIA -> {
                         Map<String, Object> params = (Map<String, Object>) request.getObject();
-                        double tongTien =  (double) params.get("tongTien");
+                        double tongTien = (double) params.get("tongTien");
                         KhuyenMaiDTO km = (KhuyenMaiDTO) params.get("km");
                         response = Response.builder()
                                 .object(thanhToanServiceImpl.tienSauKhiApGiamGia(tongTien, km))
                                 .build();
+                    }
+
+                    case GET_DS_PHONG_DE_HUY -> {
+                        String cccd = (String) request.getObject();
+                        List<ChiTietPhieuDatPhongDTO> ds = chiTietPhieuDatPhongService.getPhongDeHuyByCCCD(cccd);
+                        response = Response.builder().object(ds).build();
+                    }
+                    case HUY_PHONG -> {
+                        HuyPhongRequest huyPhongRequest = (HuyPhongRequest) request.getObject();
+                        HuyPhongResultDTO result = phieuHuyPhongService.thucHienHuyNhieuPhong(huyPhongRequest);
+                        response = Response.builder().object(result).build();
                     }
                 }
                 out.writeObject(response);

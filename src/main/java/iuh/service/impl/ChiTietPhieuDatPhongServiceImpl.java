@@ -1,9 +1,11 @@
 package iuh.service.impl;
 
 import iuh.dao.impl.ChitietPhieuDatPhongDaoImpl;
+import iuh.dto.ChiTietPhieuDatPhongDTO;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.enums.TrangThaiChiTietPhieuDatPhong;
 import iuh.enums.TrangThaiPhieuDatPhong;
+import iuh.mapper.Mapper;
 import iuh.service.ChiTietPhieuDatPhongService;
 
 import java.time.LocalDateTime;
@@ -12,6 +14,7 @@ import java.util.Map;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ChiTietPhieuDatPhongServiceImpl implements ChiTietPhieuDatPhongService {
     ChitietPhieuDatPhongDaoImpl chitietPhieuDatPhongDao = new ChitietPhieuDatPhongDaoImpl();
@@ -45,8 +48,8 @@ public class ChiTietPhieuDatPhongServiceImpl implements ChiTietPhieuDatPhongServ
 
     @Override
     public List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong statusTicket,
-                                                                         TrangThaiChiTietPhieuDatPhong statusDetail,
-                                                                         String cccd) {
+            TrangThaiChiTietPhieuDatPhong statusDetail,
+            String cccd) {
         if (statusTicket == null || statusDetail == null || cccd == null) {
             throw new NullPointerException("Lấy danh sách phiếu đặt phòng bị rỗng");
         }
@@ -56,11 +59,15 @@ public class ChiTietPhieuDatPhongServiceImpl implements ChiTietPhieuDatPhongServ
     }
 
     @Override
-    public List<ChiTietPhieuDatPhong> getPhongDeHuyByCCCD(String cccd) {
+    public List<ChiTietPhieuDatPhongDTO> getPhongDeHuyByCCCD(String cccd) {
         if (cccd == null || cccd.trim().isEmpty()) {
             return new ArrayList<>();
         }
-        return chitietPhieuDatPhongDao.getPhongDeHuyByCCCD(cccd);
+
+        return chitietPhieuDatPhongDao.getPhongDeHuyByCCCD(cccd)
+                .stream()
+                .map(e -> Mapper.map(e))
+                .collect(Collectors.toList());
     }
 
     @Override

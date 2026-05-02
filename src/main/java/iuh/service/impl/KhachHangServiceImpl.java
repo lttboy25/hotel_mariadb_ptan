@@ -14,7 +14,10 @@ public class KhachHangServiceImpl implements iuh.service.KhachHangService {
 
     @Override
     public List<KhachHangDTO> loadAll() {
-        return khachHangDao.loadAll()
+        List<KhachHang> entities = khachHangDao.loadAll();
+        if (entities == null)
+            return java.util.Collections.emptyList();
+        return entities
                 .stream()
                 .map(Mapper::map)
                 .collect(Collectors.toList());
@@ -22,15 +25,18 @@ public class KhachHangServiceImpl implements iuh.service.KhachHangService {
 
     @Override
     public boolean themKhachHang(KhachHangDTO kh) {
-        if (kh == null) return false;
-        if (kh.getNgayTao() == null) kh.setNgayTao(LocalDate.now());
+        if (kh == null)
+            return false;
+        if (kh.getNgayTao() == null)
+            kh.setNgayTao(LocalDate.now());
         KhachHang entity = Mapper.map(kh);
         return khachHangDao.create(entity) != null;
     }
 
     @Override
     public boolean capNhatKhachHang(KhachHangDTO kh) {
-        if (kh == null) return false;
+        if (kh == null)
+            return false;
         KhachHang entity = Mapper.map(kh);
         return khachHangDao.update(entity) != null;
     }
@@ -42,7 +48,10 @@ public class KhachHangServiceImpl implements iuh.service.KhachHangService {
 
     @Override
     public List<KhachHangDTO> timKiem(String kw) {
-        return khachHangDao.findByKeyword(kw)
+        List<KhachHang> entities = khachHangDao.findByKeyword(kw);
+        if (entities == null)
+            return java.util.Collections.emptyList();
+        return entities
                 .stream()
                 .map(Mapper::map)
                 .collect(Collectors.toList());
@@ -59,11 +68,22 @@ public class KhachHangServiceImpl implements iuh.service.KhachHangService {
     }
 
     @Override
-    public KhachHangDTO findByCCCD(String cccd) { return timTheoCCCD(cccd); }
+    public KhachHangDTO findByCCCD(String cccd) {
+        return timTheoCCCD(cccd);
+    }
+
     @Override
-    public boolean create(KhachHangDTO dto) { return themKhachHang(dto); }
+    public boolean create(KhachHangDTO dto) {
+        return themKhachHang(dto);
+    }
+
     @Override
-    public boolean update(KhachHangDTO dto) { return capNhatKhachHang(dto); }
+    public boolean update(KhachHangDTO dto) {
+        return capNhatKhachHang(dto);
+    }
+
     @Override
-    public String generateNextMaKH() { return phatSinhMaMoi(); }
+    public String generateNextMaKH() {
+        return phatSinhMaMoi();
+    }
 }

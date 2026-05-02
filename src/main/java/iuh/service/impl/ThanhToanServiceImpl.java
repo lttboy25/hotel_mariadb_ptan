@@ -26,7 +26,8 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
     public List<ChiTietPhieuDatPhongDTO> getDanhSachPhieuDatPhongDeThanhToan(String cccd) {
         return chiTietPhieuDatPhongServiceImpl
                 .getChiTietPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong.NHAN_PHONG,
-                        TrangThaiChiTietPhieuDatPhong.NHAN_PHONG, cccd).stream()
+                        TrangThaiChiTietPhieuDatPhong.NHAN_PHONG, cccd)
+                .stream()
                 .map(e -> Mapper.map(e))
                 .collect(Collectors.toList());
 
@@ -44,13 +45,14 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
     public HoaDonDTO thanhToan(ThanhToanRequest thanhToanRequest) {
         List<ChiTietPhieuDatPhongDTO> listThanhToanDto = thanhToanRequest.getListThanhToan();
         double tienKhachDua = thanhToanRequest.getTienKhachDua();
-        double tienThua     = thanhToanRequest.getTienThua();
+        double tienThua = thanhToanRequest.getTienThua();
         double tongTienDaTinh = thanhToanRequest.getTongTien(); // ← đã có KM + VAT
 
         List<ChiTietPhieuDatPhong> listThanhToan = listThanhToanDto.stream()
                 .map(Mapper::map).collect(Collectors.toList());
 
-        if (listThanhToan == null || listThanhToan.isEmpty()) return null;
+        if (listThanhToan == null || listThanhToan.isEmpty())
+            return null;
 
         LocalDateTime now = LocalDateTime.now();
         List<ChiTietHoaDon> dsChiTietHoaDon = new ArrayList<>();
@@ -141,8 +143,7 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
         if (khuyenMai == null || khuyenMai.getHeSo() == 0) {
             return tongTien;
         }
-        return tongTien - khuyenMai.getHeSo()*tongTien;
+        return tongTien - khuyenMai.getHeSo() * tongTien;
     }
-
 
 }

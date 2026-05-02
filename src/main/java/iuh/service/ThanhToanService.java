@@ -31,5 +31,4 @@ public interface ThanhToanService {
 
     double tienSauKhiApGiamGia(double tongTien, KhuyenMaiDTO KhuyenMai);
 
-
 }

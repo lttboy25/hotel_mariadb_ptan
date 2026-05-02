@@ -5,9 +5,8 @@
  */
 package iuh.service;
 
-import iuh.entity.PhieuHuyPhong;
-
-import java.util.List;
+import iuh.dto.HuyPhongRequest;
+import iuh.dto.HuyPhongResultDTO;
 
 /*
  * @description
@@ -16,5 +15,5 @@ import java.util.List;
  * @version:    1.0
  */
 public interface PhieuHuyPhongService {
-    boolean thucHienHuyNhieuPhong(List<PhieuHuyPhong> listPhieuHuy, double tienHoan);
+    HuyPhongResultDTO thucHienHuyNhieuPhong(HuyPhongRequest huyPhongRequest);
 }

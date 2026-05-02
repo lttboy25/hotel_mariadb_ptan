@@ -22,6 +22,9 @@ public enum CommandType {
     THEM_KHACH_HANG,
     CAP_NHAT_KHACH_HANG,
     PHAT_SINH_MA_KHACH_HANG,
+    GET_ALL_KHACH_HANG,
+    TIM_KHACH_HANG_THEO_KEYWORD,
+    XOA_KHACH_HANG_MA,
 
     // ===== THỐNG KÊ =====
     LAY_THONG_KE,
@@ -47,5 +50,9 @@ public enum CommandType {
     CO_THE_THANH_TOAN,
     THANH_TOAN,
     GET_DANH_SACH_KHUYEN_MAI_HOP_LE,
-    TIEN_SAU_KHI_AP_GIAM_GIA
+    TIEN_SAU_KHI_AP_GIAM_GIA,
+
+    // ==== HỦY PHÒNG ====
+    GET_DS_PHONG_DE_HUY,
+    HUY_PHONG,
 }

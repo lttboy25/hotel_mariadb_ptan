@@ -10,7 +10,6 @@ import iuh.network.CommandType;
 import iuh.network.Request;
 import iuh.network.Response;
 
-
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -34,28 +33,28 @@ public class ThanhToanPanel extends JPanel {
     // ═══════════════════════════════════════════════════════════════════
     // HẰNG SỐ MÀU SẮC
     // ═══════════════════════════════════════════════════════════════════
-    private static final Color BG_MAIN    = new Color(0xF4F6FB);
-    private static final Color BG_WHITE   = Color.WHITE;
-    private static final Color BLUE       = new Color(0x3B6FF0);
+    private static final Color BG_MAIN = new Color(0xF4F6FB);
+    private static final Color BG_WHITE = Color.WHITE;
+    private static final Color BLUE = new Color(0x3B6FF0);
     private static final Color BLUE_LIGHT = new Color(0xEBF0FF);
-    private static final Color TEXT_DARK  = new Color(0x1A1A2E);
-    private static final Color TEXT_MID   = new Color(0x4A5268);
-    private static final Color TEXT_GRAY  = new Color(0xA0A8B8);
+    private static final Color TEXT_DARK = new Color(0x1A1A2E);
+    private static final Color TEXT_MID = new Color(0x4A5268);
+    private static final Color TEXT_GRAY = new Color(0xA0A8B8);
     private static final Color BORDER_COL = new Color(0xE4E9F2);
-    private static final Color GREEN      = new Color(0x27AE60);
+    private static final Color GREEN = new Color(0x27AE60);
     private static final Color GREEN_DARK = new Color(0x1E8449);
-    private static final Color ORANGE     = new Color(0xF39C12);
+    private static final Color ORANGE = new Color(0xF39C12);
 
     // ═══════════════════════════════════════════════════════════════════
     // HẰNG SỐ FONT
     // ═══════════════════════════════════════════════════════════════════
-    private static final Font F_TITLE   = new Font("Segoe UI", Font.BOLD,  18);
-    private static final Font F_LABEL   = new Font("Segoe UI", Font.PLAIN, 13);
-    private static final Font F_BOLD13  = new Font("Segoe UI", Font.BOLD,  13);
-    private static final Font F_BOLD14  = new Font("Segoe UI", Font.BOLD,  14);
-    private static final Font F_BOLD16  = new Font("Segoe UI", Font.BOLD,  16);
-    private static final Font F_TABLE   = new Font("Segoe UI", Font.PLAIN, 13);
-    private static final Font F_TABLE_H = new Font("Segoe UI", Font.BOLD,  13);
+    private static final Font F_TITLE = new Font("Segoe UI", Font.BOLD, 18);
+    private static final Font F_LABEL = new Font("Segoe UI", Font.PLAIN, 13);
+    private static final Font F_BOLD13 = new Font("Segoe UI", Font.BOLD, 13);
+    private static final Font F_BOLD14 = new Font("Segoe UI", Font.BOLD, 14);
+    private static final Font F_BOLD16 = new Font("Segoe UI", Font.BOLD, 16);
+    private static final Font F_TABLE = new Font("Segoe UI", Font.PLAIN, 13);
+    private static final Font F_TABLE_H = new Font("Segoe UI", Font.BOLD, 13);
 
     // ═══════════════════════════════════════════════════════════════════
     // DỮ LIỆU / CẤU HÌNH BẢNG
@@ -75,23 +74,23 @@ public class ThanhToanPanel extends JPanel {
     // ═══════════════════════════════════════════════════════════════════
 
     // ── LEFT PANEL - Tìm kiếm & Bảng
-    private JTextField        tfCCCD;
-    private JButton           btnTimKiem;
-    private JTable            bangPhong;
+    private JTextField tfCCCD;
+    private JButton btnTimKiem;
+    private JTable bangPhong;
     private DefaultTableModel modelBang;
-    private JCheckBox         chkTatCa;     // Checkbox "chọn tất cả" trên header
+    private JCheckBox chkTatCa; // Checkbox "chọn tất cả" trên header
 
     // ── LEFT PANEL - Tổng kết
     private JLabel lblTongTien, lblKhuyenMai, lblVAT, lblTotal;
-    private JLabel lblSoPhongChon;           // Hiển thị "Đang chọn X phòng"
+    private JLabel lblSoPhongChon; // Hiển thị "Đang chọn X phòng"
 
     // ── RIGHT PANEL - Thanh Toán
     private JRadioButton rbTienMat, rbMomo;
-    private JPanel       panelTienMat, panelQR;
-    private JButton[]    btnMenhGia;
-    private JTextField   tfKhachDua;
-    private JLabel       lblTienThua;
-    private JButton      btnThanhToan;
+    private JPanel panelTienMat, panelQR;
+    private JButton[] btnMenhGia;
+    private JTextField tfKhachDua;
+    private JLabel lblTienThua;
+    private JButton btnThanhToan;
 
     // Danh sách song song với bảng (index i <=> row i)
     private List<ChiTietPhieuDatPhongDTO> danhSachPhong = new ArrayList<>();
@@ -99,9 +98,9 @@ public class ThanhToanPanel extends JPanel {
     // Danh sách các phòng đang được TICK — dùng khi thanh toán
     private List<ChiTietPhieuDatPhongDTO> listThanhToan = new ArrayList<>();
 
-    private double       tongTienPhong = 0.0;
-    private double       tienKhachDua  = 0.0;
-    private NumberFormat formatter     = NumberFormat.getInstance(new Locale("vi", "VN"));
+    private double tongTienPhong = 0.0;
+    private double tienKhachDua = 0.0;
+    private NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
     private double tienThua = 0.0;
     private double tongTien = 0.0;
 
@@ -165,13 +164,16 @@ public class ThanhToanPanel extends JPanel {
                 new EmptyBorder(6, 12, 6, 12)));
         tfCCCD.setPreferredSize(new Dimension(220, 36));
         tfCCCD.addFocusListener(new FocusAdapter() {
-            @Override public void focusGained(FocusEvent e) {
+            @Override
+            public void focusGained(FocusEvent e) {
                 if (tfCCCD.getText().equals("Nhập CCCD")) {
                     tfCCCD.setText("");
                     tfCCCD.setForeground(TEXT_DARK);
                 }
             }
-            @Override public void focusLost(FocusEvent e) {
+
+            @Override
+            public void focusLost(FocusEvent e) {
                 if (tfCCCD.getText().isEmpty()) {
                     tfCCCD.setText("Nhập CCCD");
                     tfCCCD.setForeground(TEXT_GRAY);
@@ -207,27 +209,26 @@ public class ThanhToanPanel extends JPanel {
                     this,
                     "Vui lòng nhập CCCD khách hàng trước khi tìm kiếm.",
                     "Thông báo",
-                    JOptionPane.WARNING_MESSAGE
-            );
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         // Reset trạng thái trước khi nạp kết quả mới
         listThanhToan.clear();
         tongTienPhong = 0.0;
-        tienKhachDua  = 0.0;
+        tienKhachDua = 0.0;
 
         danhSachPhong = (List<ChiTietPhieuDatPhongDTO>) clientConnection.sendRequest(
                 Request
                         .builder()
                         .commandType(CommandType.GET_DANH_SACH_DE_THANH_TOAN)
                         .object(cccd)
-                        .build()
-        ).getObject() ;
+                        .build())
+                .getObject();
 
         modelBang.setRowCount(0); // xoá dòng cũ
         for (ChiTietPhieuDatPhongDTO ct : danhSachPhong) {
-            modelBang.addRow(new Object[]{
+            modelBang.addRow(new Object[] {
                     false,
                     ct.getPhong().getSoPhong(),
                     ct.getPhong().getLoaiPhong(),
@@ -256,8 +257,7 @@ public class ThanhToanPanel extends JPanel {
                     this,
                     "Không tìm thấy phòng nào đang thuê với CCCD: " + cccd,
                     "Không có kết quả",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
+                    JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -274,6 +274,7 @@ public class ThanhToanPanel extends JPanel {
             public Class<?> getColumnClass(int col) {
                 return col == 0 ? Boolean.class : Object.class;
             }
+
             @Override
             public boolean isCellEditable(int row, int col) {
                 return col == 0; // chỉ cột checkbox được click
@@ -382,6 +383,7 @@ public class ThanhToanPanel extends JPanel {
         // Renderer cột 0 (Boolean): JCheckBox với màu zebra
         bangPhong.getColumnModel().getColumn(0).setCellRenderer(new TableCellRenderer() {
             private final JCheckBox chk = new JCheckBox();
+
             @Override
             public Component getTableCellRendererComponent(
                     JTable t, Object val, boolean sel, boolean focus, int row, int col) {
@@ -425,7 +427,7 @@ public class ThanhToanPanel extends JPanel {
     private void capNhatListThanhToan() {
         listThanhToan = new ArrayList<>();
 
-        int tongDong   = modelBang.getRowCount();
+        int tongDong = modelBang.getRowCount();
         int soDongChon = 0;
 
         for (int r = 0; r < tongDong; r++) {
@@ -448,7 +450,8 @@ public class ThanhToanPanel extends JPanel {
                 .sum();
 
         updateSummaryCard();
-        if (tfKhachDua != null) tinhTienThua();
+        if (tfKhachDua != null)
+            tinhTienThua();
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -505,21 +508,25 @@ public class ThanhToanPanel extends JPanel {
         body.add(Box.createVerticalStrut(10));
 
         // ── Khởi tạo labels ──
-        lblTongTien  = new JLabel("0 đ");
+        lblTongTien = new JLabel("0 đ");
         lblKhuyenMai = new JLabel("0%");
-        lblVAT       = new JLabel("10%");
-        lblTotal     = new JLabel("0 đ");
+        lblVAT = new JLabel("10%");
+        lblTotal = new JLabel("0 đ");
 
-        lblTongTien .setFont(F_BOLD13); lblTongTien .setForeground(TEXT_DARK);
-        lblKhuyenMai.setFont(F_BOLD13); lblKhuyenMai.setForeground(GREEN);
-        lblVAT      .setFont(F_BOLD13); lblVAT      .setForeground(TEXT_MID);
-        lblTotal    .setFont(F_BOLD16); lblTotal    .setForeground(BLUE);
+        lblTongTien.setFont(F_BOLD13);
+        lblTongTien.setForeground(TEXT_DARK);
+        lblKhuyenMai.setFont(F_BOLD13);
+        lblKhuyenMai.setForeground(GREEN);
+        lblVAT.setFont(F_BOLD13);
+        lblVAT.setForeground(TEXT_MID);
+        lblTotal.setFont(F_BOLD16);
+        lblTotal.setForeground(BLUE);
 
         body.add(makeSummaryRow("Tổng tiền phòng", lblTongTien));
         body.add(Box.createVerticalStrut(8));
-        body.add(makeSummaryRow("Khuyến mãi",      lblKhuyenMai));
+        body.add(makeSummaryRow("Khuyến mãi", lblKhuyenMai));
         body.add(Box.createVerticalStrut(8));
-        body.add(makeSummaryRow("VAT",             lblVAT));
+        body.add(makeSummaryRow("VAT", lblVAT));
         body.add(Box.createVerticalStrut(12));
 
         // ── Separator dưới ──
@@ -545,7 +552,7 @@ public class ThanhToanPanel extends JPanel {
         lblTotal.setHorizontalAlignment(JLabel.RIGHT);
 
         totalRow.add(lblNhanTotal, BorderLayout.WEST);
-        totalRow.add(lblTotal,     BorderLayout.EAST);
+        totalRow.add(lblTotal, BorderLayout.EAST);
         body.add(totalRow);
 
         card.add(body, BorderLayout.CENTER);
@@ -564,8 +571,8 @@ public class ThanhToanPanel extends JPanel {
         lblNhan.setForeground(TEXT_MID);
         lblGiaTri.setHorizontalAlignment(JLabel.RIGHT);
 
-        row.add(lblNhan,    BorderLayout.WEST);
-        row.add(lblGiaTri,  BorderLayout.EAST);
+        row.add(lblNhan, BorderLayout.WEST);
+        row.add(lblGiaTri, BorderLayout.EAST);
         return row;
     }
 
@@ -602,7 +609,8 @@ public class ThanhToanPanel extends JPanel {
 
         // ── Đường accent căn giữa ──
         JPanel accentLine = new JPanel() {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(BLUE);
@@ -669,16 +677,14 @@ public class ThanhToanPanel extends JPanel {
                     Request.builder()
                             .commandType(CommandType.CO_THE_THANH_TOAN)
                             .object(params)
-                            .build()
-            );
+                            .build());
             boolean isThanhToan = (boolean) coTheThanhToan.getObject();
             if (!isThanhToan || tfKhachDua.getText().equals("")) {
                 JOptionPane.showMessageDialog(this,
                         "Thanh toán thất bại vì số tiền khách hàng đưa không đủ",
                         "Thanh toán thất bại",
                         JOptionPane.ERROR_MESSAGE);
-            }
-            else {
+            } else {
                 ThanhToanRequest thanhToanRequest = ThanhToanRequest.builder()
                         .listThanhToan(listThanhToan)
                         .tienKhachDua(tienKhachDua)
@@ -687,21 +693,19 @@ public class ThanhToanPanel extends JPanel {
                         .maNhanVien(maNV)
                         .build();
 
-                Response resHD =  clientConnection.sendRequest(
+                Response resHD = clientConnection.sendRequest(
                         Request
                                 .builder()
                                 .commandType(CommandType.THANH_TOAN)
                                 .object(thanhToanRequest)
-                                .build()
-                );
+                                .build());
 
                 HoaDonDTO hoaDon = (HoaDonDTO) resHD.getObject();
                 if (hoaDon != null) {
                     HDPanel hdPanel = new HDPanel(hoaDon);
                     hdPanel.show(this);
                     refresh();
-                }
-                else {
+                } else {
                     JOptionPane.showMessageDialog(this,
                             "Thanh toán thất bại",
                             "Thất bại",
@@ -741,7 +745,8 @@ public class ThanhToanPanel extends JPanel {
             final double soTien = MENH_GIA_NHANH[i];
             JButton btn = buildOutlineButton(formatter.format(soTien) + " đ");
             btn.addActionListener(e -> {
-                if (tongTienPhong > 0) capNhatKhachDua(soTien);
+                if (tongTienPhong > 0)
+                    capNhatKhachDua(soTien);
             });
             btnMenhGia[i] = btn;
             gridMenhGia.add(btn);
@@ -768,7 +773,10 @@ public class ThanhToanPanel extends JPanel {
         tfKhachDua.setAlignmentX(Component.CENTER_ALIGNMENT);
         tfKhachDua.addActionListener(e -> tinhTienThua());
         tfKhachDua.addFocusListener(new FocusAdapter() {
-            @Override public void focusLost(FocusEvent e) { tinhTienThua(); }
+            @Override
+            public void focusLost(FocusEvent e) {
+                tinhTienThua();
+            }
         });
         panel.add(tfKhachDua);
         panel.add(Box.createVerticalStrut(10));
@@ -798,7 +806,6 @@ public class ThanhToanPanel extends JPanel {
         return panel;
     }
 
-
     // ═══════════════════════════════════════════════════════════════════
     // TIỆN ÍCH THANH TOÁN
     // ═══════════════════════════════════════════════════════════════════
@@ -811,7 +818,10 @@ public class ThanhToanPanel extends JPanel {
 
     private void tinhTienThua() {
         try {
-            if (tongTien <= 0) { lblTienThua.setText("—"); return; }
+            if (tongTien <= 0) {
+                lblTienThua.setText("—");
+                return;
+            }
 
             String text = tfKhachDua.getText().replace("đ", "").trim();
             Number number = formatter.parse(text);
@@ -852,16 +862,15 @@ public class ThanhToanPanel extends JPanel {
                 params.put("tongTien", tongTienPhong);
                 params.put("km", selectedKhuyenMai);
 
-
                 double tienSauGiam = (double) clientConnection.sendRequest(
                         Request
                                 .builder()
                                 .commandType(CommandType.TIEN_SAU_KHI_AP_GIAM_GIA)
                                 .object(params)
-                                .build()
-                ).getObject();
+                                .build())
+                        .getObject();
                 // Giới hạn không vượt tối đa
-                double soTienGiam  = tongTienPhong - tienSauGiam;
+                double soTienGiam = tongTienPhong - tienSauGiam;
 
                 if (soTienGiam > selectedKhuyenMai.getTongKhuyenMaiToiDa()) {
                     soTienGiam = selectedKhuyenMai.getTongKhuyenMaiToiDa();
@@ -879,8 +888,8 @@ public class ThanhToanPanel extends JPanel {
             }
         }
 
-        double vat   = tienSauKM * 0.1;
-        tongTien     = tienSauKM + vat;
+        double vat = tienSauKM * 0.1;
+        tongTien = tienSauKM + vat;
 
         lblVAT.setText("10%");
         lblTotal.setText(formatter.format(tongTien) + " đ");
@@ -903,32 +912,19 @@ public class ThanhToanPanel extends JPanel {
         tfCCCD.setText("Nhập CCCD");
         tfCCCD.setForeground(TEXT_GRAY);
 
-        // ── 2. Reset biến tiền trước để TableModelListener không tính sai khi addRow ──
+        // ── 2. Reset biến tiền trước để TableModelListener không tính sai khi addRow
+        // ──
         listThanhToan = new ArrayList<>();
         tongTienPhong = 0.0;
-        tienKhachDua  = 0.0;
+        tienKhachDua = 0.0;
 
         // ── 3. Tải lại dữ liệu bảng từ ThanhToanServiceImpl ──
         // Tải lại theo CCCD đang nhập (nếu ô trống thì trả về danh sách rỗng)
         danhSachPhong = new ArrayList<>();
-//        String cccdHienTai = tfCCCD.getText().trim();
-//        boolean coTimKiem = !cccdHienTai.isEmpty() && !cccdHienTai.equals("Nhập CCCD");
-//        if (coTimKiem) {
-//            Response res = clientConnection.sendRequest(
-//                    Request.builder()
-//                            .commandType(CommandType.GET_DANH_SACH_DE_THANH_TOAN)
-//                            .object(cccdHienTai)
-//                            .build()
-//            );
-//            danhSachPhong = (List<ChiTietPhieuDatPhongDTO>) res.getObject();
-//        }
-//        else {
-//            danhSachPhong = new ArrayList<>();
-//        }
 
         modelBang.setRowCount(0); // xóa toàn bộ dòng cũ
         for (ChiTietPhieuDatPhongDTO ct : danhSachPhong) {
-            modelBang.addRow(new Object[]{
+            modelBang.addRow(new Object[] {
                     false,
                     ct.getPhong().getSoPhong(),
                     ct.getPhong().getLoaiPhong(),
@@ -967,7 +963,8 @@ public class ThanhToanPanel extends JPanel {
 
     private JButton buildBlueButton(String text, int w, int h) {
         JButton btn = new JButton(text) {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(getModel().isPressed() ? BLUE.darker() : BLUE);
@@ -988,7 +985,8 @@ public class ThanhToanPanel extends JPanel {
 
     private JButton buildBlueButtonFull(String text) {
         JButton btn = new JButton(text) {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(getModel().isPressed() ? BLUE.darker() : BLUE);
@@ -1016,13 +1014,12 @@ public class ThanhToanPanel extends JPanel {
 
     private void moModalKhuyenMai() {
         @SuppressWarnings("unchecked")
-        List<KhuyenMaiDTO> dsKM = (List<KhuyenMaiDTO>)
-                clientConnection.sendRequest(
-                        Request
-                                .builder()
-                                .commandType(CommandType.GET_DANH_SACH_KHUYEN_MAI_HOP_LE)
-                                .build()
-                ).getObject();
+        List<KhuyenMaiDTO> dsKM = (List<KhuyenMaiDTO>) clientConnection.sendRequest(
+                Request
+                        .builder()
+                        .commandType(CommandType.GET_DANH_SACH_KHUYEN_MAI_HOP_LE)
+                        .build())
+                .getObject();
 
         // Lọc chỉ lấy KM còn hợp lệ theo ngày và tổng tiền
         LocalDateTime now = LocalDateTime.now();
@@ -1064,18 +1061,21 @@ public class ThanhToanPanel extends JPanel {
         modal.add(header, BorderLayout.NORTH);
 
         // ── Bảng khuyến mãi ──
-        String[] cols = {"Tên khuyến mãi", "Tối thiểu", "Tối đa", "Từ ngày", "Đến ngày", "Giảm"};
+        String[] cols = { "Tên khuyến mãi", "Tối thiểu", "Tối đa", "Từ ngày", "Đến ngày", "Giảm" };
         DefaultTableModel modelKM = new DefaultTableModel(cols, 0) {
-            @Override public boolean isCellEditable(int r, int c) { return false; }
+            @Override
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
         };
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         for (KhuyenMaiDTO km : dsHopLe) {
-            modelKM.addRow(new Object[]{
+            modelKM.addRow(new Object[] {
                     km.getTenKhuyenMai(),
                     formatter.format(km.getTongTienToiThieu()) + " đ",
                     formatter.format(km.getTongKhuyenMaiToiDa()) + " đ",
-                    km.getNgayBatDau()  != null ? km.getNgayBatDau().format(dtf)  : "—",
+                    km.getNgayBatDau() != null ? km.getNgayBatDau().format(dtf) : "—",
                     km.getNgayKetThuc() != null ? km.getNgayKetThuc().format(dtf) : "—",
                     Math.round(km.getHeSo() * 100) + "%"
             });
@@ -1108,28 +1108,33 @@ public class ThanhToanPanel extends JPanel {
 
         // Renderer cột "Giảm" màu xanh
         tableKM.getColumnModel().getColumn(5).setCellRenderer(new DefaultTableCellRenderer() {
-            @Override public Component getTableCellRendererComponent(
+            @Override
+            public Component getTableCellRendererComponent(
                     JTable t, Object val, boolean sel, boolean focus, int row, int col) {
                 super.getTableCellRendererComponent(t, val, sel, focus, row, col);
                 setHorizontalAlignment(JLabel.CENTER);
                 setForeground(sel ? TEXT_DARK : GREEN);
                 setFont(F_BOLD13);
-                if (!sel) setBackground(row % 2 == 0 ? BG_WHITE : new Color(0xFAFBFD));
+                if (!sel)
+                    setBackground(row % 2 == 0 ? BG_WHITE : new Color(0xFAFBFD));
                 return this;
             }
         });
 
         // Renderer zebra cho các cột còn lại
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer() {
-            @Override public Component getTableCellRendererComponent(
+            @Override
+            public Component getTableCellRendererComponent(
                     JTable t, Object val, boolean sel, boolean focus, int row, int col) {
                 super.getTableCellRendererComponent(t, val, sel, focus, row, col);
                 setHorizontalAlignment(JLabel.CENTER);
-                if (!sel) setBackground(row % 2 == 0 ? BG_WHITE : new Color(0xFAFBFD));
+                if (!sel)
+                    setBackground(row % 2 == 0 ? BG_WHITE : new Color(0xFAFBFD));
                 return this;
             }
         };
-        for (int c = 0; c < 5; c++) tableKM.getColumnModel().getColumn(c).setCellRenderer(centerRenderer);
+        for (int c = 0; c < 5; c++)
+            tableKM.getColumnModel().getColumn(c).setCellRenderer(centerRenderer);
 
         JScrollPane scroll = new JScrollPane(tableKM);
         scroll.setBorder(BorderFactory.createEmptyBorder());
@@ -1178,7 +1183,8 @@ public class ThanhToanPanel extends JPanel {
 
     private JButton buildOutlineButton(String text) {
         JButton btn = new JButton(text) {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(getModel().isPressed() ? BLUE_LIGHT : BG_WHITE);
@@ -1205,11 +1211,22 @@ public class ThanhToanPanel extends JPanel {
             private boolean hovered = false;
             {
                 addMouseListener(new MouseAdapter() {
-                    @Override public void mouseEntered(MouseEvent e) { hovered = true;  repaint(); }
-                    @Override public void mouseExited (MouseEvent e) { hovered = false; repaint(); }
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        hovered = true;
+                        repaint();
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        hovered = false;
+                        repaint();
+                    }
                 });
             }
-            @Override protected void paintComponent(Graphics g) {
+
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 Color bgColor = getModel().isPressed() ? GREEN_DARK
@@ -1243,9 +1260,18 @@ public class ThanhToanPanel extends JPanel {
 
     private Icon createRadioIcon(boolean checked) {
         return new Icon() {
-            @Override public int getIconWidth()  { return 18; }
-            @Override public int getIconHeight() { return 18; }
-            @Override public void paintIcon(Component c, Graphics g, int x, int y) {
+            @Override
+            public int getIconWidth() {
+                return 18;
+            }
+
+            @Override
+            public int getIconHeight() {
+                return 18;
+            }
+
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(BORDER_COL);
@@ -1297,7 +1323,8 @@ public class ThanhToanPanel extends JPanel {
 
             for (int r = 0; r < modules; r++) {
                 for (int c = 0; c < modules; c++) {
-                    if (isVungFinderPattern(r, c, modules)) continue;
+                    if (isVungFinderPattern(r, c, modules))
+                        continue;
                     if (luoi[r][c]) {
                         g2.setColor(Color.BLACK);
                         g2.fillRect(c * cellSize, r * cellSize, cellSize - 1, cellSize - 1);
@@ -1314,9 +1341,12 @@ public class ThanhToanPanel extends JPanel {
         }
 
         private void veFinderPattern(Graphics2D g2, int py, int px, int cell) {
-            g2.setColor(Color.BLACK); g2.fillRect(px, py, cell * 7, cell * 7);
-            g2.setColor(Color.WHITE); g2.fillRect(px + cell, py + cell, cell * 5, cell * 5);
-            g2.setColor(Color.BLACK); g2.fillRect(px + cell * 2, py + cell * 2, cell * 3, cell * 3);
+            g2.setColor(Color.BLACK);
+            g2.fillRect(px, py, cell * 7, cell * 7);
+            g2.setColor(Color.WHITE);
+            g2.fillRect(px + cell, py + cell, cell * 5, cell * 5);
+            g2.setColor(Color.BLACK);
+            g2.fillRect(px + cell * 2, py + cell * 2, cell * 3, cell * 3);
         }
 
         private boolean isVungFinderPattern(int r, int c, int n) {
@@ -1350,7 +1380,7 @@ public class ThanhToanPanel extends JPanel {
 
         RoundedPanel(int arc, Color bg) {
             this.arc = arc;
-            this.bg  = bg;
+            this.bg = bg;
             setOpaque(false);
         }
 
@@ -1379,6 +1409,5 @@ public class ThanhToanPanel extends JPanel {
         updateSummaryCard();
         tinhTienThua();
     }
-
 
 }

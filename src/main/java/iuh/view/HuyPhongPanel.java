@@ -1,7 +1,12 @@
 package iuh.view;
 
-import iuh.entity.ChiTietPhieuDatPhong;
-import iuh.entity.PhieuHuyPhong;
+import iuh.dto.ChiTietPhieuDatPhongDTO;
+import iuh.dto.HuyPhongRequest;
+import iuh.dto.HuyPhongResultDTO;
+import iuh.mapper.Mapper;
+import iuh.network.ClientConnection;
+import iuh.network.CommandType;
+import iuh.network.Request;
 import iuh.service.impl.ChiTietPhieuDatPhongServiceImpl;
 import iuh.service.impl.PhieuHuyPhongServiceImpl;
 
@@ -20,20 +25,20 @@ import java.util.List;
 public class HuyPhongPanel extends JPanel {
 
     // --- BẢNG MÀU CHUẨN FORM ---
-    static final Color BG      = new Color(0xF4F6FB);
-    static final Color WHITE   = Color.WHITE;
-    static final Color BLUE    = new Color(0x3B6FF0);
-    static final Color RED     = new Color(0xEF4444);
-    static final Color GREEN   = new Color(0x22C55E);
-    static final Color DARK    = new Color(0x1A1A2E);
-    static final Color MID     = new Color(0x4A5268);
-    static final Color BORDER  = new Color(0xE4E9F2);
+    static final Color BG = new Color(0xF4F6FB);
+    static final Color WHITE = Color.WHITE;
+    static final Color BLUE = new Color(0x3B6FF0);
+    static final Color RED = new Color(0xEF4444);
+    static final Color GREEN = new Color(0x22C55E);
+    static final Color DARK = new Color(0x1A1A2E);
+    static final Color MID = new Color(0x4A5268);
+    static final Color BORDER = new Color(0xE4E9F2);
 
-    static final Font F_H1     = new Font("Segoe UI", Font.BOLD, 24);
-    static final Font F_LABEL  = new Font("Segoe UI", Font.BOLD, 14);
-    static final Font F_TEXT   = new Font("Segoe UI", Font.PLAIN, 14);
+    static final Font F_H1 = new Font("Segoe UI", Font.BOLD, 24);
+    static final Font F_LABEL = new Font("Segoe UI", Font.BOLD, 14);
+    static final Font F_TEXT = new Font("Segoe UI", Font.PLAIN, 14);
     static final Font F_BOLD12 = new Font("Segoe UI", Font.BOLD, 13);
-    static final Font F_TABLE  = new Font("Segoe UI", Font.PLAIN, 14);
+    static final Font F_TABLE = new Font("Segoe UI", Font.PLAIN, 14);
 
     private JTable tblDanhSach;
     private DefaultTableModel tableModel;
@@ -43,9 +48,7 @@ public class HuyPhongPanel extends JPanel {
     private JLabel lblSearchMsg;
     private JLabel lblActionMsg;
 
-    private PhieuHuyPhongServiceImpl phieuHuyService = new PhieuHuyPhongServiceImpl();
-    private ChiTietPhieuDatPhongServiceImpl chiTietService = new ChiTietPhieuDatPhongServiceImpl();
-    private List<ChiTietPhieuDatPhong> dsChiTiet = new ArrayList<>();
+    private List<ChiTietPhieuDatPhongDTO> dsChiTiet = new ArrayList<>();
 
     public HuyPhongPanel() {
         setLayout(new BorderLayout(20, 20));
@@ -73,8 +76,7 @@ public class HuyPhongPanel extends JPanel {
         txtTimKiem.setPreferredSize(new Dimension(200, 40));
         txtTimKiem.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(BORDER, 1, true),
-                new EmptyBorder(0, 10, 0, 10)
-        ));
+                new EmptyBorder(0, 10, 0, 10)));
         txtTimKiem.addActionListener(e -> timKiemPhongThoCCCD());
         pnlTimKiem.add(txtTimKiem);
 
@@ -95,10 +97,13 @@ public class HuyPhongPanel extends JPanel {
         // =========================================================
         // 2. BẢNG DANH SÁCH
         // =========================================================
-        String[] cols = {"Chọn", "Mã Phiếu", "Phòng", "Loại", "Tên KH", "CCCD", "Ngày Nhận", "Ngày Trả"};
+        String[] cols = { "Chọn", "Mã Phiếu", "Phòng", "Loại", "Tên KH", "CCCD", "Ngày Nhận", "Ngày Trả" };
         tableModel = new DefaultTableModel(cols, 0) {
             @Override
-            public boolean isCellEditable(int row, int column) { return column == 0; }
+            public boolean isCellEditable(int row, int column) {
+                return column == 0;
+            }
+
             @Override
             public Class<?> getColumnClass(int columnIndex) {
                 return columnIndex == 0 ? Boolean.class : String.class;
@@ -143,7 +148,8 @@ public class HuyPhongPanel extends JPanel {
             return;
         }
 
-        dsChiTiet = chiTietService.getPhongDeHuyByCCCD(cccd);
+        dsChiTiet = (List<ChiTietPhieuDatPhongDTO>) ClientConnection.getInstance().sendRequest(
+                Request.builder().commandType(CommandType.GET_DS_PHONG_DE_HUY).object(cccd).build()).getObject();
 
         if (dsChiTiet.isEmpty()) {
             lblSearchMsg.setText("Không tìm thấy phòng nào đang đặt cho CCCD: " + cccd);
@@ -161,14 +167,20 @@ public class HuyPhongPanel extends JPanel {
         lblActionMsg.setText(" "); // Xóa thông báo báo lỗi ở nút khi tải lại bảng
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        for (ChiTietPhieuDatPhong ct : dsChiTiet) {
-            tableModel.addRow(new Object[]{
+        for (ChiTietPhieuDatPhongDTO ct : dsChiTiet) {
+            tableModel.addRow(new Object[] {
                     false,
                     ct.getPhieuDatPhong() != null ? ct.getPhieuDatPhong().getMaPhieuDatPhong() : "",
                     ct.getPhong() != null ? ct.getPhong().getMaPhong() : "",
-                    (ct.getPhong() != null && ct.getPhong().getLoaiPhong() != null) ? ct.getPhong().getLoaiPhong().getTenLoaiPhong() : "",
-                    (ct.getPhieuDatPhong() != null && ct.getPhieuDatPhong().getKhachHang() != null) ? ct.getPhieuDatPhong().getKhachHang().getTenKhachHang() : "",
-                    (ct.getPhieuDatPhong() != null && ct.getPhieuDatPhong().getKhachHang() != null) ? ct.getPhieuDatPhong().getKhachHang().getCCCD() : "",
+                    (ct.getPhong() != null && ct.getPhong().getLoaiPhong() != null)
+                            ? ct.getPhong().getLoaiPhong().getTenLoaiPhong()
+                            : "",
+                    (ct.getPhieuDatPhong() != null && ct.getPhieuDatPhong().getKhachHang() != null)
+                            ? ct.getPhieuDatPhong().getKhachHang().getTenKhachHang()
+                            : "",
+                    (ct.getPhieuDatPhong() != null && ct.getPhieuDatPhong().getKhachHang() != null)
+                            ? ct.getPhieuDatPhong().getKhachHang().getCCCD()
+                            : "",
                     ct.getThoiGianNhanPhong() != null ? ct.getThoiGianNhanPhong().format(formatter) : "",
                     ct.getThoiGianTraPhong() != null ? ct.getThoiGianTraPhong().format(formatter) : ""
             });
@@ -179,7 +191,7 @@ public class HuyPhongPanel extends JPanel {
     // LOGIC HỦY & HOÀN TIỀN
     // =========================================================
     private void xuLyHuyPhong() {
-        List<ChiTietPhieuDatPhong> danhSachPhongBiHuy = new ArrayList<>();
+        List<ChiTietPhieuDatPhongDTO> danhSachPhongBiHuy = new ArrayList<>();
         for (int i = 0; i < tblDanhSach.getRowCount(); i++) {
             Boolean isChecked = (Boolean) tblDanhSach.getValueAt(i, 0);
             if (isChecked != null && isChecked) {
@@ -201,7 +213,7 @@ public class HuyPhongPanel extends JPanel {
         LocalDateTime bayGio = LocalDateTime.now();
         java.util.Set<String> dsMaPDP = new java.util.HashSet<>();
 
-        for (ChiTietPhieuDatPhong ct : danhSachPhongBiHuy) {
+        for (ChiTietPhieuDatPhongDTO ct : danhSachPhongBiHuy) {
             if (ct.getPhieuDatPhong() != null) {
                 String ma = ct.getPhieuDatPhong().getMaPhieuDatPhong();
                 double tienCocCuaPhieu = ct.getPhieuDatPhong().getTienDatCoc();
@@ -238,7 +250,8 @@ public class HuyPhongPanel extends JPanel {
         JLabel lblTitle = lbl("Xác Nhận Hủy & Hoàn Tiền", F_H1.deriveFont(20f), DARK);
         pnlContent.add(lblTitle, BorderLayout.NORTH);
 
-        // Sử dụng BoxLayout trục Y để các thành phần xếp chồng lên nhau full chiều ngang
+        // Sử dụng BoxLayout trục Y để các thành phần xếp chồng lên nhau full chiều
+        // ngang
         JPanel pnlInput = new JPanel();
         pnlInput.setLayout(new BoxLayout(pnlInput, BoxLayout.Y_AXIS));
         pnlInput.setBackground(WHITE);
@@ -251,7 +264,8 @@ public class HuyPhongPanel extends JPanel {
         txtLyDo.setLineWrap(true);
         txtLyDo.setWrapStyleWord(true);
         JScrollPane scrollLyDo = new JScrollPane(txtLyDo);
-        scrollLyDo.setBorder(BorderFactory.createCompoundBorder(new LineBorder(BORDER, 1, true), new EmptyBorder(5, 8, 5, 8)));
+        scrollLyDo.setBorder(
+                BorderFactory.createCompoundBorder(new LineBorder(BORDER, 1, true), new EmptyBorder(5, 8, 5, 8)));
         pnlInput.add(scrollLyDo);
 
         pnlInput.add(Box.createVerticalStrut(15));
@@ -264,7 +278,8 @@ public class HuyPhongPanel extends JPanel {
         txtTienCocDisp.setEditable(false);
         txtTienCocDisp.setFocusable(false);
         txtTienCocDisp.setBackground(new Color(0xF8FAFC));
-        txtTienCocDisp.setBorder(BorderFactory.createCompoundBorder(new LineBorder(BORDER, 1, true), new EmptyBorder(0, 10, 0, 10)));
+        txtTienCocDisp.setBorder(
+                BorderFactory.createCompoundBorder(new LineBorder(BORDER, 1, true), new EmptyBorder(0, 10, 0, 10)));
         txtTienCocDisp.setPreferredSize(new Dimension(0, 40));
         txtTienCocDisp.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         pnlInput.add(txtTienCocDisp);
@@ -280,7 +295,8 @@ public class HuyPhongPanel extends JPanel {
         txtHoanDisp.setEditable(false); // KHÔNG CHO SỬA
         txtHoanDisp.setFocusable(false);
         txtHoanDisp.setBackground(new Color(0xFFF1F1)); // Nền đỏ siêu nhạt
-        txtHoanDisp.setBorder(BorderFactory.createCompoundBorder(new LineBorder(RED, 1, true), new EmptyBorder(0, 10, 0, 10)));
+        txtHoanDisp.setBorder(
+                BorderFactory.createCompoundBorder(new LineBorder(RED, 1, true), new EmptyBorder(0, 10, 0, 10)));
         txtHoanDisp.setPreferredSize(new Dimension(0, 40));
         txtHoanDisp.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         pnlInput.add(txtHoanDisp);
@@ -298,7 +314,7 @@ public class HuyPhongPanel extends JPanel {
         JButton btnCancel = createBtn("Hủy bỏ", 110, 40, MID, new Color(0x323846));
         JButton btnConfirm = createBtn("Xác nhận Hủy", 150, 40, RED, new Color(0xB91C1C));
 
-        final String[] finalLyDo = {null};
+        final String[] finalLyDo = { null };
         btnCancel.addActionListener(e -> dialog.dispose());
 
         double finalTongTienHoan = tongTienHoan;
@@ -323,22 +339,34 @@ public class HuyPhongPanel extends JPanel {
 
         // --- 3. XỬ LÝ LƯU DATABASE ---
         if (finalLyDo[0] != null) {
-            List<PhieuHuyPhong> dsPhieuHuy = new ArrayList<>();
-            for (ChiTietPhieuDatPhong ct : danhSachPhongBiHuy) {
-                dsPhieuHuy.add(PhieuHuyPhong.builder()
+            // Tạo danh sách PhieuHuyPhong DTO từ ChiTietPhieuDatPhong
+            List<iuh.dto.PhieuHuyPhongDTO> dsPhieuHuyDTO = new ArrayList<>();
+            for (ChiTietPhieuDatPhongDTO ct : danhSachPhongBiHuy) {
+                dsPhieuHuyDTO.add(iuh.dto.PhieuHuyPhongDTO.builder()
                         .lyDo(finalLyDo[0])
                         .ngayHuy(LocalDateTime.now())
-                        .chiTietPhieuDatPhong(ct)
+                        .chiTietPhieuDatPhong(Mapper.map(ct))
                         .build());
             }
 
-            if (phieuHuyService.thucHienHuyNhieuPhong(dsPhieuHuy, finalTongTienHoan)) {
+            // Tạo HuyPhongRequest DTO từ các dữ liệu
+            HuyPhongRequest request = HuyPhongRequest.builder()
+                    .listPhieuHuy(dsPhieuHuyDTO)
+                    .tienHoan(finalTongTienHoan)
+                    .build();
+
+            // Gọi service với request DTO
+            HuyPhongResultDTO resultDTO = (HuyPhongResultDTO) ClientConnection.getInstance().sendRequest(
+                    Request.builder().commandType(CommandType.HUY_PHONG).object(request).build()).getObject();
+
+            // Xử lý response DTO
+            if (resultDTO.isSuccess()) {
                 dsChiTiet.removeAll(danhSachPhongBiHuy);
                 loadDataToTable();
-                lblActionMsg.setText("Đã hủy thành công. Đã hoàn: " + fm.format(finalTongTienHoan) + " VNĐ");
+                lblActionMsg.setText("Đã hủy thành công. Đã hoàn: " + fm.format(resultDTO.getTienHoanThuc()) + " VNĐ");
                 lblActionMsg.setForeground(GREEN);
             } else {
-                lblActionMsg.setText("Lỗi kết nối Database!");
+                lblActionMsg.setText(resultDTO.getMessage());
                 lblActionMsg.setForeground(RED);
             }
         }
@@ -348,7 +376,10 @@ public class HuyPhongPanel extends JPanel {
     // CÁC HÀM TIỆN ÍCH VẼ GIAO DIỆN
     // =========================================================
     static JLabel lbl(String text, Font f, Color c) {
-        JLabel l = new JLabel(text); l.setFont(f); l.setForeground(c); return l;
+        JLabel l = new JLabel(text);
+        l.setFont(f);
+        l.setForeground(c);
+        return l;
     }
 
     static JButton blueBtn(String text, int w, int h) {
@@ -361,19 +392,25 @@ public class HuyPhongPanel extends JPanel {
 
     private static JButton createBtn(String text, int w, int h, Color normal, Color hover) {
         JButton btn = new JButton(text) {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(getModel().isRollover() ? hover : normal);
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
-                g2.setColor(WHITE); g2.setFont(F_BOLD12);
+                g2.setColor(WHITE);
+                g2.setFont(F_BOLD12);
                 FontMetrics fm = g2.getFontMetrics();
-                g2.drawString(getText(), (getWidth() - fm.stringWidth(getText())) / 2, (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
+                g2.drawString(getText(), (getWidth() - fm.stringWidth(getText())) / 2,
+                        (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
                 g2.dispose();
             }
         };
-        btn.setOpaque(false); btn.setContentAreaFilled(false); btn.setBorderPainted(false);
-        btn.setPreferredSize(new Dimension(w, h)); btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn.setOpaque(false);
+        btn.setContentAreaFilled(false);
+        btn.setBorderPainted(false);
+        btn.setPreferredSize(new Dimension(w, h));
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         return btn;
     }
 
@@ -388,13 +425,15 @@ public class HuyPhongPanel extends JPanel {
 
         DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer() {
             @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                    boolean hasFocus, int row, int column) {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                c.setFont(F_LABEL); c.setBackground(WHITE); c.setForeground(MID);
+                c.setFont(F_LABEL);
+                c.setBackground(WHITE);
+                c.setForeground(MID);
                 setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createMatteBorder(0, 0, 1, 0, BORDER),
-                        new EmptyBorder(0, 10, 0, 10)
-                ));
+                        new EmptyBorder(0, 10, 0, 10)));
                 setHorizontalAlignment(column == 0 ? SwingConstants.CENTER : SwingConstants.LEFT);
                 return c;
             }
@@ -402,7 +441,8 @@ public class HuyPhongPanel extends JPanel {
 
         DefaultTableCellRenderer textRenderer = new DefaultTableCellRenderer() {
             @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                    boolean hasFocus, int row, int column) {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 setBorder(new EmptyBorder(0, 10, 0, 10));
                 return c;
@@ -413,7 +453,8 @@ public class HuyPhongPanel extends JPanel {
         header.setPreferredSize(new Dimension(0, 45));
         for (int i = 0; i < table.getColumnCount(); i++) {
             table.getColumnModel().getColumn(i).setHeaderRenderer(headerRenderer);
-            if (i > 0) table.getColumnModel().getColumn(i).setCellRenderer(textRenderer);
+            if (i > 0)
+                table.getColumnModel().getColumn(i).setCellRenderer(textRenderer);
         }
 
         table.getColumnModel().getColumn(0).setMaxWidth(60);

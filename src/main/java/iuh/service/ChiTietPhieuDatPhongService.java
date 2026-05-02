@@ -5,6 +5,7 @@
  */
 package iuh.service;
 
+import iuh.dto.ChiTietPhieuDatPhongDTO;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.enums.TrangThaiChiTietPhieuDatPhong;
 import iuh.enums.TrangThaiPhieuDatPhong;
@@ -28,10 +29,10 @@ public interface ChiTietPhieuDatPhongService {
     boolean updateTrangThaiByMaPhong(String maPhong, TrangThaiChiTietPhieuDatPhong trangThai);
 
     List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong statusTicket,
-                                                                  TrangThaiChiTietPhieuDatPhong statusDetail,
-                                                                  String cccd);
+            TrangThaiChiTietPhieuDatPhong statusDetail,
+            String cccd);
 
-    List<ChiTietPhieuDatPhong> getPhongDeHuyByCCCD(String cccd);
+    List<ChiTietPhieuDatPhongDTO> getPhongDeHuyByCCCD(String cccd);
 
     List<ChiTietPhieuDatPhong> getPhongDeNhanByCCCD(String cccd);
 
