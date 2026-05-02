@@ -1,8 +1,8 @@
 package iuh.dto;
 
 import iuh.entity.LoaiPhong;
-import iuh.entity.TinhTrangPhong;
-import iuh.entity.TrangThaiPhong;
+import iuh.dto.TinhTrangPhong;
+import iuh.dto.TrangThaiPhong;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
