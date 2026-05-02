@@ -8,12 +8,37 @@ public enum CommandType {
     GET_ALL_LOAI_PHONG,
     GET_ROOMS_BY_KEYWORD,
 
-
     CREATE_PHONG,
-
 
     UPDATE_PHONG,
 
-
     DELETE_PHONG,
+
+    // ===== ĐẶT PHÒNG =====
+    GET_PHONG_TRONG,
+    LAY_MA_PHIEU_DAT_PHONG,
+    DAT_PHONG,
+    TIM_KHACH_HANG_CCCD,
+    THEM_KHACH_HANG,
+    CAP_NHAT_KHACH_HANG,
+    PHAT_SINH_MA_KHACH_HANG,
+
+    // ===== THỐNG KÊ =====
+    LAY_THONG_KE,
+
+    // ===== KHUYẾN MÃI =====
+    GET_ALL_KHUYEN_MAI,
+    GET_KHUYEN_MAI_BY_ID,
+    GET_KHUYEN_MAI_BY_KEYWORD,
+    CREATE_KHUYEN_MAI,
+    UPDATE_KHUYEN_MAI,
+    DELETE_KHUYEN_MAI,
+    PHAT_SINH_MA_KHUYEN_MAI,
+
+    // ===== CA LÀM VIỆC NHÂN VIÊN =====
+    GET_ACTIVE_SHIFT,
+    MO_CA,
+    KET_CA,
+    GET_SHIFT_HISTORY,
+    GET_ALL_CA
 }

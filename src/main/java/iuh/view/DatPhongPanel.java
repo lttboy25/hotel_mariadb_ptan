@@ -1,5 +1,9 @@
 package iuh.view;
 
+import iuh.network.ClientConnection;
+import iuh.network.CommandType;
+import iuh.network.Request;
+import iuh.network.Response;
 import iuh.dto.DatPhongRequestDTO;
 import iuh.dto.DatPhongResultDTO;
 import iuh.dto.KhachHangDTO;
@@ -7,9 +11,6 @@ import iuh.entity.Phong;
 import iuh.entity.TinhTrangPhong;
 import iuh.entity.TrangThaiPhieuDatPhong;
 import iuh.entity.TrangThaiPhong;
-import iuh.service.impl.DatPhongServiceImpl;
-import iuh.service.impl.KhachHangServiceImpl;
-import iuh.service.impl.CaLamViecNhanVienServiceImpl;
 import iuh.dto.CaLamViecNhanVienDTO;
 
 import javax.swing.*;
@@ -92,9 +93,7 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
     private String filterFloor = "Tầng";
 
     // Gom logic backend qua service + DTO
-    private final KhachHangServiceImpl khachHangServiceImpl = new KhachHangServiceImpl();
-    private final DatPhongServiceImpl datPhongServiceImpl = new DatPhongServiceImpl();
-    private final CaLamViecNhanVienServiceImpl shiftService = new CaLamViecNhanVienServiceImpl();
+    private final ClientConnection clientConnection = ClientConnection.getInstance();
 
     public DatPhongPanel() {
         setLayout(new BorderLayout());
@@ -122,7 +121,12 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
                 allRooms.clear();
                 return;
             }
-            List<Phong> phongs = datPhongServiceImpl.getDsPhongTrong(checkIn, checkOut);
+            Request request = Request.builder()
+                    .commandType(CommandType.GET_PHONG_TRONG)
+                    .object(new LocalDateTime[]{checkIn, checkOut})
+                    .build();
+            Response response = clientConnection.sendRequest(request);
+            List<Phong> phongs = (List<Phong>) response.getObject();
             allRooms.clear();
             for (Phong p : phongs) {
                 allRooms.add(toRoom(p));
@@ -558,7 +562,12 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
         }
 
         try {
-            List<Phong> phongs = datPhongServiceImpl.getDsPhongTrong(checkIn, checkOut);
+            Request request = Request.builder()
+                    .commandType(CommandType.GET_PHONG_TRONG)
+                    .object(new LocalDateTime[]{checkIn, checkOut})
+                    .build();
+            Response response = clientConnection.sendRequest(request);
+            List<Phong> phongs = (List<Phong>) response.getObject();
 
             allRooms.clear();
             for (Phong p : phongs) {
@@ -731,7 +740,12 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
 
             // Kiểm tra ca làm việc trước khi cho phép đặt phòng
             String maNV = CurrentUser.getInstance().getMaNhanVien();
-            CaLamViecNhanVienDTO activeShift = shiftService.getActiveShift(maNV);
+            Request request = Request.builder()
+                    .commandType(CommandType.GET_ACTIVE_SHIFT)
+                    .object(maNV)
+                    .build();
+            Response response = clientConnection.sendRequest(request);
+            CaLamViecNhanVienDTO activeShift = (CaLamViecNhanVienDTO) response.getObject();
             if (activeShift == null) {
                 JOptionPane.showMessageDialog(this,
                         "Bạn phải MỞ CA LÀM VIỆC trước khi thực hiện thực hiện các nghiệp vụ!",
@@ -1044,7 +1058,12 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
                 return;
             }
             try {
-                KhachHangDTO kh = khachHangServiceImpl.timTheoCCCD(cccd);
+                Request request = Request.builder()
+                        .commandType(CommandType.TIM_KHACH_HANG_CCCD)
+                        .object(cccd)
+                        .build();
+                Response response = clientConnection.sendRequest(request);
+                KhachHangDTO kh = (KhachHangDTO) response.getObject();
                 if (kh != null) {
                     // Tìm thấy → điền sẵn form
                     foundCustomer[0] = kh;
@@ -1110,10 +1129,21 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
                         email);
 
                 if (isNewCustomer[0]) {
-                    dto.setMaKhachHang(khachHangServiceImpl.phatSinhMaMoi());
-                    khachHangServiceImpl.themKhachHang(dto);
+                    Request reqCode = Request.builder().commandType(CommandType.PHAT_SINH_MA_KHACH_HANG).build();
+                    String maKH = (String) clientConnection.sendRequest(reqCode).getObject();
+                    dto.setMaKhachHang(maKH);
+                    
+                    Request reqAdd = Request.builder()
+                            .commandType(CommandType.THEM_KHACH_HANG)
+                            .object(dto)
+                            .build();
+                    clientConnection.sendRequest(reqAdd);
                 } else {
-                    khachHangServiceImpl.capNhatKhachHang(dto);
+                    Request reqUpd = Request.builder()
+                            .commandType(CommandType.CAP_NHAT_KHACH_HANG)
+                            .object(dto)
+                            .build();
+                    clientConnection.sendRequest(reqUpd);
                 }
 
                 finalizeDatPhong(dto, checkIn, checkOut, dialog);
@@ -1151,7 +1181,12 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
                     .maPhongs(selectedRooms.stream().map(r -> r.id).toList())
                     .build();
 
-            DatPhongResultDTO result = datPhongServiceImpl.datPhong(request);
+            Request reqDat = Request.builder()
+                    .commandType(CommandType.DAT_PHONG)
+                    .object(request)
+                    .build();
+            Response respDat = clientConnection.sendRequest(reqDat);
+            DatPhongResultDTO result = (DatPhongResultDTO) respDat.getObject();
 
             dialog.dispose();
             JOptionPane.showMessageDialog(this,

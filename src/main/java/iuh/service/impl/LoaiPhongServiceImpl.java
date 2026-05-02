@@ -4,10 +4,9 @@ import java.util.List;
 
 import iuh.dao.impl.LoaiPhongDaoImpl;
 import iuh.dto.LoaiPhongDTO;
-import iuh.entity.LoaiPhong;
-import iuh.mapper.Mapper;
+import iuh.service.LoaiPhongService;
 
-public class LoaiPhongServiceImpl implements iuh.service.i.LoaiPhongService, iuh.service.LoaiPhongService {
+public class LoaiPhongServiceImpl implements LoaiPhongService {
     private LoaiPhongDaoImpl loaiPhongDao = new LoaiPhongDaoImpl();
 
     @Override

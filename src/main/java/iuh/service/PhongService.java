@@ -6,13 +6,12 @@
 package iuh.service;
 
 import iuh.dto.PhongDTO;
+import iuh.dto.TinhTrangPhong;
+import iuh.dto.TrangThaiPhong;
 import iuh.entity.Phong;
-import iuh.entity.TinhTrangPhong;
-import iuh.entity.TrangThaiPhong;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 /*
  * @description
@@ -43,7 +42,7 @@ public interface PhongService {
 
     List<Phong> getPhongByDate(LocalDateTime ngayNhan, LocalDateTime ngayTra);
 
-    List<Phong> getRoomsByStatus(TinhTrangPhong status);
+    List<Phong> getRoomsByStatus(iuh.entity.TinhTrangPhong status);
 
-    boolean updateStatusRoom(String maPhong, TrangThaiPhong trangThai, TinhTrangPhong tinhTrang);
+    boolean updateStatusRoom(String maPhong, iuh.entity.TrangThaiPhong trangThai, iuh.entity.TinhTrangPhong tinhTrang);
 }

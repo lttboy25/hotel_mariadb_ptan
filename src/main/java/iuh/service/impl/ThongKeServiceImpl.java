@@ -8,12 +8,13 @@ package iuh.service.impl;
 import iuh.dao.impl.ThongKeDaoImpl;
 import iuh.dto.ThongKeDTO;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
-public class ThongKeServiceImpl implements iuh.service.ThongKeService {
+public class ThongKeServiceImpl implements iuh.service.ThongKeService , Serializable {
     private final ThongKeDaoImpl thongKeDaoImpl = new ThongKeDaoImpl();
 
     @Override

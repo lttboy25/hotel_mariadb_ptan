@@ -56,9 +56,11 @@ public class Mapper {
                 .maPhong(dto.getMaPhong())
                 .soPhong(dto.getSoPhong())
                 .loaiPhong(lp)
-                .trangThai(dto.getTrangThai())
+                .trangThai(dto.getTrangThai() != null ? iuh.entity.TrangThaiPhong.valueOf(dto.getTrangThai().name())
+                        : null)
                 .tang(dto.getTang())
-                .tinhTrang(dto.getTinhTrang())
+                .tinhTrang(dto.getTinhTrang() != null ? iuh.entity.TinhTrangPhong.valueOf(dto.getTinhTrang().name())
+                        : null)
                 .moTa(dto.getMoTa())
                 .build();
     }
@@ -67,15 +69,17 @@ public class Mapper {
         if (dto == null)
             return null;
 
-        LoaiPhongDTO lp =  map(dto.getLoaiPhong());
+        LoaiPhongDTO lp = map(dto.getLoaiPhong());
 
         return PhongDTO.builder()
                 .maPhong(dto.getMaPhong())
                 .soPhong(dto.getSoPhong())
                 .loaiPhong(lp)
-                .trangThai(dto.getTrangThai())
+                .trangThai(
+                        dto.getTrangThai() != null ? iuh.dto.TrangThaiPhong.valueOf(dto.getTrangThai().name()) : null)
                 .tang(dto.getTang())
-                .tinhTrang(dto.getTinhTrang())
+                .tinhTrang(
+                        dto.getTinhTrang() != null ? iuh.dto.TinhTrangPhong.valueOf(dto.getTinhTrang().name()) : null)
                 .moTa(dto.getMoTa())
                 .build();
     }

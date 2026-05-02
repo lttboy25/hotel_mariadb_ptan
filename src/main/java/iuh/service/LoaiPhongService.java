@@ -6,7 +6,6 @@
 package iuh.service;
 
 import iuh.dto.LoaiPhongDTO;
-import iuh.entity.LoaiPhong;
 
 import java.util.List;
 

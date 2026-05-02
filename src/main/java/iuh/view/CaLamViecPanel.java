@@ -2,8 +2,10 @@ package iuh.view;
 
 import iuh.dto.CaLamViecNhanVienDTO;
 import iuh.entity.Ca;
-import iuh.service.CaLamViecNhanVienService;
-import iuh.service.impl.CaLamViecNhanVienServiceImpl;
+import iuh.network.ClientConnection;
+import iuh.network.CommandType;
+import iuh.network.Request;
+import iuh.network.Response;
 import iuh.dao.impl.CaDaoImpl;
 
 import javax.swing.*;
@@ -37,7 +39,7 @@ public class CaLamViecPanel extends JPanel {
 
     static final DateTimeFormatter FMT_DATE = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    private final CaLamViecNhanVienService service = new CaLamViecNhanVienServiceImpl();
+    private final ClientConnection clientConnection = ClientConnection.getInstance();
     private final CaDaoImpl caDao = new CaDaoImpl();
 
     private CaLamViecNhanVienDTO activeShift;
@@ -231,7 +233,12 @@ public class CaLamViecPanel extends JPanel {
 
     private void refreshData() {
         String maNV = CurrentUser.getInstance().getMaNhanVien();
-        activeShift = service.getActiveShift(maNV);
+        Request request = Request.builder()
+                .commandType(CommandType.GET_ACTIVE_SHIFT)
+                .object(maNV)
+                .build();
+        Response response = clientConnection.sendRequest(request);
+        activeShift = (CaLamViecNhanVienDTO) response.getObject();
 
         updateUIState();
         loadHistory();
@@ -285,7 +292,12 @@ public class CaLamViecPanel extends JPanel {
     private void loadHistory() {
         tableModel.setRowCount(0);
         String maNV = CurrentUser.getInstance().getMaNhanVien();
-        List<CaLamViecNhanVienDTO> history = service.getShiftHistory(maNV);
+        Request request = Request.builder()
+                .commandType(CommandType.GET_SHIFT_HISTORY)
+                .object(maNV)
+                .build();
+        Response response = clientConnection.sendRequest(request);
+        List<CaLamViecNhanVienDTO> history = (List<CaLamViecNhanVienDTO>) response.getObject();
         for (CaLamViecNhanVienDTO dto : history) {
             tableModel.addRow(new Object[] {
                     dto.getMaCaLamViec(),
@@ -315,7 +327,11 @@ public class CaLamViecPanel extends JPanel {
                     maCa = maCa.split(" ")[0] + maCa.split(" ")[1]; // Simple parse "Ca 1"
 
                 String maNV = CurrentUser.getInstance().getMaNhanVien();
-                service.openShift(maNV, maCa, tienMoCa);
+                Request request = Request.builder()
+                        .commandType(CommandType.MO_CA)
+                        .object(new Object[]{maNV, maCa, tienMoCa})
+                        .build();
+                clientConnection.sendRequest(request);
                 JOptionPane.showMessageDialog(this, "Mở ca thành công!");
             } else {
                 // Close shift
@@ -325,7 +341,11 @@ public class CaLamViecPanel extends JPanel {
                     return;
                 }
                 double tienKetCa = Double.parseDouble(tienStr);
-                service.closeShift(activeShift.getMaCaLamViec(), tienKetCa);
+                Request request = Request.builder()
+                        .commandType(CommandType.KET_CA)
+                        .object(new Object[]{activeShift.getMaCaLamViec(), tienKetCa})
+                        .build();
+                clientConnection.sendRequest(request);
                 JOptionPane.showMessageDialog(this, "Kết ca thành công!");
             }
             refreshData();
