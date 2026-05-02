@@ -16,4 +16,10 @@ public enum CommandType {
 
 
     DELETE_PHONG,
+
+    //==========NHAN VIEN==============
+    GET_ALL_NHAN_VIEN,
+    SEARCH_NHAN_VIEN,
+    GET_NHAN_VIEN_BY_ID
+
 }

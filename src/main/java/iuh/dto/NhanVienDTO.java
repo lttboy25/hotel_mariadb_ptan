@@ -1,5 +1,7 @@
 package iuh.dto;
 
+import iuh.entity.TaiKhoan;
+import iuh.entity.TrangThaiNhanVien;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,7 +26,7 @@ public class NhanVienDTO implements Serializable {
 
     private String tenNhanVien;
 
-    private String taiKhoan;  // Lấy từ TaiKhoan.tenDangNhap
+    private TaiKhoanDTO taiKhoan;  // Lấy từ TaiKhoan.tenDangNhap
 
     private boolean gioiTinh;
 
@@ -36,7 +38,7 @@ public class NhanVienDTO implements Serializable {
 
     private LocalDate ngayBatDau;
 
-    private String trangThai;  // "Hoạt động", "Đã nghỉ"
+    private TrangThaiNhanVien trangThai;  // "Hoạt động", "Đã nghỉ"
 
     private String diaChi;
 

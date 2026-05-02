@@ -79,6 +79,20 @@ public class ClientHanler implements Runnable{
                         boolean rs = phongServiceImpl.deletePhong(maPhong);
                         response = Response.builder().object(rs).build();
                     }
+                    case GET_ALL_NHAN_VIEN -> {
+                        List<NhanVienDTO> rs = nhanVienServiceImpl.getAllNhanVien();
+                        response = Response.builder().object(rs).build();
+                    }
+                    case SEARCH_NHAN_VIEN -> {
+                        String keyword = (String) request.getObject();
+                        List<NhanVienDTO> rs = nhanVienServiceImpl.searchNhanVien(keyword);
+                        response = Response.builder().object(rs).build();
+                    }
+                    case GET_NHAN_VIEN_BY_ID -> {
+                        String maNV = (String) request.getObject();
+                        NhanVienDTO rs = nhanVienServiceImpl.getNhanVienDTOById(maNV);
+                        response = Response.builder().object(rs).build();
+                    }
 
 
                 }

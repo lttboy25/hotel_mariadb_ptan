@@ -71,12 +71,12 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
             dsChiTietHoaDon.add(cthd);
         }
 
-        NhanVien nv = nhanVienServiceImpl.getNhanVienById("NV001").orElse(null);
+        //NhanVien nv = nhanVienServiceImpl.getNhanVienById("NV001").orElse(null);
 
         HoaDon hoaDon = new HoaDon();
         hoaDon.setNgayDat(now);
         hoaDon.setKhachHang(phieuDatPhong.getKhachHang());
-        hoaDon.setNhanVien(nv);
+        //hoaDon.setNhanVien(nv);
         hoaDon.setTrangThai(TrangThaiHoaDon.DA_THANH_TOAN);
         hoaDon.setNgayTao(now);
         hoaDon.setTongTien(tongTien);
