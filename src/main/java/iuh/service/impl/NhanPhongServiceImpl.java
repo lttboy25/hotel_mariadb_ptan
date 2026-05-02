@@ -1,13 +1,16 @@
 package iuh.service.impl;
 
+import iuh.dto.ChiTietPhieuDatPhongDTO;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.PhieuDatPhong;
 import iuh.enums.TinhTrangPhong;
 import iuh.enums.TrangThaiChiTietPhieuDatPhong;
 import iuh.enums.TrangThaiPhieuDatPhong;
 import iuh.enums.TrangThaiPhong;
+import iuh.mapper.Mapper;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class NhanPhongServiceImpl implements iuh.service.NhanPhongService {
     private ChiTietPhieuDatPhongServiceImpl chiTietPhieuDatPhongServiceImpl = new ChiTietPhieuDatPhongServiceImpl();
@@ -15,19 +18,23 @@ public class NhanPhongServiceImpl implements iuh.service.NhanPhongService {
     private PhieuDatPhongServiceImpl phieuDatPhongServiceImpl = new PhieuDatPhongServiceImpl();
 
     @Override
-    public List<ChiTietPhieuDatPhong> getDanhSachPhongDaDatByCCCD(String cccd) {
-        return chiTietPhieuDatPhongServiceImpl.getPhongDeNhanByCCCD(cccd);
+    public List<ChiTietPhieuDatPhongDTO> getDanhSachPhongDeNhanByCCCD(String cccd) {
+        return chiTietPhieuDatPhongServiceImpl.getPhongDeNhanByCCCD(cccd)
+                .stream()
+                .map(e -> Mapper.map(e))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public boolean nhanPhong(List<ChiTietPhieuDatPhong> listNhanPhong) {
+    public boolean nhanPhong(List<ChiTietPhieuDatPhongDTO> listNhanPhong) {
 
         if (listNhanPhong == null || listNhanPhong.isEmpty())
             return false;
 
-        PhieuDatPhong phieuDatPhong = listNhanPhong.get(0).getPhieuDatPhong();
+        PhieuDatPhong phieuDatPhong = Mapper.map(listNhanPhong.get(0).getPhieuDatPhong());
 
-        for (ChiTietPhieuDatPhong ctpdp : listNhanPhong) {
+        for (ChiTietPhieuDatPhongDTO ctpdpDTO : listNhanPhong) {
+            ChiTietPhieuDatPhong ctpdp = Mapper.map(ctpdpDTO);
             if (!TrangThaiChiTietPhieuDatPhong.CHUA_THANH_TOAN.equals(ctpdp.getTrangThai())) {
                 throw new RuntimeException(
                         "Phòng " + ctpdp.getPhong().getMaPhong() + " không ở trạng thái hợp lệ để nhận!");

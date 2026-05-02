@@ -20,7 +20,7 @@ public class ChiTietPhieuDatPhongDTO implements Serializable {
 
     private Long id;
     private PhieuDatPhongDTO phieuDatPhong;
-    private Phong phong;
+    private PhongDTO phong;
 
     private TrangThaiChiTietPhieuDatPhong trangThai;
     private int soGioLuuTru;

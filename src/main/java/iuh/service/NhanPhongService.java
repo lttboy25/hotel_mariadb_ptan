@@ -5,6 +5,7 @@
  */
 package iuh.service;
 
+import iuh.dto.ChiTietPhieuDatPhongDTO;
 import iuh.entity.ChiTietPhieuDatPhong;
 
 import java.util.List;
@@ -16,9 +17,9 @@ import java.util.List;
  * @version:    1.0
  */
 public interface NhanPhongService {
-    List<ChiTietPhieuDatPhong> getDanhSachPhongDaDatByCCCD(String cccd);
+    List<ChiTietPhieuDatPhongDTO> getDanhSachPhongDeNhanByCCCD(String cccd);
 
 
 
-    boolean nhanPhong(List<ChiTietPhieuDatPhong> listNhanPhong);
+    boolean nhanPhong(List<ChiTietPhieuDatPhongDTO> listNhanPhong);
 }

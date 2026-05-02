@@ -1,8 +1,8 @@
 package iuh.view;
 
-import iuh.entity.ChiTietPhieuDatPhong;
-import iuh.entity.KhachHang;
-import iuh.entity.Phong;
+import iuh.dto.ChiTietPhieuDatPhongDTO;
+import iuh.dto.KhachHangDTO;
+import iuh.dto.PhongDTO;
 import iuh.enums.TrangThaiChiTietPhieuDatPhong;
 import iuh.service.impl.NhanPhongServiceImpl;
 import iuh.service.impl.CaLamViecNhanVienServiceImpl;
@@ -91,8 +91,8 @@ public class NhanPhongPanel extends JPanel {
     private NhanPhongServiceImpl nhanPhongServiceImpl = new NhanPhongServiceImpl();
     private CaLamViecNhanVienServiceImpl shiftService = new CaLamViecNhanVienServiceImpl();
 
-    private List<ChiTietPhieuDatPhong> danhSachChiTiet = new ArrayList<>();
-    private List<ChiTietPhieuDatPhong> listNhanPhong = new ArrayList<>();
+    private List<ChiTietPhieuDatPhongDTO> danhSachChiTiet = new ArrayList<>();
+    private List<ChiTietPhieuDatPhongDTO> listNhanPhong = new ArrayList<>();
 
     private static final DateTimeFormatter FMT_DATE = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private static final DateTimeFormatter FMT_DATE_SHORT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -408,9 +408,9 @@ public class NhanPhongPanel extends JPanel {
         danhSachChiTiet.clear();
         modelBang.setRowCount(0);
 
-        danhSachChiTiet = nhanPhongServiceImpl.getDanhSachPhongDaDatByCCCD(cccd);
+        danhSachChiTiet = nhanPhongServiceImpl.getDanhSachPhongDeNhanByCCCD(cccd);
 
-        for (ChiTietPhieuDatPhong ct : danhSachChiTiet) {
+        for (ChiTietPhieuDatPhongDTO ct : danhSachChiTiet) {
             modelBang.addRow(new Object[] {
                     false,
                     ct.getPhong().getSoPhong(),
@@ -426,7 +426,7 @@ public class NhanPhongPanel extends JPanel {
         }
 
         if (!danhSachChiTiet.isEmpty()) {
-            KhachHang kh = danhSachChiTiet.get(0).getPhieuDatPhong().getKhachHang();
+            KhachHangDTO kh = danhSachChiTiet.get(0).getPhieuDatPhong().getKhachHang();
             lblTenKhach.setText(kh.getTenKhachHang() + "  |  CCCD: " + kh.getCCCD());
             lblTenKhach.setForeground(TEXT_DARK);
             String maPDP = danhSachChiTiet.get(0).getPhieuDatPhong().getMaPhieuDatPhong();
@@ -484,7 +484,6 @@ public class NhanPhongPanel extends JPanel {
     // LOGIC XÁC NHẬN NHẬN PHÒNG
     // ═══════════════════════════════════════════════════════════════════
     private void xacNhanNhanPhong() {
-        // Kiểm tra ca làm việc
         String maNV = CurrentUser.getInstance().getMaNhanVien();
         CaLamViecNhanVienDTO activeShift = shiftService.getActiveShift(maNV);
         if (activeShift == null) {
@@ -504,33 +503,37 @@ public class NhanPhongPanel extends JPanel {
         int confirm = JOptionPane.showConfirmDialog(this,
                 "Xác nhận nhận " + listNhanPhong.size() + " phòng đã chọn?",
                 "Xác nhận", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (confirm != JOptionPane.YES_OPTION) return;
 
-        if (confirm != JOptionPane.YES_OPTION)
-            return;
-
+        boolean ok = false;
         try {
-            boolean ok = nhanPhongServiceImpl.nhanPhong(listNhanPhong);
-            if (ok) {
-                JOptionPane.showMessageDialog(this,
-                        "Nhận phòng thành công!",
-                        "Thành công", JOptionPane.INFORMATION_MESSAGE);
-                refresh();
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        "Nhận phòng thất bại. Vui lòng thử lại.",
-                        "Thất bại", JOptionPane.ERROR_MESSAGE);
-            }
+            ok = nhanPhongServiceImpl.nhanPhong(listNhanPhong);
         } catch (Exception ex) {
+            // ex.getMessage() có thể null nếu là UnsupportedOperationException
+            String msg = ex.getMessage() != null ? ex.getMessage() : ex.getClass().getSimpleName();
             JOptionPane.showMessageDialog(this,
-                    "Lỗi: " + ex.getMessage(),
+                    "Lỗi khi nhận phòng: " + msg,
                     "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Tách riêng khỏi try-catch để lỗi refresh không bị nuốt vào catch
+        if (ok) {
+            JOptionPane.showMessageDialog(this,
+                    "Nhận phòng thành công!",
+                    "Thành công", JOptionPane.INFORMATION_MESSAGE);
+            refresh();
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "Nhận phòng thất bại. Vui lòng thử lại.",
+                    "Thất bại", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     // ═══════════════════════════════════════════════════════════════════
     // DOUBLE-CLICK → POPUP CHI TIẾT
     // ═══════════════════════════════════════════════════════════════════
-    private void hienThiChiTiet(ChiTietPhieuDatPhong ct) {
+    private void hienThiChiTiet(ChiTietPhieuDatPhongDTO ct) {
         JDialog dialog = new JDialog(
                 (Frame) SwingUtilities.getWindowAncestor(this),
                 "Chi tiết phiếu đặt phòng", true);
@@ -563,8 +566,8 @@ public class NhanPhongPanel extends JPanel {
         card.setAlignmentX(Component.LEFT_ALIGNMENT);
         card.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 
-        Phong phong = ct.getPhong();
-        KhachHang kh = ct.getPhieuDatPhong().getKhachHang();
+        PhongDTO phong = ct.getPhong();
+        KhachHangDTO kh = ct.getPhieuDatPhong().getKhachHang();
 
         addDetailRow(card, "Số phòng", phong.getSoPhong() != null ? phong.getSoPhong() : "—");
         addDetailRow(card, "Loại phòng", phong.getLoaiPhong() != null ? phong.getLoaiPhong().toString() : "—");
@@ -614,8 +617,8 @@ public class NhanPhongPanel extends JPanel {
         tfCCCD.setText("Nhập số CCCD...");
         tfCCCD.setForeground(TEXT_GRAY);
 
-        listNhanPhong.clear();
-        danhSachChiTiet.clear();
+        listNhanPhong = new ArrayList<>();
+        danhSachChiTiet = new ArrayList<>();
         modelBang.setRowCount(0);
 
         chkTatCa.setSelected(false);

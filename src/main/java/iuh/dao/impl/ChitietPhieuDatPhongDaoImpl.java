@@ -181,9 +181,11 @@ public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietP
                 SELECT ct FROM ChiTietPhieuDatPhong ct
                 WHERE ct.phieuDatPhong.khachHang.CCCD = :cccd
                 AND ct.phieuDatPhong.trangThai = :dadat
+                AND ct.trangThai != :daNhan
                 """, ChiTietPhieuDatPhong.class)
                 .setParameter("dadat", TrangThaiPhieuDatPhong.DA_DAT)
                 .setParameter("cccd", cccd.trim())
+                .setParameter("daNhan", TrangThaiChiTietPhieuDatPhong.NHAN_PHONG)
                 .getResultList());
     }
 
