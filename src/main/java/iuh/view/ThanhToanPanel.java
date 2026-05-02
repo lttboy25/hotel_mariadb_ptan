@@ -4,9 +4,15 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
 
+import iuh.dto.ChiTietPhieuDatPhongDTO;
+import iuh.dto.HoaDonDTO;
 import iuh.dto.KhuyenMaiDTO;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.HoaDon;
+import iuh.network.ClientConnection;
+import iuh.network.CommandType;
+import iuh.network.Request;
+import iuh.network.Response;
 import iuh.service.impl.ChiTietPhieuDatPhongServiceImpl;
 import iuh.service.impl.PhieuDatPhongServiceImpl;
 import iuh.service.impl.ThanhToanServiceImpl;
@@ -19,9 +25,8 @@ import java.awt.image.BufferedImage;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * ThanhToanPanel - Giao diện trang Thanh Toán
@@ -94,20 +99,17 @@ public class ThanhToanPanel extends JPanel {
     private JButton[]    btnMenhGia;
     private JTextField   tfKhachDua;
     private JLabel       lblTienThua;
-    private QRCodePanel  qrCodePanel;
     private JButton      btnThanhToan;
 
     // ── Services & dữ liệu nghiệp vụ
     private ThanhToanServiceImpl thanhToanServiceImpl = new ThanhToanServiceImpl();
-    private ChiTietPhieuDatPhongServiceImpl chiTietPhieuDatPhongServiceImpl = new ChiTietPhieuDatPhongServiceImpl();
-    private PhieuDatPhongServiceImpl phieuDatPhongServiceImpl = new PhieuDatPhongServiceImpl();
     private CaLamViecNhanVienServiceImpl shiftService = new CaLamViecNhanVienServiceImpl();
 
     // Danh sách song song với bảng (index i <=> row i)
-    private List<ChiTietPhieuDatPhong> danhSachPhong = new ArrayList<>();
+    private List<ChiTietPhieuDatPhongDTO> danhSachPhong = new ArrayList<>();
 
     // Danh sách các phòng đang được TICK — dùng khi thanh toán
-    private List<ChiTietPhieuDatPhong> listThanhToan = new ArrayList<>();
+    private List<ChiTietPhieuDatPhongDTO> listThanhToan = new ArrayList<>();
 
     private double       tongTienPhong = 0.0;
     private double       tienKhachDua  = 0.0;
@@ -119,6 +121,8 @@ public class ThanhToanPanel extends JPanel {
     private KhuyenMaiDTO selectedKhuyenMai = null;
     private JLabel lblKhuyenMaiTen; // hiển thị tên KM đã chọn bên summary
     private JButton btnChonKhuyenMai; // nút xanh mở modal
+
+    private ClientConnection clientConnection = ClientConnection.getInstance();
 
     // ═══════════════════════════════════════════════════════════════════
     // KHỞI TẠO
@@ -228,7 +232,7 @@ public class ThanhToanPanel extends JPanel {
         danhSachPhong = thanhToanServiceImpl.getDanhSachPhieuDatPhongDeThanhToan(cccd);
 
         modelBang.setRowCount(0); // xoá dòng cũ
-        for (ChiTietPhieuDatPhong ct : danhSachPhong) {
+        for (ChiTietPhieuDatPhongDTO ct : danhSachPhong) {
             modelBang.addRow(new Object[]{
                     false,
                     ct.getPhong().getSoPhong(),
@@ -425,7 +429,7 @@ public class ThanhToanPanel extends JPanel {
      * Cập nhật chkTatCa và Summary Card.
      */
     private void capNhatListThanhToan() {
-        listThanhToan.clear();
+        listThanhToan = new ArrayList<>();
 
         int tongDong   = modelBang.getRowCount();
         int soDongChon = 0;
@@ -446,7 +450,7 @@ public class ThanhToanPanel extends JPanel {
 
         // Tính lại tổng tiền từ listThanhToan
         tongTienPhong = listThanhToan.stream()
-                .mapToDouble(ChiTietPhieuDatPhong::tinhThanhTien)
+                .mapToDouble(ChiTietPhieuDatPhongDTO::tinhThanhTien)
                 .sum();
 
         updateSummaryCard();
@@ -651,7 +655,17 @@ public class ThanhToanPanel extends JPanel {
                 return;
             }
 
-            boolean isThanhToan = thanhToanServiceImpl.coTheThanhToan(tienKhachDua, tongTien);
+            Map<String, Object> params = new HashMap<>();
+            params.put("tienKhachDua", tienKhachDua);
+            params.put("tongTien", tongTien);
+
+            Response coTheThanhToan = clientConnection.sendRequest(
+                    Request.builder()
+                            .commandType(CommandType.CO_THE_THANH_TOAN)
+                            .object(params)
+                            .build()
+            );
+            boolean isThanhToan = (boolean) coTheThanhToan.getObject();
             if (!isThanhToan || tfKhachDua.getText().equals("")) {
                 JOptionPane.showMessageDialog(this,
                         "Thanh toán thất bại vì số tiền khách hàng đưa không đủ",
@@ -659,7 +673,7 @@ public class ThanhToanPanel extends JPanel {
                         JOptionPane.ERROR_MESSAGE);
             }
             else {
-                HoaDon hoaDon = thanhToanServiceImpl.thanhToan(listThanhToan, tienKhachDua, tienThua);
+                HoaDonDTO hoaDon = thanhToanServiceImpl.thanhToan(listThanhToan, tienKhachDua, tienThua);
                 if (hoaDon != null) {
                     HDPanel hdPanel = new HDPanel(hoaDon);
                     hdPanel.show(this);
@@ -857,12 +871,21 @@ public class ThanhToanPanel extends JPanel {
         // Tải lại theo CCCD đang nhập (nếu ô trống thì trả về danh sách rỗng)
         String cccdHienTai = tfCCCD.getText().trim();
         boolean coTimKiem = !cccdHienTai.isEmpty() && !cccdHienTai.equals("Nhập CCCD");
-        danhSachPhong = coTimKiem
-                ? thanhToanServiceImpl.getDanhSachPhieuDatPhongDeThanhToan(cccdHienTai)
-                : new ArrayList<>();
+        if (coTimKiem) {
+            Response res = clientConnection.sendRequest(
+                    Request.builder()
+                            .commandType(CommandType.GET_DANH_SACH_DE_THANH_TOAN)
+                            .object(cccdHienTai)
+                            .build()
+            );
+            danhSachPhong = (List<ChiTietPhieuDatPhongDTO>) res.getObject();
+        }
+        else {
+            danhSachPhong = new ArrayList<>();
+        }
 
         modelBang.setRowCount(0); // xóa toàn bộ dòng cũ
-        for (ChiTietPhieuDatPhong ct : danhSachPhong) {
+        for (ChiTietPhieuDatPhongDTO ct : danhSachPhong) {
             modelBang.addRow(new Object[]{
                     false,
                     ct.getPhong().getSoPhong(),

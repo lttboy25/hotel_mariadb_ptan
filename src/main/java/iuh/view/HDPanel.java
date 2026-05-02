@@ -1,5 +1,6 @@
 package iuh.view;
 
+import iuh.dto.HoaDonDTO;
 import iuh.entity.ChiTietHoaDon;
 import iuh.entity.HoaDon;
 
@@ -15,7 +16,7 @@ public class HDPanel extends JPanel {
 
     private NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
 
-    public HDPanel(HoaDon hoaDon) {
+    public HDPanel(HoaDonDTO hoaDon) {
         setLayout(new BorderLayout(0, 12));
         setBorder(BorderFactory.createEmptyBorder(20, 24, 12, 24));
         setBackground(Color.WHITE);

@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class ClientHanler implements Runnable {
     private final ThongKeServiceImpl thongKeServiceImpl;
     private final KhuyenMaiServiceImpl khuyenMaiServiceImpl;
     private final CaLamViecNhanVienServiceImpl caLamViecNhanVienServiceImpl;
+    private final ThanhToanServiceImpl thanhToanServiceImpl;
 
     @Override
     public void run() {
@@ -173,6 +175,19 @@ public class ClientHanler implements Runnable {
                         String maNV = (String) request.getObject();
                         var history = caLamViecNhanVienServiceImpl.getShiftHistory(maNV);
                         response = Response.builder().object(history).build();
+                    }
+                    case GET_DANH_SACH_DE_THANH_TOAN -> {
+                        String cccd = (String) request.getObject();
+                        List<ChiTietPhieuDatPhongDTO> ds = thanhToanServiceImpl.getDanhSachPhieuDatPhongDeThanhToan(cccd);
+                        response = Response.builder().object(ds).build();
+                    }
+                    case CO_THE_THANH_TOAN -> {
+                        Map<String, Object> params = (Map<String, Object>) request.getObject();
+                        double tienKhachDua = (double) params.get("tienKhachDua");
+                        double tongTien     = (double) params.get("tongTien");
+                        response = Response.builder()
+                                .object(thanhToanServiceImpl.coTheThanhToan(tienKhachDua, tongTien))
+                                .build();
                     }
                 }
                 out.writeObject(response);

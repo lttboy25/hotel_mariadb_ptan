@@ -3,11 +3,15 @@ package iuh.service.impl;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import iuh.dao.impl.ChiTietHoaDonDaoImpl;
 import iuh.dao.impl.HoaDonDaoImpl;
+import iuh.dto.ChiTietPhieuDatPhongDTO;
+import iuh.dto.HoaDonDTO;
 import iuh.dto.KhuyenMaiDTO;
+import iuh.dto.PhongDTO;
 import iuh.entity.*;
 import iuh.enums.*;
 import iuh.mapper.Mapper;
@@ -21,18 +25,13 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
     private NhanVienServiceImpl nhanVienServiceImpl = new NhanVienServiceImpl();
     private KhuyenMaiServiceImpl khuyenMaiServiceImpl = new KhuyenMaiServiceImpl();
 
-    private Mapper mapper = new Mapper();
-
     @Override
-    public List<Phong> getRoomsByStatus(TinhTrangPhong status) {
-        return phongServiceImpl.getRoomsByStatus(status);
-    }
-
-    @Override
-    public List<ChiTietPhieuDatPhong> getDanhSachPhieuDatPhongDeThanhToan(String cccd) {
+    public List<ChiTietPhieuDatPhongDTO> getDanhSachPhieuDatPhongDeThanhToan(String cccd) {
         return chiTietPhieuDatPhongServiceImpl
                 .getChiTietPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong.NHAN_PHONG,
-                        TrangThaiChiTietPhieuDatPhong.NHAN_PHONG, cccd);
+                        TrangThaiChiTietPhieuDatPhong.NHAN_PHONG, cccd).stream()
+                .map(e -> Mapper.map(e))
+                .collect(Collectors.toList());
 
     }
 
@@ -45,7 +44,10 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
     }
 
     @Override
-    public HoaDon thanhToan(List<ChiTietPhieuDatPhong> listThanhToan, double tienKhachDua, double tienThua) {
+    public HoaDonDTO thanhToan(List<ChiTietPhieuDatPhongDTO> listThanhToanDto, double tienKhachDua, double tienThua) {
+
+        List<ChiTietPhieuDatPhong> listThanhToan = listThanhToanDto.stream().map(e->Mapper.map(e)).collect(Collectors.toList());
+
 
         if (listThanhToan == null || listThanhToan.isEmpty()) {
             return null;
@@ -87,7 +89,7 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
         hoaDon.setTienKhachDua(tienKhachDua);
         hoaDon.setTienThoi(tienThua);
 
-        hoaDon = hoaDonDao.save(mapper.map(hoaDon));
+        hoaDon = hoaDonDao.save(Mapper.map(hoaDon));
         if (hoaDon == null) {
             throw new RuntimeException("Không thể tạo hóa đơn");
         }
@@ -96,7 +98,7 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
 
             cthd.setHoaDon(hoaDon);
 
-            ChiTietHoaDon luuChiTietHoaDon = chiTietHoaDonDao.save(mapper.map(cthd));
+            ChiTietHoaDon luuChiTietHoaDon = chiTietHoaDonDao.save(Mapper.map(cthd));
             if (luuChiTietHoaDon == null) {
                 throw new RuntimeException("Lỗi lưu chi tiết hóa đơn");
             }
@@ -134,7 +136,7 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
                     TrangThaiPhieuDatPhong.DA_THANH_TOAN);
         }
 
-        return hoaDon;
+        return Mapper.map(hoaDon);
     }
 
     @Override

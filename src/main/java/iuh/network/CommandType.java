@@ -40,5 +40,12 @@ public enum CommandType {
     MO_CA,
     KET_CA,
     GET_SHIFT_HISTORY,
-    GET_ALL_CA
+    GET_ALL_CA,
+
+    // Thanh Toán pannel
+    GET_DANH_SACH_DE_THANH_TOAN,
+    CO_THE_THANH_TOAN,
+    THANH_TOAN,
+    GET_DANH_SACH_KHUYEN_MAI_HOP_LE,
+    TIEN_SAU_KHI_AP_GIAM_GIA
 }
