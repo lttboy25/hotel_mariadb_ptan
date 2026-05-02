@@ -7,6 +7,8 @@ package iuh.dao.impl;
 
 import iuh.db.JPAUtil;
 import iuh.entity.ChiTietPhieuDatPhong;
+import iuh.enums.TrangThaiChiTietPhieuDatPhong;
+import iuh.enums.TrangThaiPhieuDatPhong;
 import jakarta.persistence.EntityManager;
 
 import java.time.LocalDateTime;
@@ -144,8 +146,8 @@ public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietP
 
     @Override
     public List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong statusTicket,
-            TrangThaiChiTietPhieuDatPhong statusDetail,
-            String cccd) {
+                                                                         TrangThaiChiTietPhieuDatPhong statusDetail,
+                                                                         String cccd) {
         return doInTransaction(em -> em.createQuery("""
                 SELECT ctpdp FROM ChiTietPhieuDatPhong ctpdp
                 WHERE ctpdp.phieuDatPhong.trangThai = :statusTicket

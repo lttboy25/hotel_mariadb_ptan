@@ -2,6 +2,8 @@ package iuh.service.impl;
 
 import iuh.dao.impl.ChitietPhieuDatPhongDaoImpl;
 import iuh.entity.ChiTietPhieuDatPhong;
+import iuh.enums.TrangThaiChiTietPhieuDatPhong;
+import iuh.enums.TrangThaiPhieuDatPhong;
 import iuh.service.ChiTietPhieuDatPhongService;
 
 import java.time.LocalDateTime;
@@ -43,8 +45,8 @@ public class ChiTietPhieuDatPhongServiceImpl implements ChiTietPhieuDatPhongServ
 
     @Override
     public List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong statusTicket,
-            TrangThaiChiTietPhieuDatPhong statusDetail,
-            String cccd) {
+                                                                         TrangThaiChiTietPhieuDatPhong statusDetail,
+                                                                         String cccd) {
         if (statusTicket == null || statusDetail == null || cccd == null) {
             throw new NullPointerException("Lấy danh sách phiếu đặt phòng bị rỗng");
         }

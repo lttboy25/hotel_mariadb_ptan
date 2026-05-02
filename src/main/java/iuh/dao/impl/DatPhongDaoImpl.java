@@ -18,6 +18,8 @@ import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.KhachHang;
 import iuh.entity.PhieuDatPhong;
 import iuh.entity.Phong;
+import iuh.enums.TrangThaiChiTietPhieuDatPhong;
+import iuh.enums.TrangThaiPhieuDatPhong;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 

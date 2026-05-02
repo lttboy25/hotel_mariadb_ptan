@@ -8,6 +8,7 @@ package iuh.service;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.HoaDon;
 import iuh.entity.Phong;
+import iuh.enums.TinhTrangPhong;
 
 import java.util.List;
 

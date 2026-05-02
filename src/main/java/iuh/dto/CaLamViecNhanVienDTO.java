@@ -2,6 +2,7 @@ package iuh.dto;
 
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-public class CaLamViecNhanVienDTO {
+public class CaLamViecNhanVienDTO implements Serializable {
     private String maCaLamViec;
     private double tienMoCa;
     private double tienKetCa;

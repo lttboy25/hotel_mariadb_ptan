@@ -8,13 +8,15 @@ package iuh.service.impl;
 import iuh.dao.impl.KhuyenMaiDaoImpl;
 import iuh.dto.KhuyenMaiDTO;
 import iuh.entity.KhuyenMai;
+import iuh.enums.TrangThai;
 import iuh.mapper.Mapper;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class KhuyenMaiServiceImpl implements iuh.service.KhuyenMaiService {
+public class KhuyenMaiServiceImpl implements iuh.service.KhuyenMaiService, Serializable {
 
 	private final KhuyenMaiDaoImpl khuyenMaiDao = new KhuyenMaiDaoImpl();
 

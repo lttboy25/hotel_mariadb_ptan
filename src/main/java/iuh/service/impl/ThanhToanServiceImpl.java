@@ -7,6 +7,7 @@ import java.util.List;
 import iuh.dao.impl.ChiTietHoaDonDaoImpl;
 import iuh.dao.impl.HoaDonDaoImpl;
 import iuh.entity.*;
+import iuh.enums.*;
 import iuh.mapper.Mapper;
 
 public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {

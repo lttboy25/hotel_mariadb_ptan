@@ -5,6 +5,9 @@ import java.util.List;
 
 import iuh.db.JPAUtil;
 import iuh.entity.Phong;
+import iuh.enums.TinhTrangPhong;
+import iuh.enums.TrangThaiChiTietPhieuDatPhong;
+import iuh.enums.TrangThaiPhong;
 import jakarta.persistence.EntityManager;
 
 public class PhongDaoImpl extends AbstractGenericDaoImpl<Phong, String> implements iuh.dao.PhongDao {

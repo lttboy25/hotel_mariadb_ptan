@@ -6,6 +6,7 @@
 package iuh.dao;
 
 import iuh.entity.KhuyenMai;
+import iuh.enums.TrangThai;
 
 import java.util.List;
 import java.util.Optional;

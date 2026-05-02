@@ -2,16 +2,16 @@ package iuh.dto;
 
 import iuh.enums.TinhTrangPhong;
 import iuh.enums.TrangThaiPhong;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.io.Serializable;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class PhongDTO implements Serializable {
 
     private String maPhong;

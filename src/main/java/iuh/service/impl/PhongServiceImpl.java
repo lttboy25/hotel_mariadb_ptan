@@ -5,6 +5,8 @@ import java.util.List;
 
 import iuh.dao.impl.PhongDaoImpl;
 import iuh.dto.PhongDTO;
+import iuh.enums.TinhTrangPhong;
+import iuh.enums.TrangThaiPhong;
 import iuh.entity.Phong;
 import iuh.mapper.Mapper;
 
@@ -14,17 +16,8 @@ public class PhongServiceImpl implements iuh.service.PhongService {
 
     @Override
     public List<PhongDTO> getAllRoom() {
-
-        return phongDaoImpl.findAll().stream().map(e ->
-                PhongDTO.builder()
-                        .maPhong(e.getMaPhong())
-                        .soPhong(e.getSoPhong())
-                        .loaiPhong(mapper.map(e.getLoaiPhong()))
-                        .trangThai(e.getTrangThai())
-                        .tang(e.getTang())
-                        .tinhTrang(e.getTinhTrang())
-                        .moTa(e.getMoTa())
-                        .build())
+        return phongDaoImpl.findAll().stream()
+                .map(e -> mapper.map(e))
                 .toList();
     }
 
@@ -37,16 +30,7 @@ public class PhongServiceImpl implements iuh.service.PhongService {
     public List<PhongDTO> getRoomByKeyword(String keyword) {
         return phongDaoImpl.findByKeyword(keyword)
                 .stream()
-                .map(e ->
-                    PhongDTO.builder()
-                            .maPhong(e.getMaPhong())
-                            .soPhong(e.getSoPhong())
-                            .loaiPhong(mapper.map(e.getLoaiPhong()))
-                            .trangThai(e.getTrangThai())
-                            .tang(e.getTang())
-                            .tinhTrang(e.getTinhTrang())
-                            .moTa(e.getMoTa())
-                            .build())
+                .map(e -> mapper.map(e))
                 .toList();
     }
 

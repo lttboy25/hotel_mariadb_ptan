@@ -3,6 +3,7 @@ package iuh.view;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.KhachHang;
 import iuh.entity.Phong;
+import iuh.enums.TrangThaiChiTietPhieuDatPhong;
 import iuh.service.impl.NhanPhongServiceImpl;
 import iuh.service.impl.CaLamViecNhanVienServiceImpl;
 import iuh.dto.CaLamViecNhanVienDTO;

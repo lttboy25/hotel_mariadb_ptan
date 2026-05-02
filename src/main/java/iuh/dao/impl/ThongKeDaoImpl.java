@@ -7,6 +7,8 @@ package iuh.dao.impl;
 
 import iuh.db.JPAUtil;
 import iuh.dto.ThongKeDTO;
+import iuh.enums.TrangThaiChiTietPhieuDatPhong;
+import iuh.enums.TrangThaiHoaDon;
 import jakarta.persistence.EntityManager;
 
 import java.time.LocalDate;
@@ -17,7 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static iuh.entity.TrangThaiChiTietPhieuDatPhong.NHAN_PHONG;
+import static iuh.enums.TrangThaiChiTietPhieuDatPhong.NHAN_PHONG;
 
 public class ThongKeDaoImpl implements iuh.dao.ThongKeDao {
 

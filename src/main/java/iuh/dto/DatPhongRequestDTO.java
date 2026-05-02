@@ -1,5 +1,6 @@
 package iuh.dto;
 
+import iuh.enums.TrangThaiPhieuDatPhong;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

@@ -41,7 +41,7 @@ public class CurrentUser {
     }
 
     public String getTaiKhoan() {
-        return nhanVien != null ? nhanVien.getTaiKhoan() : "";
+        return nhanVien != null ? nhanVien.getTaiKhoan().getMaNhanVien() : "";
     }
 
     public void logout() {

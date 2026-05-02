@@ -1,6 +1,8 @@
 package iuh.enums;
 
-public enum TrangThaiPhong {
+import java.io.Serializable;
+
+public enum TrangThaiPhong implements Serializable {
     SAN_SANG,
     TOT,
     DANG_SUA_CHUA,

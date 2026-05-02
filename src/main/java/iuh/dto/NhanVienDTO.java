@@ -26,7 +26,7 @@ public class NhanVienDTO implements Serializable {
 
     private String tenNhanVien;
 
-    private String taiKhoan; // Lấy từ TaiKhoan.tenDangNhap
+    private TaiKhoanDTO taiKhoan; // Lấy từ TaiKhoan.tenDangNhap
 
     private boolean gioiTinh;
 
@@ -46,6 +46,7 @@ public class NhanVienDTO implements Serializable {
     public String getHoTen() {
         return tenNhanVien;
     }
+    
 
     public String getGioiTinhText() {
         return gioiTinh ? "Nam" : "Nữ";

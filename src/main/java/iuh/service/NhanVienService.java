@@ -6,7 +6,9 @@
 package iuh.service;
 
 import iuh.dto.NhanVienDTO;
+import iuh.dto.TaiKhoanDTO;
 import iuh.entity.NhanVien;
+import iuh.mapper.Mapper;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +21,7 @@ import java.util.Optional;
  */
 public interface NhanVienService {
     String VAI_TRO_MAC_DINH = "employee";
+    Mapper mapper = new Mapper();
 
     default void validateNhanVien(NhanVien nv, boolean isUpdate) {
         if (nv == null) {
@@ -67,17 +70,26 @@ public interface NhanVienService {
     NhanVienDTO getNhanVienDTOById(String maNhanVien);
 
     default NhanVienDTO mapToDTO(NhanVien nv) {
+        TaiKhoanDTO taiKhoanDTO = new TaiKhoanDTO();
+        if (nv != null) {
+            taiKhoanDTO = TaiKhoanDTO.builder()
+                    .maNhanVien(nv.getTaiKhoan().getMaNhanVien())
+                    .matKhau(nv.getTaiKhoan().getMatKhau())
+                    .vaiTro(nv.getTaiKhoan().getVaiTro())
+                    .build();
+        }
+
         return NhanVienDTO.builder()
                 .maNhanVien(nv.getMaNhanVien())
                 .CCCD(nv.getCCCD())
                 .tenNhanVien(nv.getTenNhanVien())
-                .taiKhoan(nv.getTaiKhoan() != null ? nv.getTaiKhoan().getMaNhanVien() : "")
+                .taiKhoan(taiKhoanDTO)
                 .gioiTinh(nv.isGioiTinh())
                 .ngaySinh(nv.getNgaySinh())
                 .email(nv.getEmail())
                 .soDienThoai(nv.getSoDienThoai())
                 .ngayBatDau(nv.getNgayBatDau())
-                .trangThai(nv.getTrangThai() != null ? nv.getTrangThai().getDisplay() : "")
+                .trangThai(nv.getTrangThai())
                 .diaChi(nv.getDiaChi())
                 .build();
     }

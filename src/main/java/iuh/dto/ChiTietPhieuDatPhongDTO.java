@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class ChiTietPhieuDatPhongDTO implements Serializable {
 
     private Long id;
-    private PhieuDatPhong phieuDatPhong;
+    private PhieuDatPhongDTO phieuDatPhong;
     private Phong phong;
 
     private TrangThaiChiTietPhieuDatPhong trangThai;
