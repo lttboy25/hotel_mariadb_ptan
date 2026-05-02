@@ -1,4 +1,4 @@
-package iuh.dto;
+package iuh.enums;
 
 public enum TrangThaiPhieuDatPhong {
     DA_THANH_TOAN,

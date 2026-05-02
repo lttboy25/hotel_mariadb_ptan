@@ -8,7 +8,6 @@ package iuh.service.impl;
 import iuh.dao.impl.KhuyenMaiDaoImpl;
 import iuh.dto.KhuyenMaiDTO;
 import iuh.entity.KhuyenMai;
-import iuh.entity.TrangThai;
 import iuh.mapper.Mapper;
 
 import java.util.List;

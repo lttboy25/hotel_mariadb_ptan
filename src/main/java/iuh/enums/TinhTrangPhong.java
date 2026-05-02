@@ -1,4 +1,4 @@
-package iuh.entity;
+package iuh.enums;
 
 public enum TinhTrangPhong {
     TRONG,

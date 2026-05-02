@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import iuh.enums.TrangThai;
+
 @Data
 @Builder
 @ToString(exclude = "hoaDon") // Tránh vòng lặp vô tận khi in log
@@ -63,7 +65,8 @@ public class KhuyenMai implements Serializable {
      */
     @AssertTrue(message = "Ngày kết thúc phải sau ngày bắt đầu")
     public boolean isNgayKetThucValid() {
-        if (ngayBatDau == null || ngayKetThuc == null) return true;
+        if (ngayBatDau == null || ngayKetThuc == null)
+            return true;
         return ngayKetThuc.isAfter(ngayBatDau);
     }
 }

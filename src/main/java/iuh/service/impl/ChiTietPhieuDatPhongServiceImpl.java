@@ -2,9 +2,6 @@ package iuh.service.impl;
 
 import iuh.dao.impl.ChitietPhieuDatPhongDaoImpl;
 import iuh.entity.ChiTietPhieuDatPhong;
-import iuh.entity.TrangThaiChiTietPhieuDatPhong;
-import iuh.entity.TrangThaiPhieuDatPhong;
-import iuh.entity.TrangThaiPhong;
 import iuh.service.ChiTietPhieuDatPhongService;
 
 import java.time.LocalDateTime;

@@ -7,9 +7,6 @@ package iuh.dao.impl;
 
 import iuh.db.JPAUtil;
 import iuh.entity.ChiTietPhieuDatPhong;
-import iuh.entity.TrangThaiChiTietPhieuDatPhong;
-import iuh.entity.TrangThaiPhieuDatPhong;
-import iuh.entity.TrangThaiPhong;
 import jakarta.persistence.EntityManager;
 
 import java.time.LocalDateTime;

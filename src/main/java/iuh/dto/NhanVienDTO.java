@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+import iuh.enums.TrangThaiNhanVien;
+
 /**
  * DTO cho NhanVien
  * Sử dụng để truyền dữ liệu giữa các tầng
@@ -24,7 +26,7 @@ public class NhanVienDTO implements Serializable {
 
     private String tenNhanVien;
 
-    private String taiKhoan;  // Lấy từ TaiKhoan.tenDangNhap
+    private String taiKhoan; // Lấy từ TaiKhoan.tenDangNhap
 
     private boolean gioiTinh;
 
@@ -36,7 +38,7 @@ public class NhanVienDTO implements Serializable {
 
     private LocalDate ngayBatDau;
 
-    private String trangThai;  // "Hoạt động", "Đã nghỉ"
+    private TrangThaiNhanVien trangThai; // "Hoạt động", "Đã nghỉ"
 
     private String diaChi;
 
@@ -49,4 +51,3 @@ public class NhanVienDTO implements Serializable {
         return gioiTinh ? "Nam" : "Nữ";
     }
 }
-

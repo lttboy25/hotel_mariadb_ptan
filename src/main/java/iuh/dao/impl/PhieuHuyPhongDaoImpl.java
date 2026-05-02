@@ -3,9 +3,6 @@ package iuh.dao.impl;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.PhieuDatPhong;
 import iuh.entity.PhieuHuyPhong;
-import iuh.entity.TinhTrangPhong;
-import iuh.entity.TrangThaiChiTietPhieuDatPhong;
-import iuh.entity.TrangThaiPhieuDatPhong;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;

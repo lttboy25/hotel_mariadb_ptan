@@ -1,7 +1,6 @@
 package iuh.view;
 
 import iuh.dto.KhuyenMaiDTO;
-import iuh.entity.TrangThai;
 import iuh.service.impl.KhuyenMaiServiceImpl;
 
 import javax.swing.*;

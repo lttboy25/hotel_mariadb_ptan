@@ -6,10 +6,6 @@
 package iuh.service;
 
 import iuh.entity.ChiTietPhieuDatPhong;
-import iuh.entity.TrangThai;
-import iuh.entity.TrangThaiChiTietPhieuDatPhong;
-import iuh.entity.TrangThaiPhieuDatPhong;
-import iuh.entity.TrangThaiPhong;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -2,13 +2,10 @@ package iuh.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import iuh.dao.impl.PhongDaoImpl;
 import iuh.dto.PhongDTO;
 import iuh.entity.Phong;
-import iuh.entity.TinhTrangPhong;
-import iuh.entity.TrangThaiPhong;
 import iuh.mapper.Mapper;
 
 public class PhongServiceImpl implements iuh.service.PhongService {

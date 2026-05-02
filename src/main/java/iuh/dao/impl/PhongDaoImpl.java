@@ -2,14 +2,9 @@ package iuh.dao.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import iuh.db.JPAUtil;
-import iuh.dto.PhongDTO;
 import iuh.entity.Phong;
-import iuh.entity.TinhTrangPhong;
-import iuh.entity.TrangThaiChiTietPhieuDatPhong;
-import iuh.entity.TrangThaiPhong;
 import jakarta.persistence.EntityManager;
 
 public class PhongDaoImpl extends AbstractGenericDaoImpl<Phong, String> implements iuh.dao.PhongDao {

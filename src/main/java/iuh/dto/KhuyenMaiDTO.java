@@ -9,7 +9,8 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import iuh.entity.TrangThai;
+
+import iuh.enums.TrangThai;
 
 /*
  * @description

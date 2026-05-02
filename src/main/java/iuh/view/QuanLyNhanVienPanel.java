@@ -1,7 +1,6 @@
 package iuh.view;
 
 import iuh.entity.NhanVien;
-import iuh.entity.TrangThaiNhanVien;
 import iuh.service.impl.NhanVienServiceImpl;
 
 import javax.swing.*;

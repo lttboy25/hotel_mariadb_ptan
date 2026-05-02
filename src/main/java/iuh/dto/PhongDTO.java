@@ -1,13 +1,10 @@
 package iuh.dto;
 
-import iuh.entity.LoaiPhong;
-import iuh.dto.TinhTrangPhong;
-import iuh.dto.TrangThaiPhong;
-import jakarta.persistence.*;
+import iuh.enums.TinhTrangPhong;
+import iuh.enums.TrangThaiPhong;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import java.io.Serializable;
 

@@ -7,18 +7,14 @@ package iuh.dao.impl;
 
 import iuh.db.JPAUtil;
 import iuh.dto.ThongKeDTO;
-import iuh.entity.TrangThaiChiTietPhieuDatPhong;
-import iuh.entity.TrangThaiHoaDon;
 import jakarta.persistence.EntityManager;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import static iuh.entity.TrangThaiChiTietPhieuDatPhong.NHAN_PHONG;

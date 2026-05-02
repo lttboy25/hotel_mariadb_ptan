@@ -5,6 +5,8 @@ import lombok.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import iuh.enums.TrangThaiChiTietPhieuDatPhong;
+
 @Data
 @Builder
 @NoArgsConstructor

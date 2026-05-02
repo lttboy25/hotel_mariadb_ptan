@@ -7,7 +7,7 @@ import java.util.List;
 
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.KhachHang;
-import iuh.entity.TrangThaiPhieuDatPhong;
+import iuh.enums.TrangThaiPhieuDatPhong;
 
 public class PhieuDatPhongDTO implements Serializable {
     private String maPhieuDatPhong;

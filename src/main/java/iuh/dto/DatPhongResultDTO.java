@@ -1,7 +1,5 @@
 package iuh.dto;
 
-import iuh.entity.TrangThaiPhieuDatPhong;
-import iuh.entity.TrangThaiPhong;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

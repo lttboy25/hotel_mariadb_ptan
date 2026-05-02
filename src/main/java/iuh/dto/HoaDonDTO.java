@@ -9,7 +9,7 @@ import iuh.entity.ChiTietHoaDon;
 import iuh.entity.KhachHang;
 import iuh.entity.KhuyenMai;
 import iuh.entity.NhanVien;
-import iuh.entity.TrangThaiHoaDon;
+import iuh.enums.TrangThaiHoaDon;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

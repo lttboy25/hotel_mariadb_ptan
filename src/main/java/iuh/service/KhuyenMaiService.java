@@ -6,7 +6,6 @@
 package iuh.service;
 
 import iuh.dto.KhuyenMaiDTO;
-import iuh.entity.TrangThai;
 
 import java.util.List;
 import java.util.Optional;
