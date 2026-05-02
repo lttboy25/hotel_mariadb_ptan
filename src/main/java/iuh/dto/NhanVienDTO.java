@@ -1,7 +1,5 @@
 package iuh.dto;
 
-import iuh.entity.TaiKhoan;
-import iuh.entity.TrangThaiNhanVien;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+
+import iuh.enums.TrangThaiNhanVien;
 
 /**
  * DTO cho NhanVien
@@ -26,7 +26,7 @@ public class NhanVienDTO implements Serializable {
 
     private String tenNhanVien;
 
-    private TaiKhoanDTO taiKhoan;  // Lấy từ TaiKhoan.tenDangNhap
+    private TaiKhoanDTO taiKhoan; // Lấy từ TaiKhoan.tenDangNhap
 
     private boolean gioiTinh;
 
@@ -38,7 +38,7 @@ public class NhanVienDTO implements Serializable {
 
     private LocalDate ngayBatDau;
 
-    private TrangThaiNhanVien trangThai;  // "Hoạt động", "Đã nghỉ"
+    private TrangThaiNhanVien trangThai; // "Hoạt động", "Đã nghỉ"
 
     private String diaChi;
 
@@ -46,9 +46,9 @@ public class NhanVienDTO implements Serializable {
     public String getHoTen() {
         return tenNhanVien;
     }
+    
 
     public String getGioiTinhText() {
         return gioiTinh ? "Nam" : "Nữ";
     }
 }
-

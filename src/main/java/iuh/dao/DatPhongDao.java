@@ -8,7 +8,7 @@ package iuh.dao;
 import iuh.dto.DatPhongRequestDTO;
 import iuh.entity.PhieuDatPhong;
 import iuh.entity.Phong;
-import iuh.entity.TrangThaiChiTietPhieuDatPhong;
+import iuh.enums.TrangThaiChiTietPhieuDatPhong;
 import jakarta.persistence.EntityManager;
 
 import java.time.LocalDateTime;

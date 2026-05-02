@@ -21,10 +21,11 @@ import iuh.entity.PhieuDatPhong;
 import iuh.entity.Phong;
 import iuh.mapper.Mapper;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class DatPhongServiceImpl implements iuh.service.DatPhongService {
+public class DatPhongServiceImpl implements iuh.service.DatPhongService, Serializable {
     private final DatPhongDaoImpl datPhongDao;
     private PhongDaoImpl phongDaoImpl = new PhongDaoImpl();
     public DatPhongServiceImpl() {

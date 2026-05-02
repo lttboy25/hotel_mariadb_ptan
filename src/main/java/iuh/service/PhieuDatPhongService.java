@@ -6,7 +6,7 @@
 package iuh.service;
 
 import iuh.entity.PhieuDatPhong;
-import iuh.entity.TrangThaiPhieuDatPhong;
+import iuh.enums.TrangThaiPhieuDatPhong;
 
 import java.util.List;
 

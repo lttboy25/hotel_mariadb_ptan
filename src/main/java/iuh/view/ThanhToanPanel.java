@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
 
+import iuh.dto.KhuyenMaiDTO;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.HoaDon;
 import iuh.service.impl.ChiTietPhieuDatPhongServiceImpl;
@@ -16,6 +17,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.text.NumberFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -111,6 +114,11 @@ public class ThanhToanPanel extends JPanel {
     private NumberFormat formatter     = NumberFormat.getInstance(new Locale("vi", "VN"));
     private double tienThua = 0.0;
     private double tongTien = 0.0;
+
+    // ── Khuyến mãi
+    private KhuyenMaiDTO selectedKhuyenMai = null;
+    private JLabel lblKhuyenMaiTen; // hiển thị tên KM đã chọn bên summary
+    private JButton btnChonKhuyenMai; // nút xanh mở modal
 
     // ═══════════════════════════════════════════════════════════════════
     // KHỞI TẠO
@@ -457,43 +465,73 @@ public class ThanhToanPanel extends JPanel {
         body.setLayout(new BoxLayout(body, BoxLayout.Y_AXIS));
         body.setBorder(new EmptyBorder(18, 28, 18, 28));
 
-        // Dòng trạng thái số phòng đang chọn
-        lblSoPhongChon = new JLabel("Chưa chọn phòng nào");
+        // ── "Đang chọn X phòng" — căn giữa cố định ──
+        lblSoPhongChon = new JLabel("Chưa chọn phòng nào", JLabel.CENTER);
         lblSoPhongChon.setFont(F_BOLD13);
         lblSoPhongChon.setForeground(TEXT_GRAY);
         lblSoPhongChon.setAlignmentX(Component.LEFT_ALIGNMENT);
+        lblSoPhongChon.setMaximumSize(new Dimension(Integer.MAX_VALUE, 24));
         body.add(lblSoPhongChon);
         body.add(Box.createVerticalStrut(10));
 
+        // ── Separator ──
         JSeparator sepTop = new JSeparator();
         sepTop.setForeground(BORDER_COL);
         sepTop.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
         body.add(sepTop);
         body.add(Box.createVerticalStrut(10));
 
-        lblTongTien  = new JLabel(formatter.format(tongTienPhong) + " đ");
+        // ── Hàng: nút Chọn KM (trái) + tên KM (phải) ──
+        btnChonKhuyenMai = buildBlueButton("Chọn KM", 100, 30);
+        btnChonKhuyenMai.addActionListener(e -> moModalKhuyenMai());
+
+        lblKhuyenMaiTen = new JLabel("Chưa áp dụng khuyến mãi");
+        lblKhuyenMaiTen.setFont(F_BOLD13);
+        lblKhuyenMaiTen.setForeground(TEXT_GRAY);
+        lblKhuyenMaiTen.setHorizontalAlignment(JLabel.RIGHT);
+
+        JPanel rowKM = new JPanel(new BorderLayout(8, 0));
+        rowKM.setOpaque(false);
+        rowKM.setAlignmentX(Component.LEFT_ALIGNMENT);
+        rowKM.setMaximumSize(new Dimension(Integer.MAX_VALUE, 34));
+        rowKM.add(btnChonKhuyenMai, BorderLayout.WEST);
+        rowKM.add(lblKhuyenMaiTen, BorderLayout.CENTER);
+        body.add(rowKM);
+        body.add(Box.createVerticalStrut(10));
+
+        // ── Separator giữa KM và các dòng tổng ──
+        JSeparator sepMid = new JSeparator();
+        sepMid.setForeground(BORDER_COL);
+        sepMid.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
+        body.add(sepMid);
+        body.add(Box.createVerticalStrut(10));
+
+        // ── Khởi tạo labels ──
+        lblTongTien  = new JLabel("0 đ");
         lblKhuyenMai = new JLabel("0%");
-        lblVAT        = new JLabel("10%");
-        lblTotal      = new JLabel("0 đ");
+        lblVAT       = new JLabel("10%");
+        lblTotal     = new JLabel("0 đ");
 
         lblTongTien .setFont(F_BOLD13); lblTongTien .setForeground(TEXT_DARK);
         lblKhuyenMai.setFont(F_BOLD13); lblKhuyenMai.setForeground(GREEN);
         lblVAT      .setFont(F_BOLD13); lblVAT      .setForeground(TEXT_MID);
         lblTotal    .setFont(F_BOLD16); lblTotal    .setForeground(BLUE);
 
-        body.add(buildSummaryRow("Tổng tiền phòng", lblTongTien));
-        body.add(Box.createVerticalStrut(10));
-        body.add(buildSummaryRow("Khuyến mãi",      lblKhuyenMai));
-        body.add(Box.createVerticalStrut(10));
-        body.add(buildSummaryRow("VAT",             lblVAT));
+        body.add(makeSummaryRow("Tổng tiền phòng", lblTongTien));
+        body.add(Box.createVerticalStrut(8));
+        body.add(makeSummaryRow("Khuyến mãi",      lblKhuyenMai));
+        body.add(Box.createVerticalStrut(8));
+        body.add(makeSummaryRow("VAT",             lblVAT));
         body.add(Box.createVerticalStrut(12));
 
-        JSeparator sep = new JSeparator();
-        sep.setForeground(BORDER_COL);
-        sep.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
-        body.add(sep);
+        // ── Separator dưới ──
+        JSeparator sepBot = new JSeparator();
+        sepBot.setForeground(BORDER_COL);
+        sepBot.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
+        body.add(sepBot);
         body.add(Box.createVerticalStrut(12));
 
+        // ── Tổng cộng ──
         JPanel totalRow = new JPanel(new BorderLayout());
         totalRow.setOpaque(true);
         totalRow.setBackground(BLUE_LIGHT);
@@ -501,6 +539,7 @@ public class ThanhToanPanel extends JPanel {
                 new LineBorder(new Color(0xC5D5FF), 1, true),
                 new EmptyBorder(10, 16, 10, 16)));
         totalRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
+        totalRow.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JLabel lblNhanTotal = new JLabel("Tổng cộng");
         lblNhanTotal.setFont(F_BOLD14);
@@ -513,6 +552,23 @@ public class ThanhToanPanel extends JPanel {
 
         card.add(body, BorderLayout.CENTER);
         return card;
+    }
+
+    // Đổi tên thành makeSummaryRow để tránh xung đột với buildSummaryRow cũ
+    private JPanel makeSummaryRow(String nhan, JLabel lblGiaTri) {
+        JPanel row = new JPanel(new BorderLayout(8, 0));
+        row.setOpaque(false);
+        row.setAlignmentX(Component.LEFT_ALIGNMENT);
+        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 28));
+
+        JLabel lblNhan = new JLabel(nhan);
+        lblNhan.setFont(F_LABEL);
+        lblNhan.setForeground(TEXT_MID);
+        lblGiaTri.setHorizontalAlignment(JLabel.RIGHT);
+
+        row.add(lblNhan,    BorderLayout.WEST);
+        row.add(lblGiaTri,  BorderLayout.EAST);
+        return row;
     }
 
     private JPanel buildSummaryRow(String nhan, JLabel lblGiaTri) {
@@ -754,13 +810,26 @@ public class ThanhToanPanel extends JPanel {
 
         lblTongTien.setText(formatter.format(tongTienPhong) + " đ");
 
-        double vat   = tongTienPhong * 0.1;
-        double total = tongTienPhong + vat;
+        double tienSauKM = tongTienPhong;
+        if (selectedKhuyenMai != null && tongTienPhong * 1.1 >= selectedKhuyenMai.getTongTienToiThieu()) {
+            double mucGiam = thanhToanServiceImpl.tienSauKhiApGiamGia(tongTienPhong, selectedKhuyenMai);
+            // Giới hạn không vượt tối đa
+            double soTienGiam = tongTienPhong - mucGiam;
+            if (soTienGiam > selectedKhuyenMai.getTongKhuyenMaiToiDa()) {
+                soTienGiam = selectedKhuyenMai.getTongKhuyenMaiToiDa();
+            }
+            tienSauKM = tongTienPhong - soTienGiam;
+            lblKhuyenMai.setText("-" + Math.round(selectedKhuyenMai.getHeSo() * 100) + "%");
+        } else {
+            lblKhuyenMai.setText("0%");
+        }
 
-        lblVAT  .setText("10%");
-        lblTotal.setText(formatter.format(total) + " đ");
+        double vat   = tienSauKM * 0.1;
+        tongTien     = tienSauKM + vat;
 
-        // Reset tiền khách đưa khi thay đổi phòng chọn
+        lblVAT.setText("10%");
+        lblTotal.setText(formatter.format(tongTien) + " đ");
+
         tienKhachDua = 0.0;
         if (tfKhachDua != null) {
             tfKhachDua.setText("");
@@ -780,7 +849,7 @@ public class ThanhToanPanel extends JPanel {
         tfCCCD.setForeground(TEXT_GRAY);
 
         // ── 2. Reset biến tiền trước để TableModelListener không tính sai khi addRow ──
-        listThanhToan.clear();
+        listThanhToan = new ArrayList<>();
         tongTienPhong = 0.0;
         tienKhachDua  = 0.0;
 
@@ -819,10 +888,12 @@ public class ThanhToanPanel extends JPanel {
         lblTienThua.setText("—");
         lblTienThua.setForeground(GREEN);
 
-        // ── 7. Về phương thức mặc định: Tiền mặt ──
-        rbTienMat.setSelected(true);
         panelTienMat.setVisible(true);
-        panelQR.setVisible(false);
+
+        selectedKhuyenMai = null;
+        lblKhuyenMai.setText("0%");
+        lblKhuyenMaiTen.setText("Chưa áp dụng khuyến mãi");
+        lblKhuyenMaiTen.setForeground(TEXT_GRAY);
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -850,12 +921,187 @@ public class ThanhToanPanel extends JPanel {
         return btn;
     }
 
+    private JButton buildBlueButtonFull(String text) {
+        JButton btn = new JButton(text) {
+            @Override protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(getModel().isPressed() ? BLUE.darker() : BLUE);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
+        btn.setFont(F_BOLD13);
+        btn.setForeground(Color.WHITE);
+        btn.setContentAreaFilled(false);
+        btn.setBorderPainted(false);
+        btn.setFocusPainted(false);
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        return btn;
+    }
+
     /** Nút viền có icon — dùng cho nút Làm mới (kích thước cố định) */
     private JButton buildOutlineIconButton(String text, int w, int h) {
         JButton btn = buildOutlineButton(text);
         btn.setPreferredSize(new Dimension(w, h));
         btn.setForeground(TEXT_MID);
         return btn;
+    }
+
+    private void moModalKhuyenMai() {
+        List<KhuyenMaiDTO> dsKM = thanhToanServiceImpl.getDsKhuyenMai();
+
+        // Lọc chỉ lấy KM còn hợp lệ theo ngày và tổng tiền
+        LocalDateTime now = LocalDateTime.now();
+        List<KhuyenMaiDTO> dsHopLe = dsKM.stream()
+                .filter(km -> km.getNgayBatDau() != null && km.getNgayKetThuc() != null
+                        && !now.isBefore(km.getNgayBatDau())
+                        && !now.isAfter(km.getNgayKetThuc())
+                        && tongTienPhong * 1.1 >= km.getTongTienToiThieu())
+                .collect(java.util.stream.Collectors.toList());
+
+        Frame owner = (Frame) SwingUtilities.getWindowAncestor(this);
+        JDialog modal = new JDialog(owner, "Chọn mã khuyến mãi", true);
+        modal.setSize(680, 440);
+        modal.setLocationRelativeTo(this);
+        modal.setLayout(new BorderLayout());
+
+        // ── Header modal ──
+        JPanel header = new JPanel(new BorderLayout());
+        header.setBackground(BLUE);
+        header.setBorder(new EmptyBorder(14, 20, 14, 20));
+        JLabel titleLbl = new JLabel("Danh sách mã khuyến mãi");
+        titleLbl.setFont(F_BOLD14);
+        titleLbl.setForeground(Color.WHITE);
+        header.add(titleLbl, BorderLayout.WEST);
+        if (selectedKhuyenMai != null) {
+            JButton btnBo = new JButton("Bỏ khuyến mãi");
+            btnBo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+            btnBo.setForeground(Color.WHITE);
+            btnBo.setBackground(new Color(0x2A5FD8));
+            btnBo.setBorder(new EmptyBorder(4, 10, 4, 10));
+            btnBo.setFocusPainted(false);
+            btnBo.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            btnBo.addActionListener(e -> {
+                apDungKhuyenMai(null);
+                modal.dispose();
+            });
+            header.add(btnBo, BorderLayout.EAST);
+        }
+        modal.add(header, BorderLayout.NORTH);
+
+        // ── Bảng khuyến mãi ──
+        String[] cols = {"Tên khuyến mãi", "Tối thiểu", "Tối đa", "Từ ngày", "Đến ngày", "Giảm"};
+        DefaultTableModel modelKM = new DefaultTableModel(cols, 0) {
+            @Override public boolean isCellEditable(int r, int c) { return false; }
+        };
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        for (KhuyenMaiDTO km : dsHopLe) {
+            modelKM.addRow(new Object[]{
+                    km.getTenKhuyenMai(),
+                    formatter.format(km.getTongTienToiThieu()) + " đ",
+                    formatter.format(km.getTongKhuyenMaiToiDa()) + " đ",
+                    km.getNgayBatDau()  != null ? km.getNgayBatDau().format(dtf)  : "—",
+                    km.getNgayKetThuc() != null ? km.getNgayKetThuc().format(dtf) : "—",
+                    Math.round(km.getHeSo() * 100) + "%"
+            });
+        }
+
+        JTable tableKM = new JTable(modelKM);
+        tableKM.setFont(F_TABLE);
+        tableKM.setRowHeight(48);
+        tableKM.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tableKM.setShowVerticalLines(false);
+        tableKM.setShowHorizontalLines(true);
+        tableKM.setGridColor(BORDER_COL);
+        tableKM.setBackground(BG_WHITE);
+        tableKM.setSelectionBackground(BLUE_LIGHT);
+        tableKM.setSelectionForeground(TEXT_DARK);
+        tableKM.getTableHeader().setFont(F_TABLE_H);
+        tableKM.getTableHeader().setBackground(new Color(0xF0F4FF));
+        tableKM.getTableHeader().setForeground(TEXT_MID);
+        tableKM.getTableHeader().setPreferredSize(new Dimension(0, 40));
+
+        // Tô xanh dòng đang được chọn sẵn
+        if (selectedKhuyenMai != null) {
+            for (int i = 0; i < dsHopLe.size(); i++) {
+                if (dsHopLe.get(i).getMaKhuyenMai().equals(selectedKhuyenMai.getMaKhuyenMai())) {
+                    tableKM.setRowSelectionInterval(i, i);
+                    break;
+                }
+            }
+        }
+
+        // Renderer cột "Giảm" màu xanh
+        tableKM.getColumnModel().getColumn(5).setCellRenderer(new DefaultTableCellRenderer() {
+            @Override public Component getTableCellRendererComponent(
+                    JTable t, Object val, boolean sel, boolean focus, int row, int col) {
+                super.getTableCellRendererComponent(t, val, sel, focus, row, col);
+                setHorizontalAlignment(JLabel.CENTER);
+                setForeground(sel ? TEXT_DARK : GREEN);
+                setFont(F_BOLD13);
+                if (!sel) setBackground(row % 2 == 0 ? BG_WHITE : new Color(0xFAFBFD));
+                return this;
+            }
+        });
+
+        // Renderer zebra cho các cột còn lại
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer() {
+            @Override public Component getTableCellRendererComponent(
+                    JTable t, Object val, boolean sel, boolean focus, int row, int col) {
+                super.getTableCellRendererComponent(t, val, sel, focus, row, col);
+                setHorizontalAlignment(JLabel.CENTER);
+                if (!sel) setBackground(row % 2 == 0 ? BG_WHITE : new Color(0xFAFBFD));
+                return this;
+            }
+        };
+        for (int c = 0; c < 5; c++) tableKM.getColumnModel().getColumn(c).setCellRenderer(centerRenderer);
+
+        JScrollPane scroll = new JScrollPane(tableKM);
+        scroll.setBorder(BorderFactory.createEmptyBorder());
+
+        // Thông báo nếu không có KM hợp lệ
+        if (dsHopLe.isEmpty()) {
+            JPanel emptyPanel = new JPanel(new BorderLayout());
+            emptyPanel.setBackground(BG_WHITE);
+            JLabel emptyLbl = new JLabel("Không có mã khuyến mãi hợp lệ", JLabel.CENTER);
+            emptyLbl.setFont(F_LABEL);
+            emptyLbl.setForeground(TEXT_GRAY);
+            emptyPanel.add(emptyLbl, BorderLayout.CENTER);
+            modal.add(emptyPanel, BorderLayout.CENTER);
+        } else {
+            modal.add(scroll, BorderLayout.CENTER);
+        }
+
+        // ── Footer: nút Áp dụng + Đóng ──
+        JPanel footer = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 12));
+        footer.setBackground(BG_MAIN);
+        footer.setBorder(new MatteBorder(1, 0, 0, 0, BORDER_COL));
+
+        JButton btnDong = buildOutlineButton("Đóng");
+        btnDong.setPreferredSize(new Dimension(100, 38));
+        btnDong.addActionListener(e -> modal.dispose());
+
+        JButton btnApDung = buildBlueButton("Áp dụng", 110, 38);
+        btnApDung.addActionListener(e -> {
+            int row = tableKM.getSelectedRow();
+            if (row < 0 || dsHopLe.isEmpty()) {
+                JOptionPane.showMessageDialog(modal,
+                        "Vui lòng chọn một mã khuyến mãi.",
+                        "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            apDungKhuyenMai(dsHopLe.get(row));
+            modal.dispose();
+        });
+
+        footer.add(btnDong);
+        footer.add(btnApDung);
+        modal.add(footer, BorderLayout.SOUTH);
+
+        modal.setVisible(true);
     }
 
     private JButton buildOutlineButton(String text) {
@@ -1048,6 +1294,21 @@ public class ThanhToanPanel extends JPanel {
             g2.dispose();
             super.paintComponent(g);
         }
+    }
+
+    private void apDungKhuyenMai(iuh.dto.KhuyenMaiDTO km) {
+        selectedKhuyenMai = km;
+        if (km == null) {
+            lblKhuyenMai.setText("0%");
+            lblKhuyenMaiTen.setText("Chưa áp dụng khuyến mãi");
+            lblKhuyenMaiTen.setForeground(TEXT_GRAY);
+        } else {
+            lblKhuyenMai.setText("-" + Math.round(km.getHeSo() * 100) + "%");
+            lblKhuyenMaiTen.setText(km.getTenKhuyenMai());
+            lblKhuyenMaiTen.setForeground(GREEN);
+        }
+        updateSummaryCard();
+        tinhTienThua();
     }
 
 

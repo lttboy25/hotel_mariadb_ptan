@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import iuh.enums.TrangThaiHoaDon;
+
 @Entity
 @Table(name = "HoaDon")
 @AllArgsConstructor

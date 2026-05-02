@@ -1,27 +1,17 @@
-/*
- * @ (#) TaiKhoanDTO.java       1.0
- *
- * Copyright (c) 2026 IUH. All rights reserved
- */
 package iuh.dto;
 
+import lombok.*;
 
-import iuh.entity.NhanVien;
-import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
+import java.io.Serializable;
 
-/*
- * @description:
- * @author: Duc Thuan
- * @date: 2/5/2026
- * @version:    1.0
- * @created:
- */
-public class TaiKhoanDTO {
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+
+@Builder
+public class TaiKhoanDTO implements Serializable {
     private String maNhanVien;
-
     private String matKhau;
-
     private String vaiTro;
-
 }

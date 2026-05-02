@@ -6,7 +6,9 @@
 package iuh.service;
 
 import iuh.dto.NhanVienDTO;
+import iuh.dto.TaiKhoanDTO;
 import iuh.entity.NhanVien;
+import iuh.mapper.Mapper;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,8 +21,9 @@ import java.util.Optional;
  */
 public interface NhanVienService {
     String VAI_TRO_MAC_DINH = "employee";
+    Mapper mapper = new Mapper();
 
-    default void validateNhanVien(NhanVienDTO nv, boolean isUpdate) {
+    default void validateNhanVien(NhanVien nv, boolean isUpdate) {
         if (nv == null) {
             throw new IllegalArgumentException("Dữ liệu nhân viên không hợp lệ");
         }
@@ -46,19 +49,19 @@ public interface NhanVienService {
         return value == null || value.trim().isEmpty();
     }
 
-    List<NhanVienDTO> getAllNhanVien();
+    List<NhanVien> getAllNhanVien();
 
-    Optional<NhanVienDTO> getNhanVienById(String maNhanVien);
+    Optional<NhanVien> getNhanVienById(String maNhanVien);
 
-    List<NhanVienDTO> searchNhanVienByName(String name);
+    List<NhanVien> searchNhanVienByName(String name);
 
-    NhanVienDTO createNhanVien(NhanVienDTO nhanVien);
+    NhanVien createNhanVien(NhanVien nhanVien);
 
-    NhanVienDTO updateNhanVien(NhanVienDTO nhanVien);
+    NhanVien updateNhanVien(NhanVien nhanVien);
 
     boolean deleteNhanVien(String maNhanVien);
 
-    List<NhanVienDTO> searchNhanVien(String keyword);
+    List<NhanVien> searchNhanVien(String keyword);
 
     String generateNextMaNhanVien();
 
@@ -66,12 +69,21 @@ public interface NhanVienService {
 
     NhanVienDTO getNhanVienDTOById(String maNhanVien);
 
-    default NhanVienDTO mapToDTO(NhanVienDTO nv) {
+    default NhanVienDTO mapToDTO(NhanVien nv) {
+        TaiKhoanDTO taiKhoanDTO = new TaiKhoanDTO();
+        if (nv != null) {
+            taiKhoanDTO = TaiKhoanDTO.builder()
+                    .maNhanVien(nv.getTaiKhoan().getMaNhanVien())
+                    .matKhau(nv.getTaiKhoan().getMatKhau())
+                    .vaiTro(nv.getTaiKhoan().getVaiTro())
+                    .build();
+        }
+
         return NhanVienDTO.builder()
                 .maNhanVien(nv.getMaNhanVien())
                 .CCCD(nv.getCCCD())
                 .tenNhanVien(nv.getTenNhanVien())
-                .taiKhoan(nv.getTaiKhoan())
+                .taiKhoan(taiKhoanDTO)
                 .gioiTinh(nv.isGioiTinh())
                 .ngaySinh(nv.getNgaySinh())
                 .email(nv.getEmail())
@@ -82,7 +94,7 @@ public interface NhanVienService {
                 .build();
     }
 
-    NhanVienDTO addNhanVienAutoCode(NhanVienDTO nhanVien);
+    NhanVien addNhanVienAutoCode(NhanVien nhanVien);
 
     boolean doiMatKhau(String maNhanVien, String matKhauCu, String matKhauMoi);
 

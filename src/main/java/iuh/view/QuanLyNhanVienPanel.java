@@ -1,11 +1,7 @@
 package iuh.view;
 
-import iuh.dto.NhanVienDTO;
-import iuh.entity.TrangThaiNhanVien;
-import iuh.network.ClientConnection;
-import iuh.network.CommandType;
-import iuh.network.Request;
-import iuh.network.Response;
+import iuh.entity.NhanVien;
+import iuh.enums.TrangThaiNhanVien;
 import iuh.service.impl.NhanVienServiceImpl;
 
 import javax.swing.*;
@@ -54,6 +50,7 @@ public class QuanLyNhanVienPanel extends JPanel {
             "Số điện thoại", "Email", "Ngày bắt đầu", "Trạng thái", "Địa chỉ"
     };
 
+    private final NhanVienServiceImpl nhanVienServiceImpl = new NhanVienServiceImpl();
     private final DefaultTableModel tableModel = new DefaultTableModel(COLUMNS, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
@@ -153,34 +150,17 @@ public class QuanLyNhanVienPanel extends JPanel {
 
     private void refreshTable() {
         String keyword = tfSearch.getText().trim();
-        List<NhanVienDTO> list;
-
-        if (keyword.isBlank()) {
-            Request request = Request.builder()
-                    .commandType(CommandType.GET_ALL_NHAN_VIEN)
-                    .build();
-            Response response = ClientConnection.getInstance().sendRequest(request);
-            //@SuppressWarnings("unchecked")
-                    list = (List<NhanVienDTO>) response.getObject();
-        } else {
-            Request request = Request.builder()
-                    .commandType(CommandType.SEARCH_NHAN_VIEN)
-                    .object(keyword)
-                    .build();
-            Response response = ClientConnection.getInstance().sendRequest(request);
-            //@SuppressWarnings("unchecked")
-                    list = (List<NhanVienDTO>) response.getObject();
-        }
+        List<NhanVien> list = keyword.isBlank()
+                ? nhanVienServiceImpl.getAllNhanVien()
+                : nhanVienServiceImpl.searchNhanVienByName(keyword);
 
         tableModel.setRowCount(0);
-        if (list != null) {
-            for (NhanVienDTO nv : list) {
-                tableModel.addRow(toRow(nv));
-            }
+        for (NhanVien nv : list) {
+            tableModel.addRow(toRow(nv));
         }
     }
 
-    private Object[] toRow(NhanVienDTO nv) {
+    private Object[] toRow(NhanVien nv) {
         return new Object[]{
                 nv.getMaNhanVien(),
                 nv.getCCCD(),
@@ -196,15 +176,10 @@ public class QuanLyNhanVienPanel extends JPanel {
     }
 
     private void openModal(Integer row) {
-        NhanVienDTO nv = null;
+        NhanVien nv = null;
         if (row != null) {
             String maNV = String.valueOf(tableModel.getValueAt(row, 0));
-            Request request = Request.builder()
-                    .commandType(CommandType.GET_NHAN_VIEN_BY_ID)
-                    .object(maNV)
-                    .build();
-            Response response = ClientConnection.getInstance().sendRequest(request);
-            nv = (NhanVienDTO) response.getObject();
+            nv = nhanVienServiceImpl.getNhanVienById(maNV).orElse(null);
         }
 
         NhanVienModal modal = new NhanVienModal(
@@ -260,7 +235,7 @@ public class QuanLyNhanVienPanel extends JPanel {
 class NhanVienModal extends JDialog {
     private final NhanVienServiceImpl nhanVienServiceImpl = new NhanVienServiceImpl();
     private final boolean isNew;
-    private final NhanVienDTO current;
+    private final NhanVien current;
     private Runnable onChanged;
 
     private JTextField tfMaNV;
@@ -309,7 +284,7 @@ class NhanVienModal extends JDialog {
         }
     }
 
-    NhanVienModal(JFrame owner, NhanVienDTO nhanVien, boolean isNew) {
+    NhanVienModal(JFrame owner, NhanVien nhanVien, boolean isNew) {
         super(owner, isNew ? "Thêm nhân viên" : "Cập nhật nhân viên", true);
         this.isNew = isNew;
         this.current = nhanVien;
@@ -423,7 +398,7 @@ class NhanVienModal extends JDialog {
     private void onSave() {
         try {
             validateForm();
-            NhanVienDTO saved = nhanVienServiceImpl.addNhanVienAutoCode(collectFormData());
+            NhanVien saved = nhanVienServiceImpl.addNhanVienAutoCode(collectFormData());
             String matKhauMacDinh = nhanVienServiceImpl.taoMatKhauMacDinh(saved.getMaNhanVien());
             notifyChangedAndClose("Đã thêm nhân viên. Mật khẩu mặc định: " + matKhauMacDinh);
         } catch (Exception ex) {
@@ -455,7 +430,7 @@ class NhanVienModal extends JDialog {
         }
     }
 
-    private NhanVienDTO collectFormData() {
+    private NhanVien collectFormData() {
         String ma = isNew ? tfMaNV.getText().trim() : tfMaNV.getText().trim();
         String ten = tfHoTen.getText().trim();
         if (ma.isBlank()) {
@@ -465,7 +440,7 @@ class NhanVienModal extends JDialog {
             throw new IllegalArgumentException("Tên nhân viên không được để trống.");
         }
 
-        return NhanVienDTO.builder()
+        return NhanVien.builder()
                 .maNhanVien(ma)
                 .CCCD(tfCCCD.getText().trim())
                 .tenNhanVien(ten)

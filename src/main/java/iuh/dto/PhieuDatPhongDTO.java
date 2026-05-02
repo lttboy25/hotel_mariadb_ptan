@@ -7,8 +7,16 @@ import java.util.List;
 
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.KhachHang;
-import iuh.entity.TrangThaiPhieuDatPhong;
+import iuh.enums.TrangThaiPhieuDatPhong;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PhieuDatPhongDTO implements Serializable {
     private String maPhieuDatPhong;
 
@@ -16,16 +24,17 @@ public class PhieuDatPhongDTO implements Serializable {
     private TrangThaiPhieuDatPhong trangThai;
     private long tienDatCoc;
 
-    private KhachHang khachHang;
+    private KhachHangDTO khachHang;
 
-    private List<ChiTietPhieuDatPhong> dsachPhieuDatPhong = new ArrayList<>();
+    @Builder.Default
+    private List<ChiTietPhieuDatPhongDTO> dsachPhieuDatPhong = new ArrayList<>();
 
     public long tinhTongTien() {
         if (dsachPhieuDatPhong == null)
             return 0;
         long tongTien = 0;
-        for (ChiTietPhieuDatPhong ct : dsachPhieuDatPhong) {
-            tongTien += ct.tinhThanhTien();
+        for (ChiTietPhieuDatPhongDTO ct : dsachPhieuDatPhong) {
+            tongTien += (long) ct.tinhThanhTien();
         }
         return tongTien;
     }

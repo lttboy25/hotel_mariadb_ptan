@@ -2,10 +2,8 @@ package iuh.view;
 
 import iuh.dto.LoaiPhongDTO;
 import iuh.dto.PhongDTO;
-import iuh.entity.LoaiPhong;
-import iuh.entity.Phong;
-import iuh.entity.TinhTrangPhong;
-import iuh.entity.TrangThaiPhong;
+import iuh.enums.TinhTrangPhong;
+import iuh.enums.TrangThaiPhong;
 import iuh.mapper.Mapper;
 import iuh.network.ClientConnection;
 import iuh.network.CommandType;

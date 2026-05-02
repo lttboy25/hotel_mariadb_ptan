@@ -6,10 +6,8 @@
 package iuh.service;
 
 import iuh.entity.ChiTietPhieuDatPhong;
-import iuh.entity.TrangThai;
-import iuh.entity.TrangThaiChiTietPhieuDatPhong;
-import iuh.entity.TrangThaiPhieuDatPhong;
-import iuh.entity.TrangThaiPhong;
+import iuh.enums.TrangThaiChiTietPhieuDatPhong;
+import iuh.enums.TrangThaiPhieuDatPhong;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,8 +28,8 @@ public interface ChiTietPhieuDatPhongService {
     boolean updateTrangThaiByMaPhong(String maPhong, TrangThaiChiTietPhieuDatPhong trangThai);
 
     List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong statusTicket,
-            TrangThaiChiTietPhieuDatPhong statusDetail,
-            String cccd);
+                                                                  TrangThaiChiTietPhieuDatPhong statusDetail,
+                                                                  String cccd);
 
     List<ChiTietPhieuDatPhong> getPhongDeHuyByCCCD(String cccd);
 

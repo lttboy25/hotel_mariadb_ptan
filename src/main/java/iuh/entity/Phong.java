@@ -8,6 +8,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
+import iuh.enums.TinhTrangPhong;
+import iuh.enums.TrangThaiPhong;
+
 @Data
 @Builder
 @NoArgsConstructor

@@ -1,6 +1,7 @@
 package iuh.view;
 
 import iuh.dto.NhanVienDTO;
+import iuh.enums.TrangThaiNhanVien;
 import iuh.service.impl.NhanVienServiceImpl;
 
 import javax.swing.*;
@@ -332,20 +333,20 @@ public class TaiKhoanPanel extends JPanel {
         String maNV = nv.getMaNhanVien() != null ? nv.getMaNhanVien() : "";
         String hoTen = nv.getTenNhanVien() != null ? nv.getTenNhanVien() : "";
         String email = nv.getEmail() != null ? nv.getEmail() : "";
-        //String trangThai = nv.getTrangThai() != null ? nv.getTrangThai() : "";
+        TrangThaiNhanVien trangThai = nv.getTrangThai();
 
         nameLbl.setText(hoTen.isBlank() ? "Nhan vien" : hoTen);
         emailLbl.setText(email + (maNV.isBlank() ? "" : " · " + maNV));
 
-//        if ("Đang làm việc".equalsIgnoreCase(trangThai)) {
-//            statusBadge.setText(trangThai);
-//            statusBadge.setForeground(SUCCESS_FG);
-//            statusBadge.setBackground(SUCCESS_BG);
-//        } else {
-//            statusBadge.setText(trangThai);
-//            statusBadge.setForeground(MID);
-//            statusBadge.setBackground(INPUT_BG);
-//        }
+        if ("Đang làm việc".equalsIgnoreCase(trangThai.toString())) {
+            statusBadge.setText(trangThai.toString());
+            statusBadge.setForeground(SUCCESS_FG);
+            statusBadge.setBackground(SUCCESS_BG);
+        } else {
+            statusBadge.setText(trangThai.toString());
+            statusBadge.setForeground(MID);
+            statusBadge.setBackground(INPUT_BG);
+        }
 
         tfHoTen.setText(hoTen);
         tfCCCD.setText(nv.getCCCD() != null ? nv.getCCCD() : "");
@@ -354,8 +355,8 @@ public class TaiKhoanPanel extends JPanel {
         tfSoDienThoai.setText(nv.getSoDienThoai() != null ? nv.getSoDienThoai() : "");
         tfEmail.setText(email);
         tfNgayBatDau.setText(nv.getNgayBatDau() != null ? nv.getNgayBatDau().toString() : "");
-        //tfTrangThai.setText(trangThai);
-        tfTaiKhoan.setText(nv.getTaiKhoan() != null ? nv.getTaiKhoan() : "");
+        tfTrangThai.setText(trangThai.toString());
+        tfTaiKhoan.setText(nv.getTaiKhoan().getMaNhanVien());
         tfMatKhau.setText(nhanVienServiceImpl.layMatKhauHienTai(maNV) == null ? "" : "********");
         tfGioiTinh.setText(nv.getGioiTinhText());
     }

@@ -2,7 +2,7 @@ package iuh.dao.impl;
 
 import iuh.db.JPAUtil;
 import iuh.entity.PhieuDatPhong;
-import iuh.entity.TrangThaiPhieuDatPhong;
+import iuh.enums.TrangThaiPhieuDatPhong;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;

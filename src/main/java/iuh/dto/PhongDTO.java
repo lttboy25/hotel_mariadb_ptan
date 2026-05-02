@@ -1,20 +1,17 @@
 package iuh.dto;
 
-import iuh.entity.LoaiPhong;
-import iuh.entity.TinhTrangPhong;
-import iuh.entity.TrangThaiPhong;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import iuh.enums.TinhTrangPhong;
+import iuh.enums.TrangThaiPhong;
+import lombok.*;
+
 import java.io.Serializable;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class PhongDTO implements Serializable {
 
     private String maPhong;

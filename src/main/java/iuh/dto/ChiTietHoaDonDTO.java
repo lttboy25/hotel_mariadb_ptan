@@ -21,11 +21,11 @@ import lombok.Setter;
 public class ChiTietHoaDonDTO implements Serializable {
     private Long id;
 
-    private HoaDon hoaDon;
+    private HoaDonDTO hoaDon;
 
-    private ChiTietPhieuDatPhong chiTietPhieuDatPhong;
+    private ChiTietPhieuDatPhongDTO chiTietPhieuDatPhong;
 
-    private Phong phong;
+    private PhongDTO phong;
 
     private LocalDateTime ngayTao;
     private double tongTien;

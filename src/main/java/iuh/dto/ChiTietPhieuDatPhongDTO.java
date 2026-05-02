@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import iuh.entity.PhieuDatPhong;
 import iuh.entity.PhieuHuyPhong;
 import iuh.entity.Phong;
-import iuh.entity.TrangThaiChiTietPhieuDatPhong;
+import iuh.enums.TrangThaiChiTietPhieuDatPhong;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,8 +19,8 @@ import lombok.NoArgsConstructor;
 public class ChiTietPhieuDatPhongDTO implements Serializable {
 
     private Long id;
-    private PhieuDatPhong phieuDatPhong;
-    private Phong phong;
+    private PhieuDatPhongDTO phieuDatPhong;
+    private PhongDTO phong;
 
     private TrangThaiChiTietPhieuDatPhong trangThai;
     private int soGioLuuTru;

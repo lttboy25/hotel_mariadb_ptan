@@ -1,8 +1,6 @@
 package iuh.network;
 
-import iuh.service.impl.LoaiPhongServiceImpl;
-import iuh.service.impl.NhanVienServiceImpl;
-import iuh.service.impl.PhongServiceImpl;
+import iuh.service.impl.*;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -20,8 +18,13 @@ public class MainSever {
                         client,
                         new NhanVienServiceImpl(),
                         new PhongServiceImpl(),
-                        new LoaiPhongServiceImpl()
-                        ));
+                        new LoaiPhongServiceImpl(),
+                        new DatPhongServiceImpl(),
+                        new KhachHangServiceImpl(),
+                        new ThongKeServiceImpl(),
+                        new KhuyenMaiServiceImpl(),
+                        new CaLamViecNhanVienServiceImpl()
+                ));
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

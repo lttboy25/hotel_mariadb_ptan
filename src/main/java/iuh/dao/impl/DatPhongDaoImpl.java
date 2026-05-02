@@ -18,14 +18,12 @@ import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.KhachHang;
 import iuh.entity.PhieuDatPhong;
 import iuh.entity.Phong;
-import iuh.entity.TrangThaiChiTietPhieuDatPhong;
-import iuh.entity.TrangThaiPhieuDatPhong;
+import iuh.enums.TrangThaiChiTietPhieuDatPhong;
+import iuh.enums.TrangThaiPhieuDatPhong;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 public class DatPhongDaoImpl implements iuh.dao.DatPhongDao {

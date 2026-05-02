@@ -9,7 +9,7 @@ import iuh.entity.ChiTietHoaDon;
 import iuh.entity.KhachHang;
 import iuh.entity.KhuyenMai;
 import iuh.entity.NhanVien;
-import iuh.entity.TrangThaiHoaDon;
+import iuh.enums.TrangThaiHoaDon;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,16 +25,17 @@ public class HoaDonDTO implements Serializable {
     private String maHoaDon;
     private LocalDateTime ngayDat;
 
-    private KhachHang khachHang;
+    private KhachHangDTO khachHang;
 
-    private NhanVien nhanVien;
+    private NhanVienDTO nhanVien;
 
-    private KhuyenMai khuyenMai;
+    private KhuyenMaiDTO khuyenMai;
     private LocalDateTime ngayTao;
     private TrangThaiHoaDon trangThai;
     private double tongTien;
     private double tienKhachDua;
     private double tienThoi;
 
+    @Builder.Default
     private List<ChiTietHoaDon> chiTietHoaDon = new ArrayList<>();
 }

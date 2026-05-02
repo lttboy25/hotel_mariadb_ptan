@@ -3,7 +3,7 @@ package iuh.service.impl;
 import iuh.dao.impl.PhieuDatPhongDaoImpl;
 import iuh.entity.KhachHang;
 import iuh.entity.PhieuDatPhong;
-import iuh.entity.TrangThaiPhieuDatPhong;
+import iuh.enums.TrangThaiPhieuDatPhong;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

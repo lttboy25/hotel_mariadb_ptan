@@ -1,8 +1,10 @@
 package iuh.view;
 
 import iuh.dto.ThongKeDTO;
-import iuh.service.ThongKeService;
-import iuh.service.impl.ThongKeServiceImpl;
+import iuh.network.ClientConnection;
+import iuh.network.CommandType;
+import iuh.network.Request;
+import iuh.network.Response;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -42,7 +44,7 @@ public class ThongKePanel extends JPanel {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final Color[] PIE_COLORS = {BLUE, GREEN, ORANGE, RED, PURPLE, new Color(0x14B8A6)};
 
-    private final ThongKeService thongKeService = new ThongKeServiceImpl();
+    private final ClientConnection clientConnection = ClientConnection.getInstance();
 
     private final JSpinner spTuNgay;
     private final JSpinner spDenNgay;
@@ -209,7 +211,13 @@ public class ThongKePanel extends JPanel {
         try {
             LocalDate tuNgay = spinnerToLocalDate(spTuNgay);
             LocalDate denNgay = spinnerToLocalDate(spDenNgay);
-            ThongKeDTO dto = thongKeService.layThongKe(tuNgay, denNgay);
+            
+            Request request = Request.builder()
+                    .commandType(CommandType.LAY_THONG_KE)
+                    .object(new LocalDate[]{tuNgay, denNgay})
+                    .build();
+            Response response = clientConnection.sendRequest(request);
+            ThongKeDTO dto = (ThongKeDTO) response.getObject();
             capNhatGiaoDien(dto);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(
