@@ -25,6 +25,7 @@ public class ClientHanler implements Runnable {
     private final ThongKeServiceImpl thongKeServiceImpl;
     private final KhuyenMaiServiceImpl khuyenMaiServiceImpl;
     private final CaLamViecNhanVienServiceImpl caLamViecNhanVienServiceImpl;
+    private final DoiPhongServiceImpl doiPhongServiceImpl;
 
     @Override
     public void run() {
@@ -92,6 +93,30 @@ public class ClientHanler implements Runnable {
                         String maNV = (String) request.getObject();
                         NhanVienDTO rs = nhanVienServiceImpl.getNhanVienDTOById(maNV);
                         response = Response.builder().object(rs).build();
+                    }
+                    case ADD_NHAN_VIEN_AUTO_CODE -> {
+                        NhanVienDTO collectFormData =  (NhanVienDTO) request.getObject();
+                        NhanVienDTO nv = nhanVienServiceImpl.addNhanVienAutoCode(collectFormData);
+                        response = Response.builder().object(nv).build();
+                    }
+                    case TAO_MAT_KHAU_MAC_DINH -> {
+                        String maNhanVien = (String) request.getObject();
+                        String mkMacDinh = nhanVienServiceImpl.taoMatKhauMacDinh(maNhanVien);
+                        response = Response.builder().object(mkMacDinh).build();
+                    }
+                    case DELETE_NHAN_VIEN -> {
+                        String maNhanVien = (String) request.getObject();
+                        boolean isSuccess = nhanVienServiceImpl.deleteNhanVien(maNhanVien);
+                        response = Response.builder().object(isSuccess).build();
+                    }
+                    case UPDATE_NHAN_VIEN -> {
+                        NhanVienDTO collectFormData =  (NhanVienDTO) request.getObject();
+                        NhanVienDTO updated = nhanVienServiceImpl.updateNhanVien(collectFormData);
+                        response = Response.builder().object(updated).build();
+                    }
+                    case GENERATE_NEXT_MA_NHAN_VIEN -> {
+                        String maNhanVien = nhanVienServiceImpl.generateNextMaNhanVien();
+                        response = Response.builder().object(maNhanVien).build();
                     }
 
                     // ===== ĐẶT PHÒNG =====
@@ -187,6 +212,16 @@ public class ClientHanler implements Runnable {
                         String maNV = (String) request.getObject();
                         var history = caLamViecNhanVienServiceImpl.getShiftHistory(maNV);
                         response = Response.builder().object(history).build();
+                    }
+
+                    //==========ĐỔI PHÒNG=========
+                    case GET_AVAILABLE_ROOMS -> {
+                        List<PhongDTO> avalRoom = doiPhongServiceImpl.getAvailableRooms();
+                        response = Response.builder().object(avalRoom).build();
+                    }
+                    case GET_ALL_BOOKED_ROOMS -> {
+                        List<PhongDTO> allBookedRoom = doiPhongServiceImpl.getAllBookedRooms();
+                        response = Response.builder().object(allBookedRoom).build();
                     }
                 }
                 out.writeObject(response);

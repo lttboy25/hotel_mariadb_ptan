@@ -8,6 +8,11 @@ import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 
+import iuh.dto.PhongDTO;
+import iuh.network.ClientConnection;
+import iuh.network.CommandType;
+import iuh.network.Request;
+import iuh.network.Response;
 import iuh.service.impl.DoiPhongServiceImpl;
 import iuh.entity.Phong;
 
@@ -109,16 +114,29 @@ public class DoiPhongPanel extends JPanel {
         availRooms.clear();
         allBookedRooms.clear();
 
-        for (Phong p : doiPhongServiceImpl.getAllBookedRooms()) {
-            Room r = new Room(p.getMaPhong(),
-                    p.getLoaiPhong().getTenLoaiPhong(),
-                    "Tầng " + p.getTang(),
-                    formatPrice(p.getLoaiPhong().getGia()),
-                    formatPrice(p.getLoaiPhong().getGia()));
-            bookedRooms.add(r);
-            allBookedRooms.add(r);
+        Request rs = Request.builder().commandType(CommandType.GET_ALL_BOOKED_ROOMS).build();
+        Response rp = ClientConnection.getInstance().sendRequest(rs);
+        @SuppressWarnings("unchecked")
+        List<PhongDTO> listAllBookedRooms = (List<PhongDTO>) rp.getObject();
+        if (listAllBookedRooms != null) {
+            for (PhongDTO p : listAllBookedRooms) {
+                Room r = new Room(
+                        p.getMaPhong(),
+                        p.getLoaiPhong().getTenLoaiPhong(),
+                        "Tầng " + p.getTang(),
+                        formatPrice(p.getLoaiPhong().getGia()),
+                        formatPrice(p.getLoaiPhong().getGia())
+                );
+                bookedRooms.add(r);
+                allBookedRooms.add(r);
+            }
         }
-        for (Phong p : doiPhongServiceImpl.getAvailableRooms()) {
+
+        Request request = Request.builder().commandType(CommandType.GET_AVAILABLE_ROOMS).build();
+        Response response = ClientConnection.getInstance().sendRequest(request);
+        @SuppressWarnings("unchecked")
+        List<PhongDTO> list = (List<PhongDTO>) response.getObject();
+        for (PhongDTO p : list) {
             availRooms.add(new Room(p.getMaPhong(),
                     p.getLoaiPhong().getTenLoaiPhong(),
                     "Tầng " + p.getTang(),

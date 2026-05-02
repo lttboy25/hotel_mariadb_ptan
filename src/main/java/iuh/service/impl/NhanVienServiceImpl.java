@@ -5,6 +5,7 @@ import iuh.dto.NhanVienDTO;
 import iuh.dto.TaiKhoanDTO;
 import iuh.entity.NhanVien;
 import iuh.entity.TaiKhoan;
+import iuh.enums.TrangThaiNhanVien;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,62 +13,71 @@ import java.util.Optional;
 public class NhanVienServiceImpl implements iuh.service.NhanVienService {
 
     private final NhanVienDaoImpl nhanVienDao = new NhanVienDaoImpl();
+    private static final String VAI_TRO_MAC_DINH = "Nhân viên";
+
+    // ==================== HELPER ====================
+
+    private NhanVienDTO toDTO(NhanVien e) {
+        if (e == null) return null;
+
+        TaiKhoanDTO taiKhoanDTO = null;
+        if (e.getTaiKhoan() != null) {
+            taiKhoanDTO = TaiKhoanDTO.builder()
+                    .maNhanVien(e.getTaiKhoan().getMaNhanVien())
+                    .matKhau(e.getTaiKhoan().getMatKhau())
+                    .vaiTro(e.getTaiKhoan().getVaiTro())
+                    .build();
+        }
+
+        return NhanVienDTO.builder()
+                .maNhanVien(e.getMaNhanVien())
+                .tenNhanVien(e.getTenNhanVien())
+                .CCCD(e.getCCCD())
+                .gioiTinh(e.isGioiTinh())
+                .ngaySinh(e.getNgaySinh())
+                .email(e.getEmail())
+                .soDienThoai(e.getSoDienThoai())
+                .ngayBatDau(e.getNgayBatDau())
+                .diaChi(e.getDiaChi())
+                .trangThai(e.getTrangThai())
+                .taiKhoan(taiKhoanDTO)
+                .build();
+    }
+
+    private NhanVien toEntity(NhanVienDTO dto) {
+        if (dto == null) return null;
+        return NhanVien.builder()
+                .maNhanVien(dto.getMaNhanVien())
+                .tenNhanVien(dto.getTenNhanVien())
+                .CCCD(dto.getCCCD())
+                .gioiTinh(dto.isGioiTinh())
+                .ngaySinh(dto.getNgaySinh())
+                .email(dto.getEmail())
+                .soDienThoai(dto.getSoDienThoai())
+                .ngayBatDau(dto.getNgayBatDau())
+                .diaChi(dto.getDiaChi())
+                .trangThai(dto.getTrangThai())
+                .build();
+    }
+
+    // ==================== SERVICE ====================
 
     @Override
     public List<NhanVienDTO> getAllNhanVien() {
-        return nhanVienDao.findAll()
-                .stream()
-                .map(e -> NhanVienDTO.builder()
-                        .maNhanVien(e.getMaNhanVien())
-                        .tenNhanVien(e.getTenNhanVien())
-                        .CCCD(e.getCCCD())
-                        .gioiTinh(e.isGioiTinh())
-                        .ngaySinh(e.getNgaySinh())
-                        .email(e.getEmail())
-                        .soDienThoai(e.getSoDienThoai())
-                        .ngayBatDau(e.getNgayBatDau())
-                        .diaChi(e.getDiaChi())
-                        .trangThai(e.getTrangThai())
-                        .taiKhoan(String.valueOf(e.getTaiKhoan()))
-                        .build())
+        return nhanVienDao.findAll().stream()
+                .map(this::toDTO)
                 .toList();
     }
 
     @Override
     public Optional<NhanVienDTO> getNhanVienById(String maNhanVien) {
-        return nhanVienDao.findById(maNhanVien)
-                .map(e -> NhanVienDTO.builder()
-                        .maNhanVien(e.getMaNhanVien())
-                        .tenNhanVien(e.getTenNhanVien())
-                        .CCCD(e.getCCCD())
-                        .gioiTinh(e.isGioiTinh())
-                        .ngaySinh(e.getNgaySinh())
-                        .email(e.getEmail())
-                        .soDienThoai(e.getSoDienThoai())
-                        .ngayBatDau(e.getNgayBatDau())
-                        .diaChi(e.getDiaChi())
-                        .trangThai(e.getTrangThai())
-                        .taiKhoan(String.valueOf(e.getTaiKhoan()))
-                        .build());
+        return nhanVienDao.findById(maNhanVien).map(this::toDTO);
     }
 
     @Override
     public List<NhanVienDTO> searchNhanVienByName(String name) {
-        return nhanVienDao.findByName(name)
-                .stream()
-                .map(e -> NhanVienDTO.builder()
-                        .maNhanVien(e.getMaNhanVien())
-                        .tenNhanVien(e.getTenNhanVien())
-                        .CCCD(e.getCCCD())
-                        .gioiTinh(e.isGioiTinh())
-                        .ngaySinh(e.getNgaySinh())
-                        .email(e.getEmail())
-                        .soDienThoai(e.getSoDienThoai())
-                        .ngayBatDau(e.getNgayBatDau())
-                        .diaChi(e.getDiaChi())
-                        .trangThai(e.getTrangThai())
-                        .taiKhoan(String.valueOf(e.getTaiKhoan()))
-                        .build())
+        return nhanVienDao.findByName(name).stream()
+                .map(this::toDTO)
                 .toList();
     }
 
@@ -75,32 +85,14 @@ public class NhanVienServiceImpl implements iuh.service.NhanVienService {
     public NhanVienDTO createNhanVien(NhanVienDTO nhanVien) {
         if (nhanVien == null)
             throw new IllegalArgumentException("NhanVien khong duoc null");
-        TaiKhoan tk = TaiKhoan.builder()
-                .maNhanVien(nhanVien.getMaNhanVien())
-                .matKhau(nhanVien.getTaiKhoan())
-                .vaiTro(nhanVien.getTaiKhoan().)
-                .build();
-        NhanVienDTO nv = NhanVien.builder()
-                .maNhanVien(nhanVien.getMaNhanVien())
-                .tenNhanVien(nhanVien.getTenNhanVien())
-                .CCCD(nhanVien.getCCCD())
-                .gioiTinh(nhanVien.isGioiTinh())
-                .ngaySinh(nhanVien.getNgaySinh())
-                .email(nhanVien.getEmail())
-                .soDienThoai(nhanVien.getSoDienThoai())
-                .ngayBatDau(nhanVien.getNgayBatDau())
-                .diaChi(nhanVien.getDiaChi())
-                .trangThai(nhanVien.getTrangThai())
-                .taiKhoan(nhanVien.getTaiKhoan())
-                .build();
-        return nhanVienDao.save(nv);
+        return toDTO(nhanVienDao.save(toEntity(nhanVien)));
     }
 
     @Override
     public NhanVienDTO updateNhanVien(NhanVienDTO nhanVien) {
         if (nhanVien == null || nhanVien.getMaNhanVien() == null)
             throw new IllegalArgumentException("Du lieu khong hop le");
-        return nhanVienDao.update(nhanVien);
+        return toDTO(nhanVienDao.update(toEntity(nhanVien)));
     }
 
     @Override
@@ -111,7 +103,9 @@ public class NhanVienServiceImpl implements iuh.service.NhanVienService {
 
     @Override
     public List<NhanVienDTO> searchNhanVien(String keyword) {
-        return nhanVienDao.search(keyword);
+        return nhanVienDao.search(keyword).stream()
+                .map(this::toDTO)
+                .toList();
     }
 
     @Override
@@ -123,30 +117,37 @@ public class NhanVienServiceImpl implements iuh.service.NhanVienService {
     public NhanVienDTO xacThucDangNhap(String maNhanVien, String matKhau) {
         if (maNhanVien == null || matKhau == null ||
                 maNhanVien.isEmpty() || matKhau.isEmpty()) return null;
-        return nhanVienDao.login(maNhanVien, matKhau);
+        return toDTO(nhanVienDao.login(maNhanVien, matKhau));
     }
 
     @Override
     public NhanVienDTO getNhanVienDTOById(String maNhanVien) {
         if (maNhanVien == null || maNhanVien.isBlank()) return null;
-        return nhanVienDao.findById(maNhanVien).orElse(null);
+        return nhanVienDao.findById(maNhanVien).map(this::toDTO).orElse(null);
     }
 
     @Override
     public NhanVienDTO addNhanVienAutoCode(NhanVienDTO nhanVien) {
-        validateNhanVien(nhanVien);
+        validateNhanVien(nhanVien, false);
         validateDuplicate(nhanVien, false);
 
         for (int i = 0; i < 10; i++) {
             String maNhanVien = nhanVienDao.generateMaNV();
-
-            if (nhanVienDao.existsById(maNhanVien)) {
-                continue;
-            }
+            if (nhanVienDao.existsById(maNhanVien)) continue;
 
             nhanVien.setMaNhanVien(maNhanVien);
-            // ✅ Không tạo TaiKhoan entity ở đây — để server/dao xử lý
-            return nhanVienDao.save(nhanVien);
+            NhanVien entity = toEntity(nhanVien);
+
+            String matKhauMacDinh = taoMatKhauMacDinh(maNhanVien);
+            TaiKhoan taiKhoan = TaiKhoan.builder()
+                    .maNhanVien(maNhanVien)
+                    .matKhau(matKhauMacDinh)
+                    .vaiTro(VAI_TRO_MAC_DINH)
+                    .nhanVien(entity)
+                    .build();
+            entity.setTaiKhoan(taiKhoan);
+
+            return toDTO(nhanVienDao.save(entity));
         }
 
         throw new IllegalStateException("Khong the tao ma nhan vien duy nhat.");
@@ -176,19 +177,6 @@ public class NhanVienServiceImpl implements iuh.service.NhanVienService {
     @Override
     public String taoMatKhauMacDinh(String maNhanVien) {
         return maNhanVien;
-    }
-
-    private void validateNhanVien(NhanVienDTO nv) {
-        if (nv == null)
-            throw new IllegalArgumentException("Du lieu nhan vien khong duoc null.");
-        if (nv.getTenNhanVien() == null || nv.getTenNhanVien().isBlank())
-            throw new IllegalArgumentException("Ten nhan vien khong duoc de trong.");
-        if (nv.getCCCD() == null || nv.getCCCD().isBlank())
-            throw new IllegalArgumentException("CCCD khong duoc de trong.");
-        if (nv.getSoDienThoai() == null || nv.getSoDienThoai().isBlank())
-            throw new IllegalArgumentException("So dien thoai khong duoc de trong.");
-        if (nv.getEmail() == null || nv.getEmail().isBlank())
-            throw new IllegalArgumentException("Email khong duoc de trong.");
     }
 
     public void validateDuplicate(NhanVienDTO nv, boolean isUpdate) {

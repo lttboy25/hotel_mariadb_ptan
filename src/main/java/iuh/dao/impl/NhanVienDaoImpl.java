@@ -9,6 +9,7 @@ package iuh.dao.impl;
 import iuh.db.JPAUtil;
 import iuh.entity.NhanVien;
 import iuh.entity.TaiKhoan;
+import iuh.enums.TrangThaiNhanVien;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
@@ -95,23 +96,26 @@ public class NhanVienDaoImpl extends AbstractGenericDaoImpl<NhanVien, String> im
     }
 
     @Override
-    public boolean delete(String maNhanVien){
+    public boolean delete(String maNhanVien) {
         EntityManager em = JPAUtil.getEntityManager();
-        try{
+        try {
+            em.getTransaction().begin();
             NhanVien entity = em.find(NhanVien.class, maNhanVien);
-            if(entity == null){
+            if (entity == null) {
+                System.out.println("Không tìm thấy nhân viên: " + maNhanVien);
                 return false;
             }
-            em.getTransaction().begin();
-            em.remove(entity);
+
+            System.out.println("Trước khi đổi: " + entity.getTrangThai());
+            entity.setTrangThai(TrangThaiNhanVien.DA_NGHI);
+            em.merge(entity);
             em.getTransaction().commit();
+            System.out.println("Sau khi đổi: " + entity.getTrangThai());
             return true;
-        }catch(Exception e){
-            if(em.getTransaction().isActive()){
-                em.getTransaction().rollback();
-            }
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
             throw e;
-        }finally{
+        } finally {
             em.close();
         }
     }

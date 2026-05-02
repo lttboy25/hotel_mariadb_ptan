@@ -40,5 +40,20 @@ public enum CommandType {
     MO_CA,
     KET_CA,
     GET_SHIFT_HISTORY,
-    GET_ALL_CA
+    GET_ALL_CA,
+
+    //========NHÂN VIÊN=============
+    GET_ALL_NHAN_VIEN,
+    SEARCH_NHAN_VIEN,
+    GET_NHAN_VIEN_BY_ID,
+    ADD_NHAN_VIEN_AUTO_CODE,
+    TAO_MAT_KHAU_MAC_DINH,
+    DELETE_NHAN_VIEN,
+    UPDATE_NHAN_VIEN,
+    GENERATE_NEXT_MA_NHAN_VIEN,
+
+    //========ĐỔI PHÒNG======
+    GET_AVAILABLE_ROOMS,
+    GET_ALL_BOOKED_ROOMS,
+
 }
