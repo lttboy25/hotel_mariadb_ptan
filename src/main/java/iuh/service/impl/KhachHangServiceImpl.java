@@ -14,7 +14,9 @@ public class KhachHangServiceImpl implements iuh.service.KhachHangService {
 
     @Override
     public List<KhachHangDTO> loadAll() {
-        return khachHangDao.loadAll()
+        List<KhachHang> entities = khachHangDao.loadAll();
+        if (entities == null) return java.util.Collections.emptyList();
+        return entities
                 .stream()
                 .map(Mapper::map)
                 .collect(Collectors.toList());
@@ -42,7 +44,9 @@ public class KhachHangServiceImpl implements iuh.service.KhachHangService {
 
     @Override
     public List<KhachHangDTO> timKiem(String kw) {
-        return khachHangDao.findByKeyword(kw)
+        List<KhachHang> entities = khachHangDao.findByKeyword(kw);
+        if (entities == null) return java.util.Collections.emptyList();
+        return entities
                 .stream()
                 .map(Mapper::map)
                 .collect(Collectors.toList());

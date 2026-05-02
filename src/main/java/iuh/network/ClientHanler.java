@@ -114,6 +114,20 @@ public class ClientHanler implements Runnable {
                         String code = khachHangServiceImpl.generateNextMaKH();
                         response = Response.builder().object(code).build();
                     }
+                    case GET_ALL_KHACH_HANG -> {
+                        List<KhachHangDTO> list = khachHangServiceImpl.loadAll();
+                        response = Response.builder().object(list).build();
+                    }
+                    case TIM_KHACH_HANG_THEO_KEYWORD -> {
+                        String kw = (String) request.getObject();
+                        List<KhachHangDTO> list = khachHangServiceImpl.timKiem(kw);
+                        response = Response.builder().object(list).build();
+                    }
+                    case XOA_KHACH_HANG_MA -> {
+                        String maKH = (String) request.getObject();
+                        boolean rs = khachHangServiceImpl.xoaKhachHang(maKH);
+                        response = Response.builder().object(rs).build();
+                    }
 
                     // ===== THỐNG KÊ =====
                     case LAY_THONG_KE -> {

@@ -1,13 +1,17 @@
 package iuh.view;
 
 import iuh.dto.KhachHangDTO;
-import iuh.service.impl.KhachHangServiceImpl;
+import iuh.network.ClientConnection;
+import iuh.network.CommandType;
+import iuh.network.Request;
 
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.time.LocalDate;
 
 public class QuanLyKhachHangPanel extends JPanel {
@@ -37,8 +41,9 @@ public class QuanLyKhachHangPanel extends JPanel {
 
     private DefaultTableModel tableModel;
     private JTextField tfSearch;
+    private List<KhachHangDTO> currentList = new ArrayList<>();
 
-    private KhachHangServiceImpl service = new KhachHangServiceImpl();
+    private final ClientConnection connection = ClientConnection.getInstance();
 
     public QuanLyKhachHangPanel() {
         setLayout(new BorderLayout());
@@ -62,20 +67,12 @@ public class QuanLyKhachHangPanel extends JPanel {
 
     public void loadDatabase() {
         try {
-            java.util.List<KhachHangDTO> list = service.loadAll();
-            tableModel.setRowCount(0);
-
-            for (KhachHangDTO kh : list) {
-                tableModel.addRow(new Object[] {
-                        kh.getMaKhachHang(),
-                        kh.getTenKhachHang(),
-                        kh.getSoDienThoai(),
-                        kh.getEmail(),
-                        kh.getNgayTao() != null ? kh.getNgayTao().toString() : "N/A"
-                });
-            }
+            Object payload = sendRequestSafely(
+                    Request.builder().commandType(CommandType.GET_ALL_KHACH_HANG).build(),
+                    "tải dữ liệu khách hàng");
+            refreshTable(castKhachHangList(payload));
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Lỗi khi tải dữ liệu khách hàng: " + e.getMessage());
             JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu khách hàng: " + e.getMessage());
         }
     }
@@ -94,16 +91,15 @@ public class QuanLyKhachHangPanel extends JPanel {
         tfSearch.setPreferredSize(new Dimension(240, 38));
         tfSearch.setBorder(new CompoundBorder(
                 new LineBorder(BORDER_COL, 1, true), new EmptyBorder(0, 12, 0, 12)));
-        setPlaceholder(tfSearch, "Tìm theo tên, SĐT, email...");
+        setPlaceholder(tfSearch);
 
         JButton btnSearch = QuanLyNhanVienPanel.createButton("Tìm kiếm", BLUE, new Color(0x2D5FD8), Color.WHITE, 100, 38);
         btnSearch.addActionListener(e -> {
             String kw = tfSearch.getText().equals("Tìm theo tên, SĐT, email...") ? "" : tfSearch.getText();
-            java.util.List<KhachHangDTO> list = service.timKiem(kw);
-            tableModel.setRowCount(0);
-            for (KhachHangDTO kh : list) {
-                tableModel.addRow(new Object[]{kh.getMaKhachHang(), kh.getTenKhachHang(), kh.getSoDienThoai(), kh.getEmail(), kh.getNgayTao()});
-            }
+            Object payload = sendRequestSafely(
+                    Request.builder().commandType(CommandType.TIM_KHACH_HANG_THEO_KEYWORD).object(kw).build(),
+                    "tìm kiếm khách hàng");
+            refreshTable(castKhachHangList(payload));
         });
 
         left.add(tfSearch);
@@ -160,7 +156,7 @@ public class QuanLyKhachHangPanel extends JPanel {
             @Override public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
                     int row = table.getSelectedRow();
-                    if (row >= 0) openModal(row);
+                    if (row >= 0 && row < currentList.size()) openModal(currentList.get(row));
                 }
             }
         });
@@ -172,16 +168,45 @@ public class QuanLyKhachHangPanel extends JPanel {
         return sp;
     }
 
-    private void openModal(Integer row) {
-        Object[] data = null;
-        if (row != null) {
-            data = new Object[tableModel.getColumnCount()];
-            for (int c = 0; c < data.length; c++) data[c] = tableModel.getValueAt(row, c);
-        }
+    private void openModal(KhachHangDTO data) {
         JFrame top = (JFrame) SwingUtilities.getWindowAncestor(this);
-        KhachHangModal modal = new KhachHangModal(top, data, row == null);
+        KhachHangModal modal = new KhachHangModal(top, data, data == null);
         modal.setVisible(true);
         loadDatabase(); // Nạp lại bảng sau khi Modal đóng
+    }
+
+    private Object sendRequestSafely(Request request, String action) {
+        try {
+            return connection.sendRequest(request).getObject();
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Không thể " + action + ": " + ex.getMessage(),
+                    "Lỗi giao tiếp", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<KhachHangDTO> castKhachHangList(Object payload) {
+        return payload instanceof List<?> ? (List<KhachHangDTO>) payload : new ArrayList<>();
+    }
+
+    private void refreshTable(List<KhachHangDTO> list) {
+        currentList = list != null ? new ArrayList<>(list) : new ArrayList<>();
+        tableModel.setRowCount(0);
+        for (KhachHangDTO kh : currentList) {
+            tableModel.addRow(new Object[] {
+                    kh.getMaKhachHang(),
+                    kh.getTenKhachHang(),
+                    kh.getSoDienThoai(),
+                    kh.getEmail(),
+                    formatDate(kh.getNgayTao())
+            });
+        }
+    }
+
+    private String formatDate(LocalDate date) {
+        return date != null ? date.toString() : "N/A";
     }
 
     private void styleTable(JTable t) {
@@ -202,7 +227,8 @@ public class QuanLyKhachHangPanel extends JPanel {
         ((DefaultTableCellRenderer) h.getDefaultRenderer()).setHorizontalAlignment(JLabel.LEFT);
     }
 
-    private void setPlaceholder(JTextField tf, String ph) {
+    private void setPlaceholder(JTextField tf) {
+        final String ph = "Tìm theo tên, SĐT, email...";
         tf.setText(ph); tf.setForeground(TEXT_GRAY);
         tf.addFocusListener(new FocusAdapter() {
             @Override public void focusGained(FocusEvent e) {
@@ -220,10 +246,11 @@ public class QuanLyKhachHangPanel extends JPanel {
     class KhachHangModal extends JDialog {
 
         private JTextField tfMa, tfTen, tfSdt, tfEmail, tfCccd;
-        private KhachHangServiceImpl service = new KhachHangServiceImpl();
-        private Object[] rowData;
 
-        KhachHangModal(JFrame owner, Object[] data, boolean isNew) {
+        private final KhachHangDTO rowData;
+        private final ClientConnection clientConnection = ClientConnection.getInstance();
+
+        KhachHangModal(JFrame owner, KhachHangDTO data, boolean isNew) {
             super(owner, isNew ? "Thêm khách hàng" : "Chi tiết khách hàng", true);
             this.rowData = data;
             setSize(520, 480);
@@ -238,7 +265,7 @@ public class QuanLyKhachHangPanel extends JPanel {
             setContentPane(root);
         }
 
-        private JPanel buildHeader(boolean isNew, Object[] data) {
+        private JPanel buildHeader(boolean isNew, KhachHangDTO data) {
             JPanel h = new JPanel(new BorderLayout());
             h.setBackground(BG_WHITE);
             h.setBorder(new CompoundBorder(
@@ -267,7 +294,7 @@ public class QuanLyKhachHangPanel extends JPanel {
             txt.setLayout(new BoxLayout(txt, BoxLayout.Y_AXIS)); txt.setOpaque(false);
             JLabel t1 = new JLabel(isNew ? "Thêm khách hàng mới" : "Thông tin khách hàng");
             t1.setFont(new Font("Segoe UI", Font.BOLD, 16)); t1.setForeground(TEXT_DARK);
-            JLabel t2 = new JLabel(isNew ? "Nhập đầy đủ thông tin bên dưới" : "Mã: " + (data != null ? data[0] : ""));
+            JLabel t2 = new JLabel(isNew ? "Nhập đầy đủ thông tin bên dưới" : "Mã: " + (data != null ? data.getMaKhachHang() : ""));
             t2.setFont(new Font("Segoe UI", Font.PLAIN, 12)); t2.setForeground(TEXT_GRAY);
             txt.add(t1); txt.add(Box.createVerticalStrut(2)); txt.add(t2);
 
@@ -277,7 +304,7 @@ public class QuanLyKhachHangPanel extends JPanel {
             return h;
         }
 
-        private JPanel buildForm(Object[] data, boolean isNew) {
+        private JPanel buildForm(KhachHangDTO data, boolean isNew) {
             JPanel form = new JPanel(new GridBagLayout());
             form.setBackground(BG_WHITE);
             form.setBorder(new EmptyBorder(20, 24, 20, 24));
@@ -287,19 +314,23 @@ public class QuanLyKhachHangPanel extends JPanel {
             g.weighty = 0; g.weightx = 0.5;
 
             // QUAN TRỌNG: Gán thẳng vào biến của Class để nút Lưu lấy được dữ liệu
-            tfMa = field(isNew ? service.phatSinhMaMoi() : s(data,0), false);
-            tfCccd = field("", true);
+            Object generated = isNew ? sendRequestSafely(
+                    Request.builder().commandType(CommandType.PHAT_SINH_MA_KHACH_HANG).build(),
+                    "phát sinh mã khách hàng") : null;
+            tfMa = field(isNew ? safe(generated != null ? generated.toString() : null)
+                    : safe(data != null ? data.getMaKhachHang() : null), false);
+            tfCccd = field(isNew ? "" : safe(data != null ? data.getCCCD() : null), true);
 
             addRow2(form, g, 0, "Mã khách hàng", tfMa, "CCCD / CMND", tfCccd);
 
-            tfTen = field(isNew ? "" : s(data,1), true);
+            tfTen = field(isNew ? "" : safe(data != null ? data.getTenKhachHang() : null), true);
             addRowFull(form, g, 1, "Họ và tên", tfTen);
 
-            tfSdt = field(isNew ? "" : s(data,2), true);
-            tfEmail = field(isNew ? "" : s(data,3), true);
+            tfSdt = field(isNew ? "" : safe(data != null ? data.getSoDienThoai() : null), true);
+            tfEmail = field(isNew ? "" : safe(data != null ? data.getEmail() : null), true);
             addRow2(form, g, 2, "Số điện thoại", tfSdt, "Email", tfEmail);
 
-            JTextField tfDate = field(isNew ? LocalDate.now().toString() : s(data,4), false);
+            JTextField tfDate = field(isNew ? LocalDate.now().toString() : formatDate(data != null ? data.getNgayTao() : null), false);
             tfDate.setBackground(new Color(0xF8F9FD));
             addRowFull(form, g, 3, "Ngày tạo (hệ thống)", tfDate);
 
@@ -354,20 +385,25 @@ public class QuanLyKhachHangPanel extends JPanel {
                 JButton save = QuanLyNhanVienPanel.createButton("Lưu", BLUE, new Color(0x2D5FD8), Color.WHITE, 100, 38);
                 save.addActionListener(e -> {
                     try {
-                        KhachHangDTO kh = KhachHangDTO.builder()
-                                .maKhachHang(tfMa.getText())
-                                .CCCD(tfCccd.getText().trim())
-                                .tenKhachHang(tfTen.getText().trim())
-                                .soDienThoai(tfSdt.getText().trim())
-                                .email(tfEmail.getText().trim())
-                                .ngayTao(LocalDate.now())
-                                .build();
+                        if (hasValidRequiredFields()) {
+                            KhachHangDTO kh = KhachHangDTO.builder()
+                                    .maKhachHang(tfMa.getText())
+                                    .CCCD(tfCccd.getText().trim())
+                                    .tenKhachHang(tfTen.getText().trim())
+                                    .soDienThoai(tfSdt.getText().trim())
+                                    .email(tfEmail.getText().trim())
+                                    .ngayTao(LocalDate.now())
+                                    .build();
 
-                        if (service.themKhachHang(kh)) {
-                            JOptionPane.showMessageDialog(this, "Thêm khách hàng thành công!");
-                            dispose();
-                        } else {
-                            JOptionPane.showMessageDialog(this, "Lỗi khi lưu vào CSDL!");
+                            Object payload = sendRequestSafely(
+                                    Request.builder().commandType(CommandType.THEM_KHACH_HANG).object(kh).build(),
+                                    "thêm khách hàng");
+                            if (Boolean.TRUE.equals(payload)) {
+                                JOptionPane.showMessageDialog(this, "Thêm khách hàng thành công!");
+                                dispose();
+                            } else {
+                                JOptionPane.showMessageDialog(this, "Lỗi khi lưu vào CSDL!");
+                            }
                         }
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(this, "Lỗi dữ liệu: " + ex.getMessage());
@@ -381,7 +417,11 @@ public class QuanLyKhachHangPanel extends JPanel {
                 del.addActionListener(e -> {
                     int confirm = JOptionPane.showConfirmDialog(this, "Xóa khách hàng " + tfMa.getText() + "?", "Xác nhận", JOptionPane.YES_NO_OPTION);
                     if (confirm == JOptionPane.YES_OPTION) {
-                        if (service.xoaKhachHang(tfMa.getText())) {
+                        Object payload = sendRequestSafely(
+                                Request.builder().commandType(CommandType.XOA_KHACH_HANG_MA)
+                                        .object(tfMa.getText()).build(),
+                                "xóa khách hàng");
+                        if (Boolean.TRUE.equals(payload)) {
                             JOptionPane.showMessageDialog(this, "Xóa thành công!");
                             dispose();
                         } else {
@@ -394,21 +434,25 @@ public class QuanLyKhachHangPanel extends JPanel {
                 JButton upd = QuanLyNhanVienPanel.createButton("Cập nhật", BLUE, new Color(0x2D5FD8), Color.WHITE, 110, 38);
                 upd.addActionListener(e -> {
                     try {
-                        KhachHangDTO kh = KhachHangDTO.builder()
-                                .maKhachHang(tfMa.getText())
-                                .CCCD(tfCccd.getText().trim())
-                                .tenKhachHang(tfTen.getText().trim())
-                                .soDienThoai(tfSdt.getText().trim())
-                                .email(tfEmail.getText().trim())
-                                .ngayTao(rowData[4] != null && !rowData[4].toString().equals("N/A")
-                                        ? LocalDate.parse(rowData[4].toString()) : LocalDate.now())
-                                .build();
+                        if (hasValidRequiredFields()) {
+                            KhachHangDTO kh = KhachHangDTO.builder()
+                                    .maKhachHang(tfMa.getText())
+                                    .CCCD(tfCccd.getText().trim())
+                                    .tenKhachHang(tfTen.getText().trim())
+                                    .soDienThoai(tfSdt.getText().trim())
+                                    .email(tfEmail.getText().trim())
+                                    .ngayTao(rowData != null && rowData.getNgayTao() != null ? rowData.getNgayTao() : LocalDate.now())
+                                    .build();
 
-                        if (service.capNhatKhachHang(kh)) {
-                            JOptionPane.showMessageDialog(this, "Cập nhật thành công!");
-                            dispose();
-                        } else {
-                            JOptionPane.showMessageDialog(this, "Cập nhật thất bại!");
+                            Object payload = sendRequestSafely(
+                                    Request.builder().commandType(CommandType.CAP_NHAT_KHACH_HANG).object(kh).build(),
+                                    "cập nhật khách hàng");
+                            if (Boolean.TRUE.equals(payload)) {
+                                JOptionPane.showMessageDialog(this, "Cập nhật thành công!");
+                                dispose();
+                            } else {
+                                JOptionPane.showMessageDialog(this, "Cập nhật thất bại!");
+                            }
                         }
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(this, "Lỗi cập nhật: " + ex.getMessage());
@@ -438,8 +482,31 @@ public class QuanLyKhachHangPanel extends JPanel {
             return b;
         }
 
-        private String s(Object[] a, int i) {
-            return (a != null && i < a.length && a[i] != null) ? a[i].toString() : "";
+        private String safe(String value) {
+            return value != null ? value : "";
+        }
+
+        private boolean hasValidRequiredFields() {
+            if (tfMa.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Mã khách hàng không được để trống.");
+                return false;
+            }
+            if (tfTen.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Họ và tên không được để trống.");
+                return false;
+            }
+            return true;
+        }
+
+        private Object sendRequestSafely(Request request, String action) {
+            try {
+                return clientConnection.sendRequest(request).getObject();
+            } catch (RuntimeException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Không thể " + action + ": " + ex.getMessage(),
+                        "Lỗi giao tiếp", JOptionPane.ERROR_MESSAGE);
+                return null;
+            }
         }
     }
 }
