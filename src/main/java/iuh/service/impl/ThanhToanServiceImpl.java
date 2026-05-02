@@ -8,10 +8,7 @@ import java.util.stream.Collectors;
 
 import iuh.dao.impl.ChiTietHoaDonDaoImpl;
 import iuh.dao.impl.HoaDonDaoImpl;
-import iuh.dto.ChiTietPhieuDatPhongDTO;
-import iuh.dto.HoaDonDTO;
-import iuh.dto.KhuyenMaiDTO;
-import iuh.dto.PhongDTO;
+import iuh.dto.*;
 import iuh.entity.*;
 import iuh.enums.*;
 import iuh.mapper.Mapper;
@@ -44,40 +41,35 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
     }
 
     @Override
-    public HoaDonDTO thanhToan(List<ChiTietPhieuDatPhongDTO> listThanhToanDto, double tienKhachDua, double tienThua) {
+    public HoaDonDTO thanhToan(ThanhToanRequest thanhToanRequest) {
+        List<ChiTietPhieuDatPhongDTO> listThanhToanDto = thanhToanRequest.getListThanhToan();
+        double tienKhachDua = thanhToanRequest.getTienKhachDua();
+        double tienThua     = thanhToanRequest.getTienThua();
+        double tongTienDaTinh = thanhToanRequest.getTongTien(); // ← đã có KM + VAT
 
-        List<ChiTietPhieuDatPhong> listThanhToan = listThanhToanDto.stream().map(e->Mapper.map(e)).collect(Collectors.toList());
+        List<ChiTietPhieuDatPhong> listThanhToan = listThanhToanDto.stream()
+                .map(Mapper::map).collect(Collectors.toList());
 
-
-        if (listThanhToan == null || listThanhToan.isEmpty()) {
-            return null;
-        }
+        if (listThanhToan == null || listThanhToan.isEmpty()) return null;
 
         LocalDateTime now = LocalDateTime.now();
-        double tongTien = 0.0;
         List<ChiTietHoaDon> dsChiTietHoaDon = new ArrayList<>();
-
         PhieuDatPhong phieuDatPhong = listThanhToan.get(0).getPhieuDatPhong();
 
         for (ChiTietPhieuDatPhong ctpdp : listThanhToan) {
-
             if (TrangThaiChiTietPhieuDatPhong.DA_THANH_TOAN.equals(ctpdp.getTrangThai())) {
                 throw new RuntimeException("Phòng " + ctpdp.getPhong().getMaPhong() + " đã thanh toán!");
             }
-
-            double tien = (ctpdp.tinhThanhTien() + ctpdp.tinhThanhTien() * 0.1);
-            tongTien += tien;
 
             ChiTietHoaDon cthd = new ChiTietHoaDon();
             cthd.setChiTietPhieuDatPhong(ctpdp);
             cthd.setPhong(ctpdp.getPhong());
             cthd.setNgayTao(now);
-            cthd.setTongTien(tien);
-
+            cthd.setTongTien(cthd.getTongTien());
             dsChiTietHoaDon.add(cthd);
         }
 
-        NhanVien nv = nhanVienServiceImpl.getNhanVienById("NV001").orElse(null);
+        NhanVien nv = nhanVienServiceImpl.getNhanVienById(thanhToanRequest.getMaNhanVien()).orElse(null);
 
         HoaDon hoaDon = new HoaDon();
         hoaDon.setNgayDat(now);
@@ -85,7 +77,7 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
         hoaDon.setNhanVien(nv);
         hoaDon.setTrangThai(TrangThaiHoaDon.DA_THANH_TOAN);
         hoaDon.setNgayTao(now);
-        hoaDon.setTongTien(tongTien);
+        hoaDon.setTongTien(tongTienDaTinh); // ← dùng giá trị đã tính (có KM)
         hoaDon.setTienKhachDua(tienKhachDua);
         hoaDon.setTienThoi(tienThua);
 
@@ -146,6 +138,9 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
 
     @Override
     public double tienSauKhiApGiamGia(double tongTien, KhuyenMaiDTO khuyenMai) {
+        if (khuyenMai == null || khuyenMai.getHeSo() == 0) {
+            return tongTien;
+        }
         return tongTien - khuyenMai.getHeSo()*tongTien;
     }
 

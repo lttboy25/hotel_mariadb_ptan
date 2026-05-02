@@ -4,20 +4,12 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
 
-import iuh.dto.ChiTietPhieuDatPhongDTO;
-import iuh.dto.HoaDonDTO;
-import iuh.dto.KhuyenMaiDTO;
-import iuh.entity.ChiTietPhieuDatPhong;
-import iuh.entity.HoaDon;
+import iuh.dto.*;
 import iuh.network.ClientConnection;
 import iuh.network.CommandType;
 import iuh.network.Request;
 import iuh.network.Response;
-import iuh.service.impl.ChiTietPhieuDatPhongServiceImpl;
-import iuh.service.impl.PhieuDatPhongServiceImpl;
-import iuh.service.impl.ThanhToanServiceImpl;
-import iuh.service.impl.CaLamViecNhanVienServiceImpl;
-import iuh.dto.CaLamViecNhanVienDTO;
+
 
 import java.awt.*;
 import java.awt.event.*;
@@ -100,10 +92,6 @@ public class ThanhToanPanel extends JPanel {
     private JTextField   tfKhachDua;
     private JLabel       lblTienThua;
     private JButton      btnThanhToan;
-
-    // ── Services & dữ liệu nghiệp vụ
-    private ThanhToanServiceImpl thanhToanServiceImpl = new ThanhToanServiceImpl();
-    private CaLamViecNhanVienServiceImpl shiftService = new CaLamViecNhanVienServiceImpl();
 
     // Danh sách song song với bảng (index i <=> row i)
     private List<ChiTietPhieuDatPhongDTO> danhSachPhong = new ArrayList<>();
@@ -229,7 +217,13 @@ public class ThanhToanPanel extends JPanel {
         tongTienPhong = 0.0;
         tienKhachDua  = 0.0;
 
-        danhSachPhong = thanhToanServiceImpl.getDanhSachPhieuDatPhongDeThanhToan(cccd);
+        danhSachPhong = (List<ChiTietPhieuDatPhongDTO>) clientConnection.sendRequest(
+                Request
+                        .builder()
+                        .commandType(CommandType.GET_DANH_SACH_DE_THANH_TOAN)
+                        .object(cccd)
+                        .build()
+        ).getObject() ;
 
         modelBang.setRowCount(0); // xoá dòng cũ
         for (ChiTietPhieuDatPhongDTO ct : danhSachPhong) {
@@ -645,9 +639,21 @@ public class ThanhToanPanel extends JPanel {
         btnThanhToan.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
         btnThanhToan.setPreferredSize(new Dimension(Integer.MAX_VALUE, 48));
         btnThanhToan.addActionListener(e -> {
+
+            if (listThanhToan.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn phòng");
+                return;
+            }
+
             // Kiểm tra ca làm việc trước khi thanh toán
             String maNV = CurrentUser.getInstance().getMaNhanVien();
-            CaLamViecNhanVienDTO activeShift = shiftService.getActiveShift(maNV);
+            CaLamViecNhanVienDTO activeShift = (CaLamViecNhanVienDTO) clientConnection.sendRequest(
+                    Request.builder()
+                            .commandType(CommandType.GET_ACTIVE_SHIFT)
+                            .object(maNV)
+                            .build()
+
+            ).getObject();
             if (activeShift == null) {
                 JOptionPane.showMessageDialog(this,
                         "Bạn phải MỞ CA LÀM VIỆC trước khi thực hiện thanh toán!",
@@ -673,7 +679,23 @@ public class ThanhToanPanel extends JPanel {
                         JOptionPane.ERROR_MESSAGE);
             }
             else {
-                HoaDonDTO hoaDon = thanhToanServiceImpl.thanhToan(listThanhToan, tienKhachDua, tienThua);
+                ThanhToanRequest thanhToanRequest = ThanhToanRequest.builder()
+                        .listThanhToan(listThanhToan)
+                        .tienKhachDua(tienKhachDua)
+                        .tienThua(tienThua)
+                        .tongTien(tongTien)
+                        .maNhanVien(maNV)
+                        .build();
+
+                Response resHD =  clientConnection.sendRequest(
+                        Request
+                                .builder()
+                                .commandType(CommandType.THANH_TOAN)
+                                .object(thanhToanRequest)
+                                .build()
+                );
+
+                HoaDonDTO hoaDon = (HoaDonDTO) resHD.getObject();
                 if (hoaDon != null) {
                     HDPanel hdPanel = new HDPanel(hoaDon);
                     hdPanel.show(this);
@@ -789,14 +811,13 @@ public class ThanhToanPanel extends JPanel {
 
     private void tinhTienThua() {
         try {
-            if (tongTienPhong <= 0) { lblTienThua.setText("—"); return; }
+            if (tongTien <= 0) { lblTienThua.setText("—"); return; }
 
             String text = tfKhachDua.getText().replace("đ", "").trim();
             Number number = formatter.parse(text);
             tienKhachDua = number.doubleValue();
 
-            double vat      = tongTienPhong * 0.1;
-            tongTien   = tongTienPhong + vat;
+            // Dùng tongTien đã tính sẵn trong updateSummaryCard() (đã bao gồm KM + VAT)
             tienThua = tienKhachDua - tongTien;
 
             if (tienThua >= 0) {
@@ -825,17 +846,37 @@ public class ThanhToanPanel extends JPanel {
         lblTongTien.setText(formatter.format(tongTienPhong) + " đ");
 
         double tienSauKM = tongTienPhong;
-        if (selectedKhuyenMai != null && tongTienPhong * 1.1 >= selectedKhuyenMai.getTongTienToiThieu()) {
-            double mucGiam = thanhToanServiceImpl.tienSauKhiApGiamGia(tongTienPhong, selectedKhuyenMai);
-            // Giới hạn không vượt tối đa
-            double soTienGiam = tongTienPhong - mucGiam;
-            if (soTienGiam > selectedKhuyenMai.getTongKhuyenMaiToiDa()) {
-                soTienGiam = selectedKhuyenMai.getTongKhuyenMaiToiDa();
+        if (selectedKhuyenMai != null) {
+            if (tongTienPhong * 1.1 >= selectedKhuyenMai.getTongTienToiThieu()) {
+                Map<String, Object> params = new HashMap<>();
+                params.put("tongTien", tongTienPhong);
+                params.put("km", selectedKhuyenMai);
+
+
+                double tienSauGiam = (double) clientConnection.sendRequest(
+                        Request
+                                .builder()
+                                .commandType(CommandType.TIEN_SAU_KHI_AP_GIAM_GIA)
+                                .object(params)
+                                .build()
+                ).getObject();
+                // Giới hạn không vượt tối đa
+                double soTienGiam  = tongTienPhong - tienSauGiam;
+
+                if (soTienGiam > selectedKhuyenMai.getTongKhuyenMaiToiDa()) {
+                    soTienGiam = selectedKhuyenMai.getTongKhuyenMaiToiDa();
+                }
+                tienSauKM = tongTienPhong - soTienGiam;
+                lblKhuyenMai.setText("-" + Math.round(selectedKhuyenMai.getHeSo() * 100) + "%");
+                lblKhuyenMaiTen.setText(selectedKhuyenMai.getTenKhuyenMai());
+                lblKhuyenMaiTen.setForeground(GREEN);
+            } else {
+                // KM không đủ điều kiện áp dụng
+                lblKhuyenMai.setText("0%");
+                lblKhuyenMaiTen.setText("Chưa đạt tối thiểu " +
+                        formatter.format(selectedKhuyenMai.getTongTienToiThieu()) + " đ");
+                lblKhuyenMaiTen.setForeground(ORANGE);
             }
-            tienSauKM = tongTienPhong - soTienGiam;
-            lblKhuyenMai.setText("-" + Math.round(selectedKhuyenMai.getHeSo() * 100) + "%");
-        } else {
-            lblKhuyenMai.setText("0%");
         }
 
         double vat   = tienSauKM * 0.1;
@@ -869,20 +910,21 @@ public class ThanhToanPanel extends JPanel {
 
         // ── 3. Tải lại dữ liệu bảng từ ThanhToanServiceImpl ──
         // Tải lại theo CCCD đang nhập (nếu ô trống thì trả về danh sách rỗng)
-        String cccdHienTai = tfCCCD.getText().trim();
-        boolean coTimKiem = !cccdHienTai.isEmpty() && !cccdHienTai.equals("Nhập CCCD");
-        if (coTimKiem) {
-            Response res = clientConnection.sendRequest(
-                    Request.builder()
-                            .commandType(CommandType.GET_DANH_SACH_DE_THANH_TOAN)
-                            .object(cccdHienTai)
-                            .build()
-            );
-            danhSachPhong = (List<ChiTietPhieuDatPhongDTO>) res.getObject();
-        }
-        else {
-            danhSachPhong = new ArrayList<>();
-        }
+        danhSachPhong = new ArrayList<>();
+//        String cccdHienTai = tfCCCD.getText().trim();
+//        boolean coTimKiem = !cccdHienTai.isEmpty() && !cccdHienTai.equals("Nhập CCCD");
+//        if (coTimKiem) {
+//            Response res = clientConnection.sendRequest(
+//                    Request.builder()
+//                            .commandType(CommandType.GET_DANH_SACH_DE_THANH_TOAN)
+//                            .object(cccdHienTai)
+//                            .build()
+//            );
+//            danhSachPhong = (List<ChiTietPhieuDatPhongDTO>) res.getObject();
+//        }
+//        else {
+//            danhSachPhong = new ArrayList<>();
+//        }
 
         modelBang.setRowCount(0); // xóa toàn bộ dòng cũ
         for (ChiTietPhieuDatPhongDTO ct : danhSachPhong) {
@@ -973,7 +1015,14 @@ public class ThanhToanPanel extends JPanel {
     }
 
     private void moModalKhuyenMai() {
-        List<KhuyenMaiDTO> dsKM = thanhToanServiceImpl.getDsKhuyenMai();
+        @SuppressWarnings("unchecked")
+        List<KhuyenMaiDTO> dsKM = (List<KhuyenMaiDTO>)
+                clientConnection.sendRequest(
+                        Request
+                                .builder()
+                                .commandType(CommandType.GET_DANH_SACH_KHUYEN_MAI_HOP_LE)
+                                .build()
+                ).getObject();
 
         // Lọc chỉ lấy KM còn hợp lệ theo ngày và tổng tiền
         LocalDateTime now = LocalDateTime.now();
@@ -1319,16 +1368,13 @@ public class ThanhToanPanel extends JPanel {
         }
     }
 
-    private void apDungKhuyenMai(iuh.dto.KhuyenMaiDTO km) {
+    private void apDungKhuyenMai(KhuyenMaiDTO km) {
         selectedKhuyenMai = km;
         if (km == null) {
+            // updateSummaryCard không xử lý case null → phải set thủ công
             lblKhuyenMai.setText("0%");
             lblKhuyenMaiTen.setText("Chưa áp dụng khuyến mãi");
             lblKhuyenMaiTen.setForeground(TEXT_GRAY);
-        } else {
-            lblKhuyenMai.setText("-" + Math.round(km.getHeSo() * 100) + "%");
-            lblKhuyenMaiTen.setText(km.getTenKhuyenMai());
-            lblKhuyenMaiTen.setForeground(GREEN);
         }
         updateSummaryCard();
         tinhTienThua();

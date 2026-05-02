@@ -189,6 +189,23 @@ public class ClientHanler implements Runnable {
                                 .object(thanhToanServiceImpl.coTheThanhToan(tienKhachDua, tongTien))
                                 .build();
                     }
+                    case THANH_TOAN -> {
+                        ThanhToanRequest thanhToanRequest = (ThanhToanRequest) request.getObject();
+                        HoaDonDTO hoaDonDTO = thanhToanServiceImpl.thanhToan(thanhToanRequest);
+                        response = Response.builder().object(hoaDonDTO).build();
+                    }
+                    case GET_DANH_SACH_KHUYEN_MAI_HOP_LE -> {
+                        List<KhuyenMaiDTO> ds = thanhToanServiceImpl.getDsKhuyenMai();
+                        response = Response.builder().object(ds).build();
+                    }
+                    case TIEN_SAU_KHI_AP_GIAM_GIA -> {
+                        Map<String, Object> params = (Map<String, Object>) request.getObject();
+                        double tongTien =  (double) params.get("tongTien");
+                        KhuyenMaiDTO km = (KhuyenMaiDTO) params.get("km");
+                        response = Response.builder()
+                                .object(thanhToanServiceImpl.tienSauKhiApGiamGia(tongTien, km))
+                                .build();
+                    }
                 }
                 out.writeObject(response);
                 out.flush();

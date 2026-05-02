@@ -5,10 +5,7 @@
  */
 package iuh.service;
 
-import iuh.dto.ChiTietPhieuDatPhongDTO;
-import iuh.dto.HoaDonDTO;
-import iuh.dto.KhuyenMaiDTO;
-import iuh.dto.PhongDTO;
+import iuh.dto.*;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.HoaDon;
 import iuh.entity.Phong;
@@ -28,7 +25,7 @@ public interface ThanhToanService {
 
     boolean coTheThanhToan(double tienKhachDua, double tongTien);
 
-    HoaDonDTO thanhToan(List<ChiTietPhieuDatPhongDTO> listThanhToan, double tienKhachDua, double tienThua);
+    HoaDonDTO thanhToan(ThanhToanRequest thanhToanRequest);
 
     List<KhuyenMaiDTO> getDsKhuyenMai();
 
