@@ -19,10 +19,7 @@ public class NhanPhongServiceImpl implements iuh.service.NhanPhongService {
 
     @Override
     public List<ChiTietPhieuDatPhongDTO> getDanhSachPhongDeNhanByCCCD(String cccd) {
-        return chiTietPhieuDatPhongServiceImpl.getPhongDeNhanByCCCD(cccd)
-                .stream()
-                .map(e -> Mapper.map(e))
-                .collect(Collectors.toList());
+        return chiTietPhieuDatPhongServiceImpl.getPhongDeNhanByCCCD(cccd);
     }
 
     @Override
@@ -58,11 +55,11 @@ public class NhanPhongServiceImpl implements iuh.service.NhanPhongService {
         // Kiểm tra xem tất cả chi tiết trong phiếu đã nhận hết chưa
         // Nếu còn phòng chưa nhận (cùng phiếu nhưng chưa được chọn) thì KHÔNG cập nhật
         // phiếu
-        List<ChiTietPhieuDatPhong> dsAll = chiTietPhieuDatPhongServiceImpl
+        List<ChiTietPhieuDatPhongDTO> dsAll = chiTietPhieuDatPhongServiceImpl
                 .getChiTietPhieuDatPhongByMaPDP(phieuDatPhong.getMaPhieuDatPhong());
 
         boolean tatCaDaNhan = true;
-        for (ChiTietPhieuDatPhong ct : dsAll) {
+        for (ChiTietPhieuDatPhongDTO ct : dsAll) {
             if (!TrangThaiChiTietPhieuDatPhong.NHAN_PHONG.equals(ct.getTrangThai())) {
                 tatCaDaNhan = false;
                 break;

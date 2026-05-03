@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -26,6 +27,7 @@ public class ClientHanler implements Runnable {
     private final KhuyenMaiServiceImpl khuyenMaiServiceImpl;
     private final CaLamViecNhanVienServiceImpl caLamViecNhanVienServiceImpl;
     private final DoiPhongServiceImpl doiPhongServiceImpl;
+    private final ChiTietPhieuDatPhongServiceImpl chiTietPhieuDatPhongServiceImpl;
 
     @Override
     public void run() {
@@ -223,6 +225,47 @@ public class ClientHanler implements Runnable {
                         List<PhongDTO> allBookedRoom = doiPhongServiceImpl.getAllBookedRooms();
                         response = Response.builder().object(allBookedRoom).build();
                     }
+                    case GET_MA_PDP_BY_PHONG -> {
+                        String maPhong = (String) request.getObject();
+                        String get = doiPhongServiceImpl.getMaPDPByPhong(maPhong);
+                        response = Response.builder().object(get).build();
+                    }
+                    case DOI_PHONG -> {
+                        DoiPhongRequestDTO dto = (DoiPhongRequestDTO) request.getObject();
+
+                        doiPhongServiceImpl.doiPhong(
+                                dto.getMaPDP(),
+                                dto.getMaPhongCu(),
+                                dto.getMaPhongMoi()
+                        );
+
+                        response = Response.builder().object("OK").build();
+                    }
+
+                    //========GIA HAN PHONG========
+                    case TIM_PHONG_DANG_THUE -> {
+                        String keyword = (String) request.getObject();
+                        List<ChiTietPhieuDatPhongDTO> listPhongDangThue = chiTietPhieuDatPhongServiceImpl.timPhongDangThue(keyword);
+                        response = Response.builder().object(listPhongDangThue).build();
+                    }
+                    case IS_ROOM_AVAILABLE_FOR_EXTENSION -> {
+                        GiaHanRequestDTO data = (GiaHanRequestDTO) request.getObject();
+
+                        boolean isRight = chiTietPhieuDatPhongServiceImpl
+                                .isRoomAvailableForExtension(data.getChiTietId(), data.getNewEndTime());
+
+                        response = Response.builder().object(isRight).build();
+                    }
+                    case GIA_HAN_NHIEU -> {
+                        Map<Long, LocalDateTime> requests =
+                                (Map<Long, LocalDateTime>) request.getObject();
+
+                        chiTietPhieuDatPhongServiceImpl.giaHanNhieu(requests);
+
+                        response = Response.builder().object(true).build();
+                    }
+
+
                 }
                 out.writeObject(response);
                 out.flush();

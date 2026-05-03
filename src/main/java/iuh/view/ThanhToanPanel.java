@@ -4,6 +4,8 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
 
+import iuh.dto.ChiTietPhieuDatPhongDTO;
+import iuh.dto.HoaDonDTO;
 import iuh.dto.KhuyenMaiDTO;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.HoaDon;
@@ -104,10 +106,10 @@ public class ThanhToanPanel extends JPanel {
     private CaLamViecNhanVienServiceImpl shiftService = new CaLamViecNhanVienServiceImpl();
 
     // Danh sách song song với bảng (index i <=> row i)
-    private List<ChiTietPhieuDatPhong> danhSachPhong = new ArrayList<>();
+    private List<ChiTietPhieuDatPhongDTO> danhSachPhong = new ArrayList<>();
 
     // Danh sách các phòng đang được TICK — dùng khi thanh toán
-    private List<ChiTietPhieuDatPhong> listThanhToan = new ArrayList<>();
+    private List<ChiTietPhieuDatPhongDTO> listThanhToan = new ArrayList<>();
 
     private double       tongTienPhong = 0.0;
     private double       tienKhachDua  = 0.0;
@@ -228,7 +230,7 @@ public class ThanhToanPanel extends JPanel {
         danhSachPhong = thanhToanServiceImpl.getDanhSachPhieuDatPhongDeThanhToan(cccd);
 
         modelBang.setRowCount(0); // xoá dòng cũ
-        for (ChiTietPhieuDatPhong ct : danhSachPhong) {
+        for (ChiTietPhieuDatPhongDTO ct : danhSachPhong) {
             modelBang.addRow(new Object[]{
                     false,
                     ct.getPhong().getSoPhong(),
@@ -446,7 +448,7 @@ public class ThanhToanPanel extends JPanel {
 
         // Tính lại tổng tiền từ listThanhToan
         tongTienPhong = listThanhToan.stream()
-                .mapToDouble(ChiTietPhieuDatPhong::tinhThanhTien)
+                .mapToDouble(ChiTietPhieuDatPhongDTO::tinhThanhTien)
                 .sum();
 
         updateSummaryCard();
@@ -659,7 +661,7 @@ public class ThanhToanPanel extends JPanel {
                         JOptionPane.ERROR_MESSAGE);
             }
             else {
-                HoaDon hoaDon = thanhToanServiceImpl.thanhToan(listThanhToan, tienKhachDua, tienThua);
+                HoaDonDTO hoaDon = thanhToanServiceImpl.thanhToan(listThanhToan, tienKhachDua, tienThua);
                 if (hoaDon != null) {
                     HDPanel hdPanel = new HDPanel(hoaDon);
                     hdPanel.show(this);
@@ -862,7 +864,7 @@ public class ThanhToanPanel extends JPanel {
                 : new ArrayList<>();
 
         modelBang.setRowCount(0); // xóa toàn bộ dòng cũ
-        for (ChiTietPhieuDatPhong ct : danhSachPhong) {
+        for (ChiTietPhieuDatPhongDTO ct : danhSachPhong) {
             modelBang.addRow(new Object[]{
                     false,
                     ct.getPhong().getSoPhong(),

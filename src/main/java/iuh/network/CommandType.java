@@ -55,5 +55,11 @@ public enum CommandType {
     //========ĐỔI PHÒNG======
     GET_AVAILABLE_ROOMS,
     GET_ALL_BOOKED_ROOMS,
+    GET_MA_PDP_BY_PHONG,
+    DOI_PHONG,
 
+    //============GIA HẠN PHÒNG========
+    TIM_PHONG_DANG_THUE,
+    IS_ROOM_AVAILABLE_FOR_EXTENSION,
+    GIA_HAN_NHIEU
 }

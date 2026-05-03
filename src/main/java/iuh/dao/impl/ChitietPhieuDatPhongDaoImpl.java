@@ -58,9 +58,14 @@ public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietP
 
     @Override
     public List<ChiTietPhieuDatPhong> getAll() {
-        return doInTransaction(
-                em -> em.createQuery("SELECT ct FROM ChiTietPhieuDatPhong ct", ChiTietPhieuDatPhong.class)
-                        .getResultList());
+        try (EntityManager em = JPAUtil.getEntityManager()) {
+            return em.createQuery(
+                            "SELECT ct FROM ChiTietPhieuDatPhong ct " +
+                                    "JOIN FETCH ct.phieuDatPhong " +
+                                    "JOIN FETCH ct.phong",
+                            ChiTietPhieuDatPhong.class)
+                    .getResultList();
+        }
     }
 
     @Override

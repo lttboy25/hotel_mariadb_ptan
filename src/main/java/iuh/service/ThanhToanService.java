@@ -5,6 +5,8 @@
  */
 package iuh.service;
 
+import iuh.dto.ChiTietPhieuDatPhongDTO;
+import iuh.dto.HoaDonDTO;
 import iuh.dto.KhuyenMaiDTO;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.HoaDon;
@@ -22,11 +24,12 @@ import java.util.List;
 public interface ThanhToanService {
     List<Phong> getRoomsByStatus(TinhTrangPhong status);
 
-    List<ChiTietPhieuDatPhong> getDanhSachPhieuDatPhongDeThanhToan(String cccd);
+    List<ChiTietPhieuDatPhongDTO> getDanhSachPhieuDatPhongDeThanhToan(String cccd);
 
     boolean coTheThanhToan(double tienKhachDua, double tongTien);
 
-    HoaDon thanhToan(List<ChiTietPhieuDatPhong> listThanhToan, double tienKhachDua, double tienThua);
+    HoaDonDTO thanhToan(List<ChiTietPhieuDatPhongDTO> listThanhToan,
+                        double tienKhachDua, double tienThua);
 
     List<KhuyenMaiDTO> getDsKhuyenMai();
 

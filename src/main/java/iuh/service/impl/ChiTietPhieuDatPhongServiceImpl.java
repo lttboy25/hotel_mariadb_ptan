@@ -1,9 +1,11 @@
 package iuh.service.impl;
 
 import iuh.dao.impl.ChitietPhieuDatPhongDaoImpl;
+import iuh.dto.ChiTietPhieuDatPhongDTO;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.enums.TrangThaiChiTietPhieuDatPhong;
 import iuh.enums.TrangThaiPhieuDatPhong;
+import iuh.mapper.Mapper;
 import iuh.service.ChiTietPhieuDatPhongService;
 
 import java.time.LocalDateTime;
@@ -17,12 +19,13 @@ public class ChiTietPhieuDatPhongServiceImpl implements ChiTietPhieuDatPhongServ
     ChitietPhieuDatPhongDaoImpl chitietPhieuDatPhongDao = new ChitietPhieuDatPhongDaoImpl();
 
     @Override
-    public List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByMaPDP(String maPDP) {
-        List<ChiTietPhieuDatPhong> ds = new ArrayList<>();
-        if (maPDP == null) {
-            return ds;
-        }
-        return chitietPhieuDatPhongDao.getByMaPhieuDatPhong(maPDP);
+    public List<ChiTietPhieuDatPhongDTO> getChiTietPhieuDatPhongByMaPDP(String maPDP) {
+        if (maPDP == null) return new ArrayList<>();
+
+        return chitietPhieuDatPhongDao.getByMaPhieuDatPhong(maPDP)
+                .stream()
+                .map(Mapper::map)
+                .toList();
     }
 
     @Override
@@ -44,61 +47,79 @@ public class ChiTietPhieuDatPhongServiceImpl implements ChiTietPhieuDatPhongServ
     }
 
     @Override
-    public List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong statusTicket,
-                                                                         TrangThaiChiTietPhieuDatPhong statusDetail,
-                                                                         String cccd) {
+    public List<ChiTietPhieuDatPhongDTO> getChiTietPhieuDatPhongByToPayment(
+            TrangThaiPhieuDatPhong statusTicket,
+            TrangThaiChiTietPhieuDatPhong statusDetail,
+            String cccd) {
+
         if (statusTicket == null || statusDetail == null || cccd == null) {
-            throw new NullPointerException("Lấy danh sách phiếu đặt phòng bị rỗng");
+            throw new IllegalArgumentException("Tham số không hợp lệ");
         }
 
-        return chitietPhieuDatPhongDao.getChiTietPhieuDatPhongByToPayment(statusTicket, statusDetail, cccd);
-
+        return chitietPhieuDatPhongDao.getChiTietPhieuDatPhongByToPayment(statusTicket, statusDetail, cccd)
+                .stream()
+                .map(Mapper::map)
+                .toList();
     }
 
     @Override
-    public List<ChiTietPhieuDatPhong> getPhongDeHuyByCCCD(String cccd) {
-        if (cccd == null || cccd.trim().isEmpty()) {
-            return new ArrayList<>();
-        }
-        return chitietPhieuDatPhongDao.getPhongDeHuyByCCCD(cccd);
+    public List<ChiTietPhieuDatPhongDTO> getPhongDeHuyByCCCD(String cccd) {
+        if (cccd == null || cccd.trim().isEmpty()) return new ArrayList<>();
+
+        return chitietPhieuDatPhongDao.getPhongDeHuyByCCCD(cccd)
+                .stream()
+                .map(Mapper::map)
+                .toList();
+    }
+
+
+    @Override
+    public List<ChiTietPhieuDatPhongDTO> getPhongDeNhanByCCCD(String cccd) {
+        if (cccd == null || cccd.trim().isEmpty()) return new ArrayList<>();
+
+        return chitietPhieuDatPhongDao.getPhongDeNhanByCCCD(cccd)
+                .stream()
+                .map(Mapper::map)
+                .toList();
     }
 
     @Override
-    public List<ChiTietPhieuDatPhong> getPhongDeNhanByCCCD(String cccd) {
-        if (cccd == null || cccd.trim().isEmpty()) {
-            return new ArrayList<>();
-        }
-        return chitietPhieuDatPhongDao.getPhongDeNhanByCCCD(cccd);
-    }
-
-    @Override
-    public List<ChiTietPhieuDatPhong> timPhongDangThueBySDT(String soDienThoai) {
+    public List<ChiTietPhieuDatPhongDTO> timPhongDangThueBySDT(String soDienThoai) {
         if (soDienThoai == null || soDienThoai.isBlank())
             throw new IllegalArgumentException("Số điện thoại không được để trống.");
-        return chitietPhieuDatPhongDao.getDangThueBySDT(soDienThoai.trim());
+
+        return chitietPhieuDatPhongDao.getDangThueBySDT(soDienThoai.trim())
+                .stream()
+                .map(Mapper::map)
+                .toList();
     }
+
 
     @Override
     public void giaHanNhieu(Map<Long, LocalDateTime> requests) {
+
         for (Map.Entry<Long, LocalDateTime> entry : requests.entrySet()) {
+
             Long id = entry.getKey();
             LocalDateTime thoiGianTraMoi = entry.getValue();
 
-            ChiTietPhieuDatPhong ct = chitietPhieuDatPhongDao.findById(id);
-            if (ct == null)
-                throw new IllegalArgumentException("Không tìm thấy chi tiết phiếu ID: " + id);
+            ChiTietPhieuDatPhong entity = chitietPhieuDatPhongDao.findById(id);
+            if (entity == null)
+                throw new IllegalArgumentException("Không tìm thấy ID: " + id);
 
-            if (thoiGianTraMoi == null || !thoiGianTraMoi.isAfter(ct.getThoiGianTraPhong()))
+            if (thoiGianTraMoi == null || !thoiGianTraMoi.isAfter(entity.getThoiGianTraPhong()))
                 throw new IllegalArgumentException(
-                        "Thời gian gia hạn phải sau ngày trả hiện tại của phòng "
-                                + (ct.getPhong() != null ? ct.getPhong().getSoPhong() : id));
+                        "Thời gian gia hạn không hợp lệ cho phòng "
+                                + (entity.getPhong() != null ? entity.getPhong().getSoPhong() : id)
+                );
 
             int soGioMoi = (int) ChronoUnit.HOURS.between(
-                    ct.getThoiGianNhanPhong(), thoiGianTraMoi);
+                    entity.getThoiGianNhanPhong(), thoiGianTraMoi);
 
             chitietPhieuDatPhongDao.updateGiaHan(id, thoiGianTraMoi, soGioMoi);
         }
     }
+
 
     @Override
     public boolean isRoomAvailableForExtension(Long chiTietId, LocalDateTime newEndTime) {
@@ -106,7 +127,10 @@ public class ChiTietPhieuDatPhongServiceImpl implements ChiTietPhieuDatPhongServ
     }
 
     @Override
-    public List<ChiTietPhieuDatPhong> timPhongDangThue(String keyword) {
-        return chitietPhieuDatPhongDao.searchPhongDangThue(keyword);
+    public List<ChiTietPhieuDatPhongDTO> timPhongDangThue(String keyword) {
+        return chitietPhieuDatPhongDao.searchPhongDangThue(keyword)
+                .stream()
+                .map(Mapper::map)
+                .toList();
     }
 }

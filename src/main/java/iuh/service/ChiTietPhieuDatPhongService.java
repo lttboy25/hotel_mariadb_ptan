@@ -5,6 +5,7 @@
  */
 package iuh.service;
 
+import iuh.dto.ChiTietPhieuDatPhongDTO;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.enums.TrangThaiChiTietPhieuDatPhong;
 import iuh.enums.TrangThaiPhieuDatPhong;
@@ -20,26 +21,26 @@ import java.util.Map;
  * @version:    1.0
  */
 public interface ChiTietPhieuDatPhongService {
-    List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByMaPDP(String maPDP);
+    List<ChiTietPhieuDatPhongDTO> getChiTietPhieuDatPhongByMaPDP(String maPDP);
 
     boolean updateStatusDetail(Long id, TrangThaiChiTietPhieuDatPhong status);
 
     @Deprecated
     boolean updateTrangThaiByMaPhong(String maPhong, TrangThaiChiTietPhieuDatPhong trangThai);
 
-    List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong statusTicket,
+    List<ChiTietPhieuDatPhongDTO> getChiTietPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong statusTicket,
                                                                   TrangThaiChiTietPhieuDatPhong statusDetail,
                                                                   String cccd);
 
-    List<ChiTietPhieuDatPhong> getPhongDeHuyByCCCD(String cccd);
+    List<ChiTietPhieuDatPhongDTO> getPhongDeHuyByCCCD(String cccd);
 
-    List<ChiTietPhieuDatPhong> getPhongDeNhanByCCCD(String cccd);
+    List<ChiTietPhieuDatPhongDTO> getPhongDeNhanByCCCD(String cccd);
 
-    List<ChiTietPhieuDatPhong> timPhongDangThueBySDT(String soDienThoai);
+    List<ChiTietPhieuDatPhongDTO> timPhongDangThueBySDT(String soDienThoai);
 
     void giaHanNhieu(Map<Long, LocalDateTime> requests);
 
     boolean isRoomAvailableForExtension(Long chiTietId, LocalDateTime newEndTime);
 
-    List<ChiTietPhieuDatPhong> timPhongDangThue(String keyword);
+    List<ChiTietPhieuDatPhongDTO> timPhongDangThue(String keyword);
 }

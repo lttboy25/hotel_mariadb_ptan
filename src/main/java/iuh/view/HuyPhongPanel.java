@@ -1,7 +1,9 @@
 package iuh.view;
 
+import iuh.dto.ChiTietPhieuDatPhongDTO;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.PhieuHuyPhong;
+import iuh.mapper.Mapper;
 import iuh.service.impl.ChiTietPhieuDatPhongServiceImpl;
 import iuh.service.impl.PhieuHuyPhongServiceImpl;
 
@@ -45,7 +47,7 @@ public class HuyPhongPanel extends JPanel {
 
     private PhieuHuyPhongServiceImpl phieuHuyService = new PhieuHuyPhongServiceImpl();
     private ChiTietPhieuDatPhongServiceImpl chiTietService = new ChiTietPhieuDatPhongServiceImpl();
-    private List<ChiTietPhieuDatPhong> dsChiTiet = new ArrayList<>();
+    private List<ChiTietPhieuDatPhongDTO> dsChiTiet = new ArrayList<>();
 
     public HuyPhongPanel() {
         setLayout(new BorderLayout(20, 20));
@@ -161,7 +163,7 @@ public class HuyPhongPanel extends JPanel {
         lblActionMsg.setText(" "); // Xóa thông báo báo lỗi ở nút khi tải lại bảng
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        for (ChiTietPhieuDatPhong ct : dsChiTiet) {
+        for (ChiTietPhieuDatPhongDTO ct : dsChiTiet) {
             tableModel.addRow(new Object[]{
                     false,
                     ct.getPhieuDatPhong() != null ? ct.getPhieuDatPhong().getMaPhieuDatPhong() : "",
@@ -179,7 +181,7 @@ public class HuyPhongPanel extends JPanel {
     // LOGIC HỦY & HOÀN TIỀN
     // =========================================================
     private void xuLyHuyPhong() {
-        List<ChiTietPhieuDatPhong> danhSachPhongBiHuy = new ArrayList<>();
+        List<ChiTietPhieuDatPhongDTO> danhSachPhongBiHuy = new ArrayList<>();
         for (int i = 0; i < tblDanhSach.getRowCount(); i++) {
             Boolean isChecked = (Boolean) tblDanhSach.getValueAt(i, 0);
             if (isChecked != null && isChecked) {
@@ -201,7 +203,7 @@ public class HuyPhongPanel extends JPanel {
         LocalDateTime bayGio = LocalDateTime.now();
         java.util.Set<String> dsMaPDP = new java.util.HashSet<>();
 
-        for (ChiTietPhieuDatPhong ct : danhSachPhongBiHuy) {
+        for (ChiTietPhieuDatPhongDTO ct : danhSachPhongBiHuy) {
             if (ct.getPhieuDatPhong() != null) {
                 String ma = ct.getPhieuDatPhong().getMaPhieuDatPhong();
                 double tienCocCuaPhieu = ct.getPhieuDatPhong().getTienDatCoc();
@@ -324,11 +326,11 @@ public class HuyPhongPanel extends JPanel {
         // --- 3. XỬ LÝ LƯU DATABASE ---
         if (finalLyDo[0] != null) {
             List<PhieuHuyPhong> dsPhieuHuy = new ArrayList<>();
-            for (ChiTietPhieuDatPhong ct : danhSachPhongBiHuy) {
+            for (ChiTietPhieuDatPhongDTO ct : danhSachPhongBiHuy) {
                 dsPhieuHuy.add(PhieuHuyPhong.builder()
                         .lyDo(finalLyDo[0])
                         .ngayHuy(LocalDateTime.now())
-                        .chiTietPhieuDatPhong(ct)
+                        .chiTietPhieuDatPhong(Mapper.map(ct))
                         .build());
             }
 
