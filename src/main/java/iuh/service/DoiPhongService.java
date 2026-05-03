@@ -5,6 +5,7 @@
  */
 package iuh.service;
 
+import iuh.dto.PhongDTO;
 import iuh.entity.Phong;
 
 import java.util.List;
@@ -17,15 +18,15 @@ import java.util.List;
  */
 public interface DoiPhongService {
     //lay phong da dat
-    List<Phong> getBookedRooms(String maPDP);
+    List<PhongDTO> getBookedRooms(String maPDP);
 
     //lay phong trong
-    List<Phong> getAvailableRooms();
+    List<PhongDTO> getAvailableRooms();
 
     // doi phong
     void doiPhong(String maPDP, String maPhongCu, String maPhongMoi);
 
-    List<Phong> getAllBookedRooms();
+    List<PhongDTO> getAllBookedRooms();
 
     double tinhPhiChenhLech(String maPhongCu, String maPhongMoi);
 

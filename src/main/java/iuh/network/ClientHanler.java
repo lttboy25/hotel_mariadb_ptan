@@ -29,6 +29,8 @@ public class ClientHanler implements Runnable {
     private final ThanhToanServiceImpl thanhToanServiceImpl;
     private final PhieuHuyPhongServiceImpl phieuHuyPhongService;
     private final ChiTietPhieuDatPhongServiceImpl chiTietPhieuDatPhongService;
+    private final DoiPhongServiceImpl doiPhongServiceImpl;
+    private final ChiTietPhieuDatPhongServiceImpl chiTietPhieuDatPhongServiceImpl;
 
     @Override
     public void run() {
@@ -82,6 +84,44 @@ public class ClientHanler implements Runnable {
                         String maPhong = (String) request.getObject();
                         boolean rs = phongServiceImpl.deletePhong(maPhong);
                         response = Response.builder().object(rs).build();
+                    }
+                    case GET_ALL_NHAN_VIEN -> {
+                        List<NhanVienDTO> rs = nhanVienServiceImpl.getAllNhanVien();
+                        response = Response.builder().object(rs).build();
+                    }
+                    case SEARCH_NHAN_VIEN -> {
+                        String keyword = (String) request.getObject();
+                        List<NhanVienDTO> rs = nhanVienServiceImpl.searchNhanVien(keyword);
+                        response = Response.builder().object(rs).build();
+                    }
+                    case GET_NHAN_VIEN_BY_ID -> {
+                        String maNV = (String) request.getObject();
+                        NhanVienDTO rs = nhanVienServiceImpl.getNhanVienDTOById(maNV);
+                        response = Response.builder().object(rs).build();
+                    }
+                    case ADD_NHAN_VIEN_AUTO_CODE -> {
+                        NhanVienDTO collectFormData = (NhanVienDTO) request.getObject();
+                        NhanVienDTO nv = nhanVienServiceImpl.addNhanVienAutoCode(collectFormData);
+                        response = Response.builder().object(nv).build();
+                    }
+                    case TAO_MAT_KHAU_MAC_DINH -> {
+                        String maNhanVien = (String) request.getObject();
+                        String mkMacDinh = nhanVienServiceImpl.taoMatKhauMacDinh(maNhanVien);
+                        response = Response.builder().object(mkMacDinh).build();
+                    }
+                    case DELETE_NHAN_VIEN -> {
+                        String maNhanVien = (String) request.getObject();
+                        boolean isSuccess = nhanVienServiceImpl.deleteNhanVien(maNhanVien);
+                        response = Response.builder().object(isSuccess).build();
+                    }
+                    case UPDATE_NHAN_VIEN -> {
+                        NhanVienDTO collectFormData = (NhanVienDTO) request.getObject();
+                        NhanVienDTO updated = nhanVienServiceImpl.updateNhanVien(collectFormData);
+                        response = Response.builder().object(updated).build();
+                    }
+                    case GENERATE_NEXT_MA_NHAN_VIEN -> {
+                        String maNhanVien = nhanVienServiceImpl.generateNextMaNhanVien();
+                        response = Response.builder().object(maNhanVien).build();
                     }
 
                     // ===== ĐẶT PHÒNG =====
@@ -235,6 +275,55 @@ public class ClientHanler implements Runnable {
                         HuyPhongResultDTO result = phieuHuyPhongService.thucHienHuyNhieuPhong(huyPhongRequest);
                         response = Response.builder().object(result).build();
                     }
+
+                    // ==========ĐỔI PHÒNG=========
+                    case GET_AVAILABLE_ROOMS -> {
+                        List<PhongDTO> avalRoom = doiPhongServiceImpl.getAvailableRooms();
+                        response = Response.builder().object(avalRoom).build();
+                    }
+                    case GET_ALL_BOOKED_ROOMS -> {
+                        List<PhongDTO> allBookedRoom = doiPhongServiceImpl.getAllBookedRooms();
+                        response = Response.builder().object(allBookedRoom).build();
+                    }
+                    case GET_MA_PDP_BY_PHONG -> {
+                        String maPhong = (String) request.getObject();
+                        String get = doiPhongServiceImpl.getMaPDPByPhong(maPhong);
+                        response = Response.builder().object(get).build();
+                    }
+                    case DOI_PHONG -> {
+                        DoiPhongRequestDTO dto = (DoiPhongRequestDTO) request.getObject();
+
+                        doiPhongServiceImpl.doiPhong(
+                                dto.getMaPDP(),
+                                dto.getMaPhongCu(),
+                                dto.getMaPhongMoi());
+
+                        response = Response.builder().object("OK").build();
+                    }
+
+                    // ========GIA HAN PHONG========
+                    case TIM_PHONG_DANG_THUE -> {
+                        String keyword = (String) request.getObject();
+                        List<ChiTietPhieuDatPhongDTO> listPhongDangThue = chiTietPhieuDatPhongServiceImpl
+                                .timPhongDangThue(keyword);
+                        response = Response.builder().object(listPhongDangThue).build();
+                    }
+                    case IS_ROOM_AVAILABLE_FOR_EXTENSION -> {
+                        GiaHanRequestDTO data = (GiaHanRequestDTO) request.getObject();
+
+                        boolean isRight = chiTietPhieuDatPhongServiceImpl
+                                .isRoomAvailableForExtension(data.getChiTietId(), data.getNewEndTime());
+
+                        response = Response.builder().object(isRight).build();
+                    }
+                    case GIA_HAN_NHIEU -> {
+                        Map<Long, LocalDateTime> requests = (Map<Long, LocalDateTime>) request.getObject();
+
+                        chiTietPhieuDatPhongServiceImpl.giaHanNhieu(requests);
+
+                        response = Response.builder().object(true).build();
+                    }
+
                 }
                 out.writeObject(response);
                 out.flush();

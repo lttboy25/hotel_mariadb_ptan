@@ -55,4 +55,24 @@ public enum CommandType {
     // ==== HỦY PHÒNG ====
     GET_DS_PHONG_DE_HUY,
     HUY_PHONG,
+    // ========NHÂN VIÊN=============
+    GET_ALL_NHAN_VIEN,
+    SEARCH_NHAN_VIEN,
+    GET_NHAN_VIEN_BY_ID,
+    ADD_NHAN_VIEN_AUTO_CODE,
+    TAO_MAT_KHAU_MAC_DINH,
+    DELETE_NHAN_VIEN,
+    UPDATE_NHAN_VIEN,
+    GENERATE_NEXT_MA_NHAN_VIEN,
+
+    // ========ĐỔI PHÒNG======
+    GET_AVAILABLE_ROOMS,
+    GET_ALL_BOOKED_ROOMS,
+    GET_MA_PDP_BY_PHONG,
+    DOI_PHONG,
+
+    // ============GIA HẠN PHÒNG========
+    TIM_PHONG_DANG_THUE,
+    IS_ROOM_AVAILABLE_FOR_EXTENSION,
+    GIA_HAN_NHIEU
 }

@@ -1,7 +1,9 @@
 package iuh.view;
 
+import iuh.dto.NhanVienDTO;
 import iuh.entity.NhanVien;
 import iuh.enums.TrangThaiNhanVien;
+import iuh.network.*;
 import iuh.service.impl.NhanVienServiceImpl;
 
 import javax.swing.*;
@@ -150,17 +152,34 @@ public class QuanLyNhanVienPanel extends JPanel {
 
     private void refreshTable() {
         String keyword = tfSearch.getText().trim();
-        List<NhanVien> list = keyword.isBlank()
-                ? nhanVienServiceImpl.getAllNhanVien()
-                : nhanVienServiceImpl.searchNhanVienByName(keyword);
+        List<NhanVienDTO> list;
+
+        if (keyword.isBlank()) {
+            Request request = Request.builder()
+                    .commandType(CommandType.GET_ALL_NHAN_VIEN)
+                    .build();
+            Response response = ClientConnection.getInstance().sendRequest(request);
+            //@SuppressWarnings("unchecked")
+                    list = (List<NhanVienDTO>) response.getObject();
+        } else {
+            Request request = Request.builder()
+                    .commandType(CommandType.SEARCH_NHAN_VIEN)
+                    .object(keyword)
+                    .build();
+            Response response = ClientConnection.getInstance().sendRequest(request);
+            //@SuppressWarnings("unchecked")
+                    list = (List<NhanVienDTO>) response.getObject();
+        }
 
         tableModel.setRowCount(0);
-        for (NhanVien nv : list) {
-            tableModel.addRow(toRow(nv));
+        if (list != null) {
+            for (NhanVienDTO nv : list) {
+                tableModel.addRow(toRow(nv));
+            }
         }
     }
 
-    private Object[] toRow(NhanVien nv) {
+    private Object[] toRow(NhanVienDTO nv) {
         return new Object[]{
                 nv.getMaNhanVien(),
                 nv.getCCCD(),
@@ -176,10 +195,15 @@ public class QuanLyNhanVienPanel extends JPanel {
     }
 
     private void openModal(Integer row) {
-        NhanVien nv = null;
+        NhanVienDTO nv = null;
         if (row != null) {
             String maNV = String.valueOf(tableModel.getValueAt(row, 0));
-            nv = nhanVienServiceImpl.getNhanVienById(maNV).orElse(null);
+            Request request = Request.builder()
+                    .commandType(CommandType.GET_NHAN_VIEN_BY_ID)
+                    .object(maNV)
+                    .build();
+            Response response = ClientConnection.getInstance().sendRequest(request);
+            nv = (NhanVienDTO) response.getObject();
         }
 
         NhanVienModal modal = new NhanVienModal(
@@ -235,7 +259,7 @@ public class QuanLyNhanVienPanel extends JPanel {
 class NhanVienModal extends JDialog {
     private final NhanVienServiceImpl nhanVienServiceImpl = new NhanVienServiceImpl();
     private final boolean isNew;
-    private final NhanVien current;
+    private final NhanVienDTO current;
     private Runnable onChanged;
 
     private JTextField tfMaNV;
@@ -284,7 +308,7 @@ class NhanVienModal extends JDialog {
         }
     }
 
-    NhanVienModal(JFrame owner, NhanVien nhanVien, boolean isNew) {
+    NhanVienModal(JFrame owner, NhanVienDTO nhanVien, boolean isNew) {
         super(owner, isNew ? "Thêm nhân viên" : "Cập nhật nhân viên", true);
         this.isNew = isNew;
         this.current = nhanVien;
@@ -371,7 +395,9 @@ class NhanVienModal extends JDialog {
 
     private void fillData() {
         if (isNew) {
-            tfMaNV.setText(nhanVienServiceImpl.generateNextMaNhanVien());
+            Request request = Request.builder().commandType(CommandType.GENERATE_NEXT_MA_NHAN_VIEN).build();
+            Response response = ClientConnection.getInstance().sendRequest(request);
+            tfMaNV.setText((String) response.getObject());
             return;
         }
 
@@ -398,8 +424,16 @@ class NhanVienModal extends JDialog {
     private void onSave() {
         try {
             validateForm();
-            NhanVien saved = nhanVienServiceImpl.addNhanVienAutoCode(collectFormData());
-            String matKhauMacDinh = nhanVienServiceImpl.taoMatKhauMacDinh(saved.getMaNhanVien());
+            NhanVienDTO saved = null;
+            Request request = Request.builder().commandType(CommandType.ADD_NHAN_VIEN_AUTO_CODE).object(collectFormData()).build();
+            Response response = ClientConnection.getInstance().sendRequest(request);
+            saved = (NhanVienDTO) response.getObject();
+
+            String matKhauMacDinh = null;
+            Request rs = Request.builder().commandType(CommandType.TAO_MAT_KHAU_MAC_DINH).object(saved.getMaNhanVien()).build();
+            Response sp = ClientConnection.getInstance().sendRequest(rs);
+            matKhauMacDinh = (String) sp.getObject();
+
             notifyChangedAndClose("Đã thêm nhân viên. Mật khẩu mặc định: " + matKhauMacDinh);
         } catch (Exception ex) {
             showError(ex);
@@ -409,8 +443,15 @@ class NhanVienModal extends JDialog {
     private void onUpdate() {
         try {
             validateForm();
-            nhanVienServiceImpl.updateNhanVien(collectFormData());
-            notifyChangedAndClose("Đã cập nhật nhân viên.");
+            Request request = Request.builder().commandType(CommandType.UPDATE_NHAN_VIEN).object(collectFormData()).build();
+            Response response = ClientConnection.getInstance().sendRequest(request);
+            NhanVienDTO updated = (NhanVienDTO) response.getObject();
+            if (updated != null) {
+                notifyChangedAndClose("Đã cập nhật nhân viên.");
+            } else {
+                showError(new Exception("Không tìm thấy nhân viên để xóa."));
+            }
+
         } catch (Exception ex) {
             showError(ex);
         }
@@ -423,14 +464,21 @@ class NhanVienModal extends JDialog {
         }
 
         try {
-            nhanVienServiceImpl.deleteNhanVien(tfMaNV.getText().trim());
-            notifyChangedAndClose("Đã xóa nhân viên.");
+            Request request = Request.builder().commandType(CommandType.DELETE_NHAN_VIEN)
+                    .object(tfMaNV.getText().trim()).build();
+            Response response = ClientConnection.getInstance().sendRequest(request);
+            boolean isSuccess = (Boolean) response.getObject();
+            if (isSuccess) {
+                notifyChangedAndClose("Đã xóa nhân viên.");
+            } else {
+                showError(new Exception("Không tìm thấy nhân viên để xóa."));
+            }
         } catch (Exception ex) {
             showError(ex);
         }
     }
 
-    private NhanVien collectFormData() {
+    private NhanVienDTO collectFormData() {
         String ma = isNew ? tfMaNV.getText().trim() : tfMaNV.getText().trim();
         String ten = tfHoTen.getText().trim();
         if (ma.isBlank()) {
@@ -440,7 +488,7 @@ class NhanVienModal extends JDialog {
             throw new IllegalArgumentException("Tên nhân viên không được để trống.");
         }
 
-        return NhanVien.builder()
+        return NhanVienDTO.builder()
                 .maNhanVien(ma)
                 .CCCD(tfCCCD.getText().trim())
                 .tenNhanVien(ten)

@@ -37,5 +37,5 @@ public class HoaDonDTO implements Serializable {
     private double tienThoi;
 
     @Builder.Default
-    private List<ChiTietHoaDon> chiTietHoaDon = new ArrayList<>();
+    private List<ChiTietHoaDonDTO> chiTietHoaDon = new ArrayList<>();
 }

@@ -8,6 +8,12 @@ import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 
+import iuh.dto.DoiPhongRequestDTO;
+import iuh.dto.PhongDTO;
+import iuh.network.ClientConnection;
+import iuh.network.CommandType;
+import iuh.network.Request;
+import iuh.network.Response;
 import iuh.service.impl.DoiPhongServiceImpl;
 import iuh.entity.Phong;
 
@@ -109,16 +115,29 @@ public class DoiPhongPanel extends JPanel {
         availRooms.clear();
         allBookedRooms.clear();
 
-        for (Phong p : doiPhongServiceImpl.getAllBookedRooms()) {
-            Room r = new Room(p.getMaPhong(),
-                    p.getLoaiPhong().getTenLoaiPhong(),
-                    "Tầng " + p.getTang(),
-                    formatPrice(p.getLoaiPhong().getGia()),
-                    formatPrice(p.getLoaiPhong().getGia()));
-            bookedRooms.add(r);
-            allBookedRooms.add(r);
+        Request rs = Request.builder().commandType(CommandType.GET_ALL_BOOKED_ROOMS).build();
+        Response rp = ClientConnection.getInstance().sendRequest(rs);
+        @SuppressWarnings("unchecked")
+        List<PhongDTO> listAllBookedRooms = (List<PhongDTO>) rp.getObject();
+        if (listAllBookedRooms != null) {
+            for (PhongDTO p : listAllBookedRooms) {
+                Room r = new Room(
+                        p.getMaPhong(),
+                        p.getLoaiPhong().getTenLoaiPhong(),
+                        "Tầng " + p.getTang(),
+                        formatPrice(p.getLoaiPhong().getGia()),
+                        formatPrice(p.getLoaiPhong().getGia())
+                );
+                bookedRooms.add(r);
+                allBookedRooms.add(r);
+            }
         }
-        for (Phong p : doiPhongServiceImpl.getAvailableRooms()) {
+
+        Request request = Request.builder().commandType(CommandType.GET_AVAILABLE_ROOMS).build();
+        Response response = ClientConnection.getInstance().sendRequest(request);
+        @SuppressWarnings("unchecked")
+        List<PhongDTO> list = (List<PhongDTO>) response.getObject();
+        for (PhongDTO p : list) {
             availRooms.add(new Room(p.getMaPhong(),
                     p.getLoaiPhong().getTenLoaiPhong(),
                     "Tầng " + p.getTang(),
@@ -137,9 +156,13 @@ public class DoiPhongPanel extends JPanel {
         refreshSummary();
     }
 
+
     private String getMaPDPByPhong(String maPhong) {
-        return doiPhongServiceImpl.getMaPDPByPhong(maPhong);
+        Request request = Request.builder().commandType(CommandType.GET_MA_PDP_BY_PHONG).object(maPhong).build();
+        Response rp = ClientConnection.getInstance().sendRequest(request);
+        return rp.getObject() != null ? rp.getObject().toString() : null;
     }
+
 
     // =========================================================================
     //  HEADER
@@ -743,15 +766,35 @@ public class DoiPhongPanel extends JPanel {
             int confirm = JOptionPane.showConfirmDialog(this,
                     "Xác nhận đổi phòng " + from.id + " → " + to.id + "?",
                     "Xác nhận đổi phòng", JOptionPane.YES_NO_OPTION);
+
             if (confirm == JOptionPane.YES_OPTION) {
                 try {
-                    doiPhongServiceImpl.doiPhong(getMaPDPByPhong(from.id), from.id, to.id);
+                    String maPDP = getMaPDPByPhong(from.id);
+
+                    DoiPhongRequestDTO dto = new DoiPhongRequestDTO(
+                            maPDP,
+                            from.id,
+                            to.id
+                    );
+
+                    Request rs = Request.builder()
+                            .commandType(CommandType.DOI_PHONG)
+                            .object(dto)
+                            .build();
+
+                    Response rp = ClientConnection.getInstance().sendRequest(rs);
+
                     JOptionPane.showMessageDialog(this,
                             "Đổi phòng thành công!\n" + from.id + " → " + to.id,
                             "Thành công", JOptionPane.INFORMATION_MESSAGE);
+
                     reloadAll();
+
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage(), "Thất bại", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this,
+                            "Lỗi: " + ex.getMessage(),
+                            "Thất bại",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         });

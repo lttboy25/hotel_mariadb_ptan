@@ -1,7 +1,14 @@
 package iuh.view;
 
+import iuh.dto.ChiTietPhieuDatPhongDTO;
+import iuh.dto.GiaHanRequestDTO;
+import iuh.dto.PhongDTO;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.Phong;
+import iuh.network.ClientConnection;
+import iuh.network.CommandType;
+import iuh.network.Request;
+import iuh.network.Response;
 import iuh.service.impl.ChiTietPhieuDatPhongServiceImpl;
 
 import javax.swing.*;
@@ -58,7 +65,7 @@ public class GiaHanPhongPanel extends JPanel {
 
     // ── State ─────────────────────────────────────────────────────────────────
     /** Danh sách chi tiết phiếu đang hiển thị (load từ DB) */
-    private List<ChiTietPhieuDatPhong> danhSachDangThue = new ArrayList<>();
+    private List<ChiTietPhieuDatPhongDTO> danhSachDangThue = new ArrayList<>();
 
     /**
      * Map: chiTietId → RowModel (loại gia hạn + số lượng).
@@ -246,7 +253,7 @@ public class GiaHanPhongPanel extends JPanel {
             if (e.getValueIsAdjusting()) return;
             int row = roomTable.getSelectedRow();
             if (row < 0 || row >= danhSachDangThue.size()) return;
-            ChiTietPhieuDatPhong ct = danhSachDangThue.get(row);
+            ChiTietPhieuDatPhongDTO ct = danhSachDangThue.get(row);
             Long id = ct.getId();
             if (selectedRows.containsKey(id)) {
                 selectedRows.remove(id);
@@ -529,8 +536,12 @@ public class GiaHanPhongPanel extends JPanel {
         String keyword = searchField.getText().trim();
 
         try {
-            List<ChiTietPhieuDatPhong> results =
-                    service.timPhongDangThue(keyword.isEmpty() ? null : keyword);
+
+            Request request = Request.builder().commandType(CommandType.TIM_PHONG_DANG_THUE).object(keyword).build();
+            Response response = ClientConnection.getInstance().sendRequest(request);
+            @SuppressWarnings("unchecked")
+            List<ChiTietPhieuDatPhongDTO> results =
+                    (List<ChiTietPhieuDatPhongDTO>) response.getObject();
 
             danhSachDangThue = results;
             selectedRows.clear();
@@ -552,10 +563,10 @@ public class GiaHanPhongPanel extends JPanel {
         }
     }
     /** Đổ dữ liệu thật vào bảng trái */
-    private void loadRoomTable(List<ChiTietPhieuDatPhong> list) {
+    private void loadRoomTable(List<ChiTietPhieuDatPhongDTO> list) {
         roomTableModel.setRowCount(0);
-        for (ChiTietPhieuDatPhong ct : list) {
-            Phong p       = ct.getPhong();
+        for (ChiTietPhieuDatPhongDTO ct : list) {
+            PhongDTO p       = ct.getPhong();
             String soPhong  = (p != null) ? p.getSoPhong()  : "--";
             String loai     = (p != null && p.getLoaiPhong() != null)
                     ? p.getLoaiPhong().getTenLoaiPhong() : "--";
@@ -587,8 +598,16 @@ public class GiaHanPhongPanel extends JPanel {
                 return;
             }
 
-            boolean ok = service.isRoomAvailableForExtension(m.chiTietId, newEnd);
 
+            GiaHanRequestDTO data = new GiaHanRequestDTO(m.chiTietId, newEnd);
+
+            Request request = Request.builder()
+                    .commandType(CommandType.IS_ROOM_AVAILABLE_FOR_EXTENSION)
+                    .object(data)
+                    .build();
+            Response response = ClientConnection.getInstance().sendRequest(request);
+
+            boolean ok = (Boolean) response.getObject();
             if (!ok) {
                 JOptionPane.showMessageDialog(this,
                         "Phòng đã có khách đặt trong khoảng thời gian này!\nKhông thể gia hạn.",
@@ -604,18 +623,32 @@ public class GiaHanPhongPanel extends JPanel {
 
         try {
             Map<Long, LocalDateTime> requests = new LinkedHashMap<>();
-            for (RowModel m : selectedRows.values())
+            for (RowModel m : selectedRows.values()) {
                 requests.put(m.chiTietId, m.tinhThoiGianTraMoi());
+            }
 
-            service.giaHanNhieu(requests);
+            Request rs = Request.builder()
+                    .commandType(CommandType.GIA_HAN_NHIEU)
+                    .object(requests)
+                    .build();
 
-            JOptionPane.showMessageDialog(this,
-                    "Gia hạn thành công " + requests.size() + " phòng!",
-                    "Thành công", JOptionPane.INFORMATION_MESSAGE);
+            Response rp = ClientConnection.getInstance().sendRequest(rs);
 
-            // Reset và load lại
-            selectedRows.clear();
-            doSearch();
+            boolean result = (Boolean) rp.getObject();
+
+            if (result) {
+                JOptionPane.showMessageDialog(this,
+                        "Gia hạn thành công " + requests.size() + " phòng!",
+                        "Thành công", JOptionPane.INFORMATION_MESSAGE);
+
+                selectedRows.clear();
+                doSearch();
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Gia hạn thất bại!",
+                        "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,
                     "Lỗi gia hạn: " + ex.getMessage(),

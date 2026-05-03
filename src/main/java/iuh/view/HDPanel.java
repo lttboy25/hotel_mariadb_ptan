@@ -1,12 +1,10 @@
 package iuh.view;
 
+import iuh.dto.ChiTietHoaDonDTO;
 import iuh.dto.HoaDonDTO;
-import iuh.entity.ChiTietHoaDon;
-import iuh.entity.HoaDon;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,26 +20,32 @@ public class HDPanel extends JPanel {
         setBackground(Color.WHITE);
         setPreferredSize(new Dimension(400, 400));
 
-        // Icon + tiêu đề
         JLabel icon = new JLabel(UIManager.getIcon("OptionPane.informationIcon"));
         icon.setHorizontalAlignment(JLabel.CENTER);
         add(icon, BorderLayout.NORTH);
 
-        // Nội dung
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
         content.setBackground(Color.WHITE);
 
         List<String> phongTra = new ArrayList<>();
-        for (ChiTietHoaDon ct : hoaDon.getChiTietHoaDon()) {
-            phongTra.add(ct.getPhong().toString());
+        if (hoaDon.getChiTietHoaDon() != null) {
+            for (ChiTietHoaDonDTO ct : hoaDon.getChiTietHoaDon()) { // ✅ dùng DTO
+                if (ct.getPhong() != null) {
+                    phongTra.add(ct.getPhong().getMaPhong());
+                }
+            }
         }
 
         addRow(content, "Thanh toán thành công!");
         addRow(content, "Mã hóa đơn: " + hoaDon.getMaHoaDon());
         addRow(content, "Ngày tạo: " + hoaDon.getNgayTao());
-        addRow(content, "Khách hàng: " + hoaDon.getKhachHang().getTenKhachHang());
-        addRow(content, "Mã nhân viên: " + hoaDon.getNhanVien().getMaNhanVien());
+        addRow(content, "Khách hàng: " + (hoaDon.getKhachHang() != null
+                ? hoaDon.getKhachHang().getTenKhachHang()
+                : "N/A"));
+        addRow(content, "Mã nhân viên: " + (hoaDon.getNhanVien() != null
+                ? hoaDon.getNhanVien().getMaNhanVien()
+                : "N/A"));
         addRow(content, "Số phòng đã trả: " + String.join(", ", phongTra));
         addRow(content, "Tổng tiền: " + formatter.format(hoaDon.getTongTien()) + " đ");
         addRow(content, "Tiền khách đưa: " + formatter.format(hoaDon.getTienKhachDua()) + " đ");
@@ -61,12 +65,10 @@ public class HDPanel extends JPanel {
 
     public void show(Component parent) {
         JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(parent);
-
         JDialog dialog = new JDialog(parentFrame, "Thành công", true);
         dialog.setLayout(new BorderLayout());
         dialog.add(this, BorderLayout.CENTER);
 
-        // Nút OK
         JButton btnOK = new JButton("OK");
         btnOK.setFont(new Font("Segoe UI", Font.BOLD, 13));
         btnOK.addActionListener(e -> dialog.dispose());

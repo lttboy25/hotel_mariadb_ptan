@@ -204,10 +204,10 @@ public class Mapper {
                 .tongTien(entity.getTongTien())
                 .tienKhachDua(entity.getTienKhachDua())
                 .tienThoi(entity.getTienThoi())
-                // QUAN TRỌNG: HoaDonDTO.chiTietHoaDon vẫn là List<ChiTietHoaDon> (entity)
-                // Tạm giữ nguyên, cần refactor DTO về sau
                 .chiTietHoaDon(entity.getChiTietHoaDon() != null
-                        ? entity.getChiTietHoaDon()
+                        ? entity.getChiTietHoaDon().stream()
+                        .map(Mapper::map)
+                        .collect(Collectors.toList())
                         : new ArrayList<>())
                 .build();
     }

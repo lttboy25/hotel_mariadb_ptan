@@ -1,61 +1,48 @@
-/*
- * @ (#) DoiPhongServiceImpl.java       1.0
- *
- * Copyright (c) 2026 IUH. All rights reserved
- */
 package iuh.service.impl;
-
 
 import iuh.dao.impl.ChitietPhieuDatPhongDaoImpl;
 import iuh.dao.impl.PhongDaoImpl;
-import iuh.dto.PhongDTO;
+import iuh.dto.*;
 import iuh.entity.ChiTietPhieuDatPhong;
 import iuh.entity.Phong;
+import iuh.mapper.Mapper;
 import iuh.service.DoiPhongService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/*
- * @description:
- * @author: Duc Thuan
- * @date: 23/4/2026
- * @version:    1.0
- * @created:
- */
 public class DoiPhongServiceImpl implements DoiPhongService {
-    private PhongDaoImpl phongDaoImpl = new PhongDaoImpl();
-    private ChitietPhieuDatPhongDaoImpl ctDao = new ChitietPhieuDatPhongDaoImpl();
+    private final PhongDaoImpl phongDaoImpl = new PhongDaoImpl();
+    private final ChitietPhieuDatPhongDaoImpl ctDao = new ChitietPhieuDatPhongDaoImpl();
 
-    //lay phong da dat
+    // ✅ Không cần toDTO/toEntity ở đây vì DAO đã trả về DTO
+
     @Override
-    public List<Phong> getBookedRooms(String maPDP){
+    public List<PhongDTO> getBookedRooms(String maPDP) {
         return ctDao.getByMaPhieuDatPhong(maPDP)
                 .stream()
                 .map(ChiTietPhieuDatPhong::getPhong)
+                .map(Mapper::map)
                 .collect(Collectors.toList());
     }
 
-    //lay phong trong
     @Override
-    public List<Phong> getAvailableRooms() {
-        // Lấy danh sách mã phòng đang được đặt
+    public List<PhongDTO> getAvailableRooms() {
         List<String> bookedIds = ctDao.getAll()
                 .stream()
                 .map(ct -> ct.getPhong().getMaPhong())
                 .collect(Collectors.toList());
 
-        // Lọc ra những phòng trống và không nằm trong danh sách đã đặt
         return phongDaoImpl.getAvailableRooms()
                 .stream()
                 .filter(p -> !bookedIds.contains(p.getMaPhong()))
+                .map(Mapper::map)
                 .collect(Collectors.toList());
     }
 
-    // doi phong
     @Override
-    public void doiPhong(String maPDP, String maPhongCu, String maPhongMoi){
+    public void doiPhong(String maPDP, String maPhongCu, String maPhongMoi) {
         List<ChiTietPhieuDatPhong> list = ctDao.getByMaPhieuDatPhong(maPDP);
 
         ChiTietPhieuDatPhong ct = list.stream()
@@ -68,28 +55,28 @@ public class DoiPhongServiceImpl implements DoiPhongService {
                 ct.getThoiGianNhanPhong(),
                 ct.getThoiGianTraPhong()
         );
-        if(!isAvailable){
+        if (!isAvailable) {
             throw new RuntimeException("Phòng mới đã có người đặt!");
         }
-        //lay phong moi
-        Phong phongMoi = phongDaoImpl.findById(maPhongMoi);
 
-        if(phongMoi == null){
+        Phong phongMoi = phongDaoImpl.findById(maPhongMoi);
+        if (phongMoi == null) {
             throw new RuntimeException("Phòng mới không tồn tại!");
         }
 
-        ct.setPhong(phongMoi);
+        ct.setPhong(phongMoi);  // ✅ set PhongDTO vào ChiTietPhieuDatPhongDTO
         ctDao.update(ct);
     }
 
     @Override
-    public List<Phong> getAllBookedRooms() {
+    public List<PhongDTO> getAllBookedRooms() {
         return ctDao.getAll()
                 .stream()
                 .map(ChiTietPhieuDatPhong::getPhong)
+                .map(Mapper::map)
                 .collect(Collectors.collectingAndThen(
                         Collectors.toMap(
-                                Phong::getMaPhong,
+                                PhongDTO::getMaPhong,
                                 p -> p,
                                 (a, b) -> a
                         ),
@@ -99,12 +86,14 @@ public class DoiPhongServiceImpl implements DoiPhongService {
 
     @Override
     public double tinhPhiChenhLech(String maPhongCu, String maPhongMoi) {
-        Phong cu  = phongDaoImpl.findById(maPhongCu);
+        Phong cu = phongDaoImpl.findById(maPhongCu);
         Phong moi = phongDaoImpl.findById(maPhongMoi);
+        if (cu == null || moi == null)
+            throw new RuntimeException("Không tìm thấy phòng");
+
         return moi.getLoaiPhong().getGia() - cu.getLoaiPhong().getGia();
     }
 
-    // DoiPhongServiceImpl.java
     @Override
     public String getMaPDPByPhong(String maPhong) {
         return ctDao.getAll().stream()

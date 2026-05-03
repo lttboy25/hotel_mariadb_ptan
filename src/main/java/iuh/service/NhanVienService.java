@@ -7,7 +7,6 @@ package iuh.service;
 
 import iuh.dto.NhanVienDTO;
 import iuh.dto.TaiKhoanDTO;
-import iuh.entity.NhanVien;
 import iuh.mapper.Mapper;
 
 import java.util.List;
@@ -23,7 +22,7 @@ public interface NhanVienService {
     String VAI_TRO_MAC_DINH = "employee";
     Mapper mapper = new Mapper();
 
-    default void validateNhanVien(NhanVien nv, boolean isUpdate) {
+    default void validateNhanVien(NhanVienDTO nv, boolean isUpdate) {
         if (nv == null) {
             throw new IllegalArgumentException("Dữ liệu nhân viên không hợp lệ");
         }
@@ -49,19 +48,19 @@ public interface NhanVienService {
         return value == null || value.trim().isEmpty();
     }
 
-    List<NhanVien> getAllNhanVien();
+    List<NhanVienDTO> getAllNhanVien();
 
-    Optional<NhanVien> getNhanVienById(String maNhanVien);
+    Optional<NhanVienDTO> getNhanVienById(String maNhanVien);
 
-    List<NhanVien> searchNhanVienByName(String name);
+    List<NhanVienDTO> searchNhanVienByName(String name);
 
-    NhanVien createNhanVien(NhanVien nhanVien);
+    NhanVienDTO createNhanVien(NhanVienDTO nhanVien);
 
-    NhanVien updateNhanVien(NhanVien nhanVien);
+    NhanVienDTO updateNhanVien(NhanVienDTO nhanVien);
 
     boolean deleteNhanVien(String maNhanVien);
 
-    List<NhanVien> searchNhanVien(String keyword);
+    List<NhanVienDTO> searchNhanVien(String keyword);
 
     String generateNextMaNhanVien();
 
@@ -69,7 +68,7 @@ public interface NhanVienService {
 
     NhanVienDTO getNhanVienDTOById(String maNhanVien);
 
-    default NhanVienDTO mapToDTO(NhanVien nv) {
+    default NhanVienDTO mapToDTO(NhanVienDTO nv) {
         TaiKhoanDTO taiKhoanDTO = new TaiKhoanDTO();
         if (nv != null) {
             taiKhoanDTO = TaiKhoanDTO.builder()
@@ -94,7 +93,7 @@ public interface NhanVienService {
                 .build();
     }
 
-    NhanVien addNhanVienAutoCode(NhanVien nhanVien);
+    NhanVienDTO addNhanVienAutoCode(NhanVienDTO nhanVien);
 
     boolean doiMatKhau(String maNhanVien, String matKhauCu, String matKhauMoi);
 

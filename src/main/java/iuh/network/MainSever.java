@@ -26,6 +26,8 @@ public class MainSever {
                         new CaLamViecNhanVienServiceImpl(),
                         new ThanhToanServiceImpl(),
                         new PhieuHuyPhongServiceImpl(),
+                        new ChiTietPhieuDatPhongServiceImpl(),
+                        new DoiPhongServiceImpl(),
                         new ChiTietPhieuDatPhongServiceImpl()));
             }
         } catch (Exception e) {

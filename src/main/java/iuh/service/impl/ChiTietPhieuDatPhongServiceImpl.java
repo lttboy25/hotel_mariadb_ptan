@@ -20,12 +20,14 @@ public class ChiTietPhieuDatPhongServiceImpl implements ChiTietPhieuDatPhongServ
     ChitietPhieuDatPhongDaoImpl chitietPhieuDatPhongDao = new ChitietPhieuDatPhongDaoImpl();
 
     @Override
-    public List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByMaPDP(String maPDP) {
+    public List<ChiTietPhieuDatPhongDTO> getChiTietPhieuDatPhongByMaPDP(String maPDP) {
         List<ChiTietPhieuDatPhong> ds = new ArrayList<>();
         if (maPDP == null) {
-            return ds;
+            return ds.stream().map(
+                    e -> Mapper.map(e)).collect(Collectors.toList());
         }
-        return chitietPhieuDatPhongDao.getByMaPhieuDatPhong(maPDP);
+        return chitietPhieuDatPhongDao.getByMaPhieuDatPhong(maPDP).stream().map(
+                e -> Mapper.map(e)).collect(Collectors.toList());
     }
 
     @Override
@@ -79,10 +81,11 @@ public class ChiTietPhieuDatPhongServiceImpl implements ChiTietPhieuDatPhongServ
     }
 
     @Override
-    public List<ChiTietPhieuDatPhong> timPhongDangThueBySDT(String soDienThoai) {
+    public List<ChiTietPhieuDatPhongDTO> timPhongDangThueBySDT(String soDienThoai) {
         if (soDienThoai == null || soDienThoai.isBlank())
             throw new IllegalArgumentException("Số điện thoại không được để trống.");
-        return chitietPhieuDatPhongDao.getDangThueBySDT(soDienThoai.trim());
+        return chitietPhieuDatPhongDao.getDangThueBySDT(soDienThoai.trim()).stream().map(
+                e -> Mapper.map(e)).collect(Collectors.toList());
     }
 
     @Override
@@ -113,7 +116,8 @@ public class ChiTietPhieuDatPhongServiceImpl implements ChiTietPhieuDatPhongServ
     }
 
     @Override
-    public List<ChiTietPhieuDatPhong> timPhongDangThue(String keyword) {
-        return chitietPhieuDatPhongDao.searchPhongDangThue(keyword);
+    public List<ChiTietPhieuDatPhongDTO> timPhongDangThue(String keyword) {
+        return chitietPhieuDatPhongDao.searchPhongDangThue(keyword).stream().map(
+                e -> Mapper.map(e)).collect(Collectors.toList());
     }
 }

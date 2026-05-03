@@ -21,7 +21,7 @@ import java.util.Map;
  * @version:    1.0
  */
 public interface ChiTietPhieuDatPhongService {
-    List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByMaPDP(String maPDP);
+    List<ChiTietPhieuDatPhongDTO> getChiTietPhieuDatPhongByMaPDP(String maPDP);
 
     boolean updateStatusDetail(Long id, TrangThaiChiTietPhieuDatPhong status);
 
@@ -36,11 +36,11 @@ public interface ChiTietPhieuDatPhongService {
 
     List<ChiTietPhieuDatPhong> getPhongDeNhanByCCCD(String cccd);
 
-    List<ChiTietPhieuDatPhong> timPhongDangThueBySDT(String soDienThoai);
+    List<ChiTietPhieuDatPhongDTO> timPhongDangThueBySDT(String soDienThoai);
 
     void giaHanNhieu(Map<Long, LocalDateTime> requests);
 
     boolean isRoomAvailableForExtension(Long chiTietId, LocalDateTime newEndTime);
 
-    List<ChiTietPhieuDatPhong> timPhongDangThue(String keyword);
+    List<ChiTietPhieuDatPhongDTO> timPhongDangThue(String keyword);
 }
