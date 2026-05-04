@@ -5,6 +5,7 @@
  */
 package iuh.service;
 
+import iuh.dto.PhieuDatPhongDTO;
 import iuh.entity.PhieuDatPhong;
 import iuh.enums.TrangThaiPhieuDatPhong;
 
@@ -17,7 +18,7 @@ import java.util.List;
  * @version:    1.0
  */
 public interface PhieuDatPhongService {
-    List<PhieuDatPhong> getAll();
+    List<PhieuDatPhongDTO> getAll();
 
     List<PhieuDatPhong> getByTrangThai(TrangThaiPhieuDatPhong trangThai);
 

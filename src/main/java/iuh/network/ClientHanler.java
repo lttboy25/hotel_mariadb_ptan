@@ -34,6 +34,7 @@ public class ClientHanler implements Runnable {
     private final DoiPhongServiceImpl doiPhongServiceImpl;
     private final HoaDonServiceImpl hoaDonServiceImpl;
     private final NhanPhongServiceImpl nhanPhongServiceImpl;
+    private final PhieuDatPhongServiceImpl phieuDatPhongServiceImpl;
 
     @Override
     public void run() {
@@ -365,6 +366,12 @@ public class ClientHanler implements Runnable {
                         List<ChiTietPhieuDatPhongDTO> listNhanPhong = (List<ChiTietPhieuDatPhongDTO>) request.getObject();
                         boolean rs = nhanPhongServiceImpl.nhanPhong(listNhanPhong);
                         response = Response.builder().object(rs).build();
+                    }
+
+                    //==========PHIEU DOI PHONG ============
+                    case GET_ALL -> {
+                        List<PhieuDatPhongDTO> rsPDP = phieuDatPhongServiceImpl.getAll();
+                        response = Response.builder().object(rsPDP).build();
                     }
 
                 }
