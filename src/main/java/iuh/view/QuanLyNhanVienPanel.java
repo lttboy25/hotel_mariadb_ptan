@@ -3,7 +3,6 @@ package iuh.view;
 import iuh.dto.NhanVienDTO;
 import iuh.enums.TrangThaiNhanVien;
 import iuh.network.*;
-import iuh.service.impl.NhanVienServiceImpl;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -51,7 +50,6 @@ public class QuanLyNhanVienPanel extends JPanel {
             "Số điện thoại", "Email", "Ngày bắt đầu", "Trạng thái", "Địa chỉ"
     };
 
-    private final NhanVienServiceImpl nhanVienServiceImpl = new NhanVienServiceImpl();
     private final DefaultTableModel tableModel = new DefaultTableModel(COLUMNS, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
@@ -256,7 +254,6 @@ public class QuanLyNhanVienPanel extends JPanel {
 }
 
 class NhanVienModal extends JDialog {
-    private final NhanVienServiceImpl nhanVienServiceImpl = new NhanVienServiceImpl();
     private final boolean isNew;
     private final NhanVienDTO current;
     private Runnable onChanged;
