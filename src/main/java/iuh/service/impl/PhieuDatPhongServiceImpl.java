@@ -1,6 +1,8 @@
 package iuh.service.impl;
 
 import iuh.dao.impl.PhieuDatPhongDaoImpl;
+import iuh.dto.KhachHangDTO;
+import iuh.dto.PhieuDatPhongDTO;
 import iuh.entity.KhachHang;
 import iuh.entity.PhieuDatPhong;
 import iuh.enums.TrangThaiPhieuDatPhong;
@@ -13,13 +15,13 @@ public class PhieuDatPhongServiceImpl implements iuh.service.PhieuDatPhongServic
     PhieuDatPhongDaoImpl phieuDatPhongDao = new PhieuDatPhongDaoImpl();
 
     @Override
-    public List<PhieuDatPhong> getAll() {
-        List<PhieuDatPhong> list = new ArrayList<>();
+    public List<PhieuDatPhongDTO> getAll() {
+        List<PhieuDatPhongDTO> list = new ArrayList<>();
 
-        KhachHang kh = new KhachHang(); // tạm demo
+        KhachHangDTO kh = new KhachHangDTO();
         kh.setMaKhachHang("KH001");
 
-        list.add(new PhieuDatPhong(
+        list.add(new PhieuDatPhongDTO(
                 "PDP001",
                 LocalDate.parse("2026-02-01"),
                 TrangThaiPhieuDatPhong.DA_DAT,
@@ -27,7 +29,7 @@ public class PhieuDatPhongServiceImpl implements iuh.service.PhieuDatPhongServic
                 kh,
                 new ArrayList<>()));
 
-        list.add(new PhieuDatPhong(
+        list.add(new PhieuDatPhongDTO(
                 "PDP002",
                 LocalDate.parse("2026-02-02"),
                 TrangThaiPhieuDatPhong.NHAN_PHONG,

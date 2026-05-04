@@ -6,7 +6,12 @@
 package iuh.view;
 
 
+import iuh.dto.PhieuDatPhongDTO;
 import iuh.entity.PhieuDatPhong;
+import iuh.network.ClientConnection;
+import iuh.network.CommandType;
+import iuh.network.Request;
+import iuh.network.Response;
 import iuh.service.impl.PhieuDatPhongServiceImpl;
 
 import javax.swing.*;
@@ -58,9 +63,12 @@ public class PDPPanel extends JPanel {
     private void loadData() {
         PhieuDatPhongServiceImpl service = new PhieuDatPhongServiceImpl();
 
-        List<PhieuDatPhong> list = service.getAll();
+        Request request = Request.builder().object(CommandType.GET_ALL).build();
+        Response response = ClientConnection.getInstance().sendRequest(request);
+        @SuppressWarnings("unchecked")
+        List<PhieuDatPhongDTO> list = (List<PhieuDatPhongDTO>) response.getObject();
 
-        for (PhieuDatPhong p : list) {
+        for (PhieuDatPhongDTO p : list) {
             model.addRow(new Object[]{
                     p.getMaPhieuDatPhong(),
                     p.getNgayTao(),

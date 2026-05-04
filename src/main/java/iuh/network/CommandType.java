@@ -82,4 +82,7 @@ public enum CommandType {
 
     GET_DANH_SACH_PHONG_DE_NHAN,
     NHAN_PHONG,
+
+    //=======PHIẾU ĐỔI PHÒNG====
+    GET_ALL
 }
