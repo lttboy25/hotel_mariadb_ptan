@@ -32,13 +32,8 @@ public class ClientConnection {
         try {
             out.writeObject(request);
             out.flush();
-            Response response = (Response) in.readObject();
-            if (response != null && !response.isSuccess()) {
-                throw new RuntimeException(response.getMessage() != null ? response.getMessage() : "Lỗi từ server");
-            }
-            return response;
+            return (Response) in.readObject();
         } catch (Exception e) {
-            if (e instanceof RuntimeException) throw (RuntimeException) e;
             throw new RuntimeException("Lỗi giao tiếp với server", e);
         }
     }

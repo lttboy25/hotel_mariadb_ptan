@@ -13,6 +13,5 @@ import java.io.Serializable;
 @Builder
 public class Response implements Serializable {
     private Object object;
-    private String message;
-    private boolean success = true;
+
 }

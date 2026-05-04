@@ -150,7 +150,7 @@ public class ClientHanler implements Runnable {
                             response = Response.builder().object(kh).build();
                         }
                         case PHAT_SINH_MA_KHACH_HANG -> {
-                            String maKH = khachHangServiceImpl.phatSinhMaKhachHang();
+                            String maKH = khachHangServiceImpl.phatSinhMaMoi();
                             response = Response.builder().object(maKH).build();
                         }
                         case THEM_KHACH_HANG -> {
@@ -384,8 +384,7 @@ public class ClientHanler implements Runnable {
                     System.err.println("Request processing error: " + e.getMessage());
                     e.printStackTrace();
                     response = Response.builder()
-                            .success(false)
-                            .message(e.getMessage())
+                            .object("Lỗi xử lý yêu cầu: " + e.getMessage())
                             .build();
                 }
 
