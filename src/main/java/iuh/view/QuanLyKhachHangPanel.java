@@ -62,7 +62,6 @@ public class QuanLyKhachHangPanel extends JPanel {
         card.add(buildTable(), BorderLayout.CENTER);
         add(card, BorderLayout.CENTER);
 
-        loadDatabase();
     }
 
     public void loadDatabase() {
@@ -149,7 +148,7 @@ public class QuanLyKhachHangPanel extends JPanel {
         for (int i = 0; i < COLS.length; i++)
             table.getColumnModel().getColumn(i).setCellRenderer(base);
 
-        int[] widths = { 80, 180, 130, 220, 110 };
+        int[] widths = {80, 180, 130, 220, 110};
         for (int i = 0; i < widths.length; i++)
             table.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
 
@@ -218,7 +217,7 @@ public class QuanLyKhachHangPanel extends JPanel {
         currentList = list != null ? new ArrayList<>(list) : new ArrayList<>();
         tableModel.setRowCount(0);
         for (KhachHangDTO kh : currentList) {
-            tableModel.addRow(new Object[] {
+            tableModel.addRow(new Object[]{
                     kh.getMaKhachHang(),
                     kh.getTenKhachHang(),
                     kh.getSoDienThoai(),
@@ -383,7 +382,7 @@ public class QuanLyKhachHangPanel extends JPanel {
         }
 
         private void addRow2(JPanel form, GridBagConstraints g, int row,
-                String l1, JComponent f1, String l2, JComponent f2) {
+                             String l1, JComponent f1, String l2, JComponent f2) {
             g.gridwidth = 1;
             g.insets = new Insets(0, 0, 4, 12);
             g.gridy = row * 2;

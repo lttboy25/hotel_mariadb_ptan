@@ -14,30 +14,30 @@ import java.time.format.DateTimeFormatter;
 
 public class QuanLyKhuyenMaiPanel extends JPanel {
 
-    private static final Color BG_MAIN    = QuanLyNhanVienPanel.BG_MAIN;
-    private static final Color BG_WHITE   = QuanLyNhanVienPanel.BG_WHITE;
-    private static final Color BLUE       = QuanLyNhanVienPanel.BLUE;
+    private static final Color BG_MAIN = QuanLyNhanVienPanel.BG_MAIN;
+    private static final Color BG_WHITE = QuanLyNhanVienPanel.BG_WHITE;
+    private static final Color BLUE = QuanLyNhanVienPanel.BLUE;
     private static final Color BLUE_LIGHT = QuanLyNhanVienPanel.BLUE_LIGHT;
-    private static final Color TEXT_DARK  = QuanLyNhanVienPanel.TEXT_DARK;
-    private static final Color TEXT_MID   = QuanLyNhanVienPanel.TEXT_MID;
-    private static final Color TEXT_GRAY  = QuanLyNhanVienPanel.TEXT_GRAY;
+    private static final Color TEXT_DARK = QuanLyNhanVienPanel.TEXT_DARK;
+    private static final Color TEXT_MID = QuanLyNhanVienPanel.TEXT_MID;
+    private static final Color TEXT_GRAY = QuanLyNhanVienPanel.TEXT_GRAY;
     private static final Color BORDER_COL = QuanLyNhanVienPanel.BORDER_COL;
-    private static final Color HEADER_BG  = QuanLyNhanVienPanel.HEADER_BG;
-    private static final Color ROW_ALT    = QuanLyNhanVienPanel.ROW_ALT;
-    private static final Color ROW_SEL    = QuanLyNhanVienPanel.ROW_SEL;
-    private static final Color GREEN      = QuanLyNhanVienPanel.GREEN;
-    private static final Color GREEN_BG   = QuanLyNhanVienPanel.GREEN_BG;
-    private static final Color RED        = QuanLyNhanVienPanel.RED;
-    private static final Color RED_BG     = QuanLyNhanVienPanel.RED_BG;
-    private static final Color ORANGE     = QuanLyNhanVienPanel.ORANGE;
-    private static final Color ORANGE_BG  = QuanLyNhanVienPanel.ORANGE_BG;
-    private static final Color PURPLE     = new Color(0x7B61FF);
-    private static final Color PURPLE_BG  = new Color(0xF0EEFF);
+    private static final Color HEADER_BG = QuanLyNhanVienPanel.HEADER_BG;
+    private static final Color ROW_ALT = QuanLyNhanVienPanel.ROW_ALT;
+    private static final Color ROW_SEL = QuanLyNhanVienPanel.ROW_SEL;
+    private static final Color GREEN = QuanLyNhanVienPanel.GREEN;
+    private static final Color GREEN_BG = QuanLyNhanVienPanel.GREEN_BG;
+    private static final Color RED = QuanLyNhanVienPanel.RED;
+    private static final Color RED_BG = QuanLyNhanVienPanel.RED_BG;
+    private static final Color ORANGE = QuanLyNhanVienPanel.ORANGE;
+    private static final Color ORANGE_BG = QuanLyNhanVienPanel.ORANGE_BG;
+    private static final Color PURPLE = new Color(0x7B61FF);
+    private static final Color PURPLE_BG = new Color(0xF0EEFF);
 
-    private static final Font F_TITLE   = QuanLyNhanVienPanel.F_TITLE;
-    private static final Font F_LABEL   = QuanLyNhanVienPanel.F_LABEL;
-    private static final Font F_BOLD13  = QuanLyNhanVienPanel.F_BOLD13;
-    private static final Font F_TABLE   = QuanLyNhanVienPanel.F_TABLE;
+    private static final Font F_TITLE = QuanLyNhanVienPanel.F_TITLE;
+    private static final Font F_LABEL = QuanLyNhanVienPanel.F_LABEL;
+    private static final Font F_BOLD13 = QuanLyNhanVienPanel.F_BOLD13;
+    private static final Font F_TABLE = QuanLyNhanVienPanel.F_TABLE;
     private static final Font F_TABLE_H = QuanLyNhanVienPanel.F_TABLE_H;
 
     private static final DateTimeFormatter DISPLAY_DT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -65,8 +65,6 @@ public class QuanLyKhuyenMaiPanel extends JPanel {
         card.add(buildToolbar(), BorderLayout.NORTH);
         card.add(buildTable(), BorderLayout.CENTER);
         add(card, BorderLayout.CENTER);
-
-        SwingUtilities.invokeLater(this::refreshTable);
     }
 
     private JPanel buildToolbar() {
@@ -112,15 +110,20 @@ public class QuanLyKhuyenMaiPanel extends JPanel {
         JPanel wrap = new JPanel(new BorderLayout());
         wrap.setOpaque(false);
         wrap.add(bar, BorderLayout.CENTER);
-        wrap.add(new JSeparator() {{ setForeground(BORDER_COL); }}, BorderLayout.SOUTH);
+        wrap.add(new JSeparator() {{
+            setForeground(BORDER_COL);
+        }}, BorderLayout.SOUTH);
         return wrap;
     }
 
     private JScrollPane buildTable() {
         tableModel = new DefaultTableModel(new Object[0][0], new String[]{
-            "Mã KM", "Tên chương trình", "Ngày bắt đầu", "Ngày kết thúc", "Hệ số", "T.Tiền tối thiểu", "Trạng thái"
+                "Mã KM", "Tên chương trình", "Ngày bắt đầu", "Ngày kết thúc", "Hệ số", "T.Tiền tối thiểu", "Trạng thái"
         }) {
-            @Override public boolean isCellEditable(int r, int c) { return false; }
+            @Override
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
         };
 
         table = new JTable(tableModel);
@@ -129,7 +132,8 @@ public class QuanLyKhuyenMaiPanel extends JPanel {
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
         DefaultTableCellRenderer base = new DefaultTableCellRenderer() {
-            @Override public Component getTableCellRendererComponent(JTable t, Object v, boolean sel, boolean foc, int row, int col) {
+            @Override
+            public Component getTableCellRendererComponent(JTable t, Object v, boolean sel, boolean foc, int row, int col) {
                 super.getTableCellRendererComponent(t, v, sel, foc, row, col);
                 setBackground(sel ? ROW_SEL : (row % 2 == 0 ? BG_WHITE : ROW_ALT));
                 setForeground(col == 0 ? BLUE : col == 4 ? GREEN : col == 5 ? ORANGE : TEXT_DARK);
@@ -141,7 +145,8 @@ public class QuanLyKhuyenMaiPanel extends JPanel {
         };
 
         DefaultTableCellRenderer statusRenderer = new DefaultTableCellRenderer() {
-            @Override public Component getTableCellRendererComponent(JTable t, Object val, boolean sel, boolean foc, int row, int col) {
+            @Override
+            public Component getTableCellRendererComponent(JTable t, Object val, boolean sel, boolean foc, int row, int col) {
                 String text = val == null ? "" : val.toString();
                 JPanel cell = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
                 cell.setBackground(sel ? ROW_SEL : (row % 2 == 0 ? BG_WHITE : ROW_ALT));
@@ -150,13 +155,23 @@ public class QuanLyKhuyenMaiPanel extends JPanel {
                 Color bg;
                 Color fg;
                 switch (text) {
-                    case "Đang hoạt động" -> { bg = GREEN_BG; fg = GREEN; }
-                    case "Sắp diễn ra" -> { bg = PURPLE_BG; fg = PURPLE; }
-                    default -> { bg = RED_BG; fg = RED; }
+                    case "Đang hoạt động" -> {
+                        bg = GREEN_BG;
+                        fg = GREEN;
+                    }
+                    case "Sắp diễn ra" -> {
+                        bg = PURPLE_BG;
+                        fg = PURPLE;
+                    }
+                    default -> {
+                        bg = RED_BG;
+                        fg = RED;
+                    }
                 }
 
                 JLabel pill = new JLabel(text) {
-                    @Override protected void paintComponent(Graphics g) {
+                    @Override
+                    protected void paintComponent(Graphics g) {
                         Graphics2D g2 = (Graphics2D) g.create();
                         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                         g2.setColor(bg);
@@ -185,16 +200,17 @@ public class QuanLyKhuyenMaiPanel extends JPanel {
         }
 
         table.addMouseListener(new MouseAdapter() {
-            @Override public void mouseClicked(MouseEvent e) {
+            @Override
+            public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
                     int row = table.getSelectedRow();
                     if (row >= 0) {
                         String maKhuyenMai = String.valueOf(tableModel.getValueAt(row, 0));
                         khuyenMaiServiceImpl.getKhuyenMaiById(maKhuyenMai).ifPresentOrElse(
-                            km -> openModal(km, false),
-                            () -> JOptionPane.showMessageDialog(QuanLyKhuyenMaiPanel.this,
-                                "Không tìm thấy khuyến mãi đã chọn.",
-                                "Thông báo", JOptionPane.WARNING_MESSAGE)
+                                km -> openModal(km, false),
+                                () -> JOptionPane.showMessageDialog(QuanLyKhuyenMaiPanel.this,
+                                        "Không tìm thấy khuyến mãi đã chọn.",
+                                        "Thông báo", JOptionPane.WARNING_MESSAGE)
                         );
                     }
                 }
@@ -230,14 +246,14 @@ public class QuanLyKhuyenMaiPanel extends JPanel {
     }
 
     private Object[] toRow(KhuyenMaiDTO km) {
-        return new Object[] {
-            km.getMaKhuyenMai(),
-            km.getTenKhuyenMai(),
-            formatDateTime(km.getNgayBatDau()),
-            formatDateTime(km.getNgayKetThuc()),
-            formatPercent(km.getHeSo()),
-            formatMoney(km.getTongTienToiThieu()),
-            toDisplayStatus(km.getTrangThai())
+        return new Object[]{
+                km.getMaKhuyenMai(),
+                km.getTenKhuyenMai(),
+                formatDateTime(km.getNgayBatDau()),
+                formatDateTime(km.getNgayKetThuc()),
+                formatPercent(km.getHeSo()),
+                formatMoney(km.getTongTienToiThieu()),
+                toDisplayStatus(km.getTrangThai())
         };
     }
 
@@ -271,14 +287,16 @@ public class QuanLyKhuyenMaiPanel extends JPanel {
         tf.setText(ph);
         tf.setForeground(TEXT_GRAY);
         tf.addFocusListener(new FocusAdapter() {
-            @Override public void focusGained(FocusEvent e) {
+            @Override
+            public void focusGained(FocusEvent e) {
                 if (tf.getText().equals(ph)) {
                     tf.setText("");
                     tf.setForeground(TEXT_DARK);
                 }
             }
 
-            @Override public void focusLost(FocusEvent e) {
+            @Override
+            public void focusLost(FocusEvent e) {
                 if (tf.getText().isEmpty()) {
                     tf.setText(ph);
                     tf.setForeground(TEXT_GRAY);
@@ -313,16 +331,16 @@ public class QuanLyKhuyenMaiPanel extends JPanel {
 
 class KhuyenMaiModal extends JDialog {
 
-    private static final Color BG_WHITE   = QuanLyNhanVienPanel.BG_WHITE;
-    private static final Color BLUE       = QuanLyNhanVienPanel.BLUE;
-    private static final Color TEXT_DARK  = QuanLyNhanVienPanel.TEXT_DARK;
-    private static final Color TEXT_MID   = QuanLyNhanVienPanel.TEXT_MID;
-    private static final Color TEXT_GRAY  = QuanLyNhanVienPanel.TEXT_GRAY;
+    private static final Color BG_WHITE = QuanLyNhanVienPanel.BG_WHITE;
+    private static final Color BLUE = QuanLyNhanVienPanel.BLUE;
+    private static final Color TEXT_DARK = QuanLyNhanVienPanel.TEXT_DARK;
+    private static final Color TEXT_MID = QuanLyNhanVienPanel.TEXT_MID;
+    private static final Color TEXT_GRAY = QuanLyNhanVienPanel.TEXT_GRAY;
     private static final Color BORDER_COL = QuanLyNhanVienPanel.BORDER_COL;
-    private static final Color GREEN      = QuanLyNhanVienPanel.GREEN;
-    private static final Color RED        = QuanLyNhanVienPanel.RED;
-    private static final Color PURPLE     = new Color(0x7B61FF);
-    private static final Color PURPLE_BG  = new Color(0xF0EEFF);
+    private static final Color GREEN = QuanLyNhanVienPanel.GREEN;
+    private static final Color RED = QuanLyNhanVienPanel.RED;
+    private static final Color PURPLE = new Color(0x7B61FF);
+    private static final Color PURPLE_BG = new Color(0xF0EEFF);
     private static final DateTimeFormatter DISPLAY_DT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     private final KhuyenMaiServiceImpl khuyenMaiServiceImpl = new KhuyenMaiServiceImpl();
@@ -368,7 +386,8 @@ class KhuyenMaiModal extends JDialog {
         left.setOpaque(false);
 
         JLabel icon = new JLabel() {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(PURPLE_BG);
@@ -424,7 +443,8 @@ class KhuyenMaiModal extends JDialog {
         cbTrangThai = new JComboBox<>(TrangThai.values());
         styleCombo(cbTrangThai);
         cbTrangThai.setRenderer(new DefaultListCellRenderer() {
-            @Override public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 setText(toStatusLabel((TrangThai) value));
                 return this;
@@ -585,7 +605,7 @@ class KhuyenMaiModal extends JDialog {
 
         float tongTienToiThieu = parseMoney(tongTienToiThieuText);
         float tongKhuyenMaiToiDa = parseMoney(tongKhuyenMaiToiDaText);
-        if(tongKhuyenMaiToiDa > tongTienToiThieu) {
+        if (tongKhuyenMaiToiDa > tongTienToiThieu) {
             throw new IllegalArgumentException("Tổng khuyến mãi tối đa không được lớn hơn tổng tiền tối thiểu.");
         }
         if (ma.isBlank()) {
@@ -600,10 +620,10 @@ class KhuyenMaiModal extends JDialog {
         if (!ngayKetThuc.isAfter(ngayBatDau)) {
             throw new IllegalArgumentException("Ngày kết thúc phải sau ngày bắt đầu.");
         }
-        if(tongTienToiThieu < 0) {
+        if (tongTienToiThieu < 0) {
             throw new IllegalArgumentException("Tổng tiền tối thiểu không được âm.");
         }
-        if(tongKhuyenMaiToiDa < 0) {
+        if (tongKhuyenMaiToiDa < 0) {
             throw new IllegalArgumentException("Tổng khuyến mãi tối đa không được âm.");
         }
 
@@ -665,7 +685,8 @@ class KhuyenMaiModal extends JDialog {
 
     private JButton makeCloseBtn() {
         JButton b = new JButton("✕") {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(getModel().isRollover() ? new Color(0xFFF0F0) : BG_WHITE);

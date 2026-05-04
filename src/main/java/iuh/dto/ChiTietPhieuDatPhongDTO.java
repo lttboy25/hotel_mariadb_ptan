@@ -29,10 +29,22 @@ public class ChiTietPhieuDatPhongDTO implements Serializable {
     private int soNguoi;
 
     public double tinhThanhTien() {
-        if (this.phong != null && this.phong.getLoaiPhong() != null) {
-            return this.soGioLuuTru * this.phong.getLoaiPhong().getGia();
+        if (this.phong == null || this.phong.getLoaiPhong() == null) {
+            return 0;
         }
-        return 0;
+
+        double giaPhong = this.phong.getLoaiPhong().getGia();
+        double donGiaTheoGio;
+
+        if (this.soGioLuuTru < 12) {
+            donGiaTheoGio = giaPhong * 0.3;
+        } else if (this.soGioLuuTru < 24) {
+            donGiaTheoGio = giaPhong * 0.5;
+        } else {
+            donGiaTheoGio = giaPhong;
+        }
+
+        return this.soGioLuuTru * donGiaTheoGio;
     }
 
     private PhieuHuyPhong phieuHuyPhong;

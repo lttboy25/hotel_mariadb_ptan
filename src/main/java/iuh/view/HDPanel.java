@@ -31,9 +31,9 @@ public class HDPanel extends JPanel {
         List<String> phongTra = new ArrayList<>();
         if (hoaDon.getChiTietHoaDon() != null) {
             for (ChiTietHoaDonDTO ct : hoaDon.getChiTietHoaDon()) { // ✅ dùng DTO
-                if (ct.getPhong() != null) {
-                    phongTra.add(ct.getPhong().getMaPhong());
-                }
+
+                phongTra.add(ct.getPhong().getSoPhong());
+
             }
         }
 
@@ -43,8 +43,8 @@ public class HDPanel extends JPanel {
         addRow(content, "Khách hàng: " + (hoaDon.getKhachHang() != null
                 ? hoaDon.getKhachHang().getTenKhachHang()
                 : "N/A"));
-        addRow(content, "Mã nhân viên: " + (hoaDon.getNhanVien() != null
-                ? hoaDon.getNhanVien().getMaNhanVien()
+        addRow(content, "Tên nhân viên: " + (hoaDon.getNhanVien() != null
+                ? hoaDon.getNhanVien().getTenNhanVien()
                 : "N/A"));
         addRow(content, "Số phòng đã trả: " + String.join(", ", phongTra));
         addRow(content, "Tổng tiền: " + formatter.format(hoaDon.getTongTien()) + " đ");

@@ -9,6 +9,7 @@ import iuh.network.ClientConnection;
 import iuh.network.CommandType;
 import iuh.network.Request;
 import iuh.network.Response;
+import iuh.service.impl.ThanhToanServiceImpl;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -18,10 +19,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * ThanhToanPanel - Giao diện trang Thanh Toán
- *
+ * <p>
  * Quy trình:
  * B1: Nhập CCCD → Tìm phòng cần thanh toán
  * B2: Tick checkbox chọn 1 hoặc nhiều phòng cần thanh toán
@@ -98,9 +100,9 @@ public class ThanhToanPanel extends JPanel {
     // Danh sách các phòng đang được TICK — dùng khi thanh toán
     private List<ChiTietPhieuDatPhongDTO> listThanhToan = new ArrayList<>();
 
+    private NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
     private double tongTienPhong = 0.0;
     private double tienKhachDua = 0.0;
-    private NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
     private double tienThua = 0.0;
     private double tongTien = 0.0;
 
@@ -219,16 +221,16 @@ public class ThanhToanPanel extends JPanel {
         tienKhachDua = 0.0;
 
         danhSachPhong = (List<ChiTietPhieuDatPhongDTO>) clientConnection.sendRequest(
-                Request
-                        .builder()
-                        .commandType(CommandType.GET_DANH_SACH_DE_THANH_TOAN)
-                        .object(cccd)
-                        .build())
+                        Request
+                                .builder()
+                                .commandType(CommandType.GET_DANH_SACH_DE_THANH_TOAN)
+                                .object(cccd)
+                                .build())
                 .getObject();
 
         modelBang.setRowCount(0); // xoá dòng cũ
         for (ChiTietPhieuDatPhongDTO ct : danhSachPhong) {
-            modelBang.addRow(new Object[] {
+            modelBang.addRow(new Object[]{
                     false,
                     ct.getPhong().getSoPhong(),
                     ct.getPhong().getLoaiPhong(),
@@ -576,21 +578,6 @@ public class ThanhToanPanel extends JPanel {
         return row;
     }
 
-    private JPanel buildSummaryRow(String nhan, JLabel lblGiaTri) {
-        JPanel row = new JPanel(new BorderLayout(8, 0));
-        row.setOpaque(false);
-        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 28));
-
-        JLabel lblNhan = new JLabel(nhan);
-        lblNhan.setFont(F_LABEL);
-        lblNhan.setForeground(TEXT_MID);
-        lblGiaTri.setHorizontalAlignment(JLabel.RIGHT);
-
-        row.add(lblNhan, BorderLayout.WEST);
-        row.add(lblGiaTri, BorderLayout.EAST);
-        return row;
-    }
-
     // ═══════════════════════════════════════════════════════════════════
     // PANEL PHẢI
     // Fix: bỏ setMaximumSize cứng trên radioCard/gridMenhGia -> text không bị cắt
@@ -847,49 +834,55 @@ public class ThanhToanPanel extends JPanel {
     // ═══════════════════════════════════════════════════════════════════
     private void updateSummaryCard() {
         int soPhong = listThanhToan.size();
-
-        lblSoPhongChon.setText(soPhong > 0
-                ? "Đang chọn " + soPhong + " phòng"
-                : "Chưa chọn phòng nào");
+        lblSoPhongChon.setText(soPhong > 0 ? "Đang chọn " + soPhong + " phòng" : "Chưa chọn phòng nào");
         lblSoPhongChon.setForeground(soPhong > 0 ? BLUE : TEXT_GRAY);
-
         lblTongTien.setText(formatter.format(tongTienPhong) + " đ");
 
-        double tienSauKM = tongTienPhong;
-        if (selectedKhuyenMai != null) {
-            if (tongTienPhong * 1.1 >= selectedKhuyenMai.getTongTienToiThieu()) {
-                Map<String, Object> params = new HashMap<>();
-                params.put("tongTien", tongTienPhong);
-                params.put("km", selectedKhuyenMai);
+        if (soPhong == 0) {
+            tongTien = 0;
+            lblKhuyenMai.setText("0%");
+            lblKhuyenMaiTen.setText("Chưa áp dụng khuyến mãi");
+            lblKhuyenMaiTen.setForeground(TEXT_GRAY);
+            lblVAT.setText("10%");
+            lblTotal.setText("0 đ");
+            if (tfKhachDua != null) {
+                tfKhachDua.setText("");
+                lblTienThua.setText("—");
+                lblTienThua.setForeground(GREEN);
+            }
+            return;  // ← thoát sớm, không gọi server
+        }
 
-                double tienSauGiam = (double) clientConnection.sendRequest(
-                        Request
-                                .builder()
+        Map<String, Object> params = new HashMap<>();
+        params.put("tongTien", tongTienPhong);
+        params.put("km", selectedKhuyenMai);
+
+        KiemTraKhuyenMaiResult result = (KiemTraKhuyenMaiResult) clientConnection.sendRequest(
+                        Request.builder()
                                 .commandType(CommandType.TIEN_SAU_KHI_AP_GIAM_GIA)
                                 .object(params)
                                 .build())
-                        .getObject();
-                // Giới hạn không vượt tối đa
-                double soTienGiam = tongTienPhong - tienSauGiam;
+                .getObject();
 
-                if (soTienGiam > selectedKhuyenMai.getTongKhuyenMaiToiDa()) {
-                    soTienGiam = selectedKhuyenMai.getTongKhuyenMaiToiDa();
-                }
-                tienSauKM = tongTienPhong - soTienGiam;
+        if (result == null) return;  // phòng thủ thêm
+        tongTien = result.getTien();
+
+        if (selectedKhuyenMai != null) {
+            if (tongTienPhong >= selectedKhuyenMai.getTongTienToiThieu()) {
                 lblKhuyenMai.setText("-" + Math.round(selectedKhuyenMai.getHeSo() * 100) + "%");
                 lblKhuyenMaiTen.setText(selectedKhuyenMai.getTenKhuyenMai());
                 lblKhuyenMaiTen.setForeground(GREEN);
             } else {
-                // KM không đủ điều kiện áp dụng
                 lblKhuyenMai.setText("0%");
                 lblKhuyenMaiTen.setText("Chưa đạt tối thiểu " +
                         formatter.format(selectedKhuyenMai.getTongTienToiThieu()) + " đ");
                 lblKhuyenMaiTen.setForeground(ORANGE);
             }
+        } else {
+            lblKhuyenMai.setText("0%");
+            lblKhuyenMaiTen.setText("Không có khuyến mãi");
+            lblKhuyenMaiTen.setForeground(TEXT_GRAY);
         }
-
-        double vat = tienSauKM * 0.1;
-        tongTien = tienSauKM + vat;
 
         lblVAT.setText("10%");
         lblTotal.setText(formatter.format(tongTien) + " đ");
@@ -924,7 +917,7 @@ public class ThanhToanPanel extends JPanel {
 
         modelBang.setRowCount(0); // xóa toàn bộ dòng cũ
         for (ChiTietPhieuDatPhongDTO ct : danhSachPhong) {
-            modelBang.addRow(new Object[] {
+            modelBang.addRow(new Object[]{
                     false,
                     ct.getPhong().getSoPhong(),
                     ct.getPhong().getLoaiPhong(),
@@ -1004,7 +997,9 @@ public class ThanhToanPanel extends JPanel {
         return btn;
     }
 
-    /** Nút viền có icon — dùng cho nút Làm mới (kích thước cố định) */
+    /**
+     * Nút viền có icon — dùng cho nút Làm mới (kích thước cố định)
+     */
     private JButton buildOutlineIconButton(String text, int w, int h) {
         JButton btn = buildOutlineButton(text);
         btn.setPreferredSize(new Dimension(w, h));
@@ -1015,20 +1010,15 @@ public class ThanhToanPanel extends JPanel {
     private void moModalKhuyenMai() {
         @SuppressWarnings("unchecked")
         List<KhuyenMaiDTO> dsKM = (List<KhuyenMaiDTO>) clientConnection.sendRequest(
-                Request
-                        .builder()
-                        .commandType(CommandType.GET_DANH_SACH_KHUYEN_MAI_HOP_LE)
-                        .build())
+                        Request.builder()
+                                .commandType(CommandType.GET_DANH_SACH_KHUYEN_MAI_HOP_LE)
+                                .build())
                 .getObject();
 
-        // Lọc chỉ lấy KM còn hợp lệ theo ngày và tổng tiền
-        LocalDateTime now = LocalDateTime.now();
+        // Chỉ lọc theo tổng tiền — ngày đã được server xử lý
         List<KhuyenMaiDTO> dsHopLe = dsKM.stream()
-                .filter(km -> km.getNgayBatDau() != null && km.getNgayKetThuc() != null
-                        && !now.isBefore(km.getNgayBatDau())
-                        && !now.isAfter(km.getNgayKetThuc())
-                        && tongTienPhong * 1.1 >= km.getTongTienToiThieu())
-                .collect(java.util.stream.Collectors.toList());
+                .filter(km -> tongTienPhong >= km.getTongTienToiThieu())
+                .collect(Collectors.toList());
 
         Frame owner = (Frame) SwingUtilities.getWindowAncestor(this);
         JDialog modal = new JDialog(owner, "Chọn mã khuyến mãi", true);
@@ -1061,7 +1051,7 @@ public class ThanhToanPanel extends JPanel {
         modal.add(header, BorderLayout.NORTH);
 
         // ── Bảng khuyến mãi ──
-        String[] cols = { "Tên khuyến mãi", "Tối thiểu", "Tối đa", "Từ ngày", "Đến ngày", "Giảm" };
+        String[] cols = {"Tên khuyến mãi", "Tối thiểu", "Tối đa", "Từ ngày", "Đến ngày", "Giảm"};
         DefaultTableModel modelKM = new DefaultTableModel(cols, 0) {
             @Override
             public boolean isCellEditable(int r, int c) {
@@ -1071,7 +1061,7 @@ public class ThanhToanPanel extends JPanel {
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         for (KhuyenMaiDTO km : dsHopLe) {
-            modelKM.addRow(new Object[] {
+            modelKM.addRow(new Object[]{
                     km.getTenKhuyenMai(),
                     formatter.format(km.getTongTienToiThieu()) + " đ",
                     formatter.format(km.getTongKhuyenMaiToiDa()) + " đ",
@@ -1209,6 +1199,7 @@ public class ThanhToanPanel extends JPanel {
     private JButton buildGreenButton(String text) {
         JButton btn = new JButton(text) {
             private boolean hovered = false;
+
             {
                 addMouseListener(new MouseAdapter() {
                     @Override

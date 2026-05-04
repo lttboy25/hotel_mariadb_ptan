@@ -253,15 +253,16 @@ public class ClientHanler implements Runnable {
                         response = Response.builder().object(hoaDonDTO).build();
                     }
                     case GET_DANH_SACH_KHUYEN_MAI_HOP_LE -> {
-                        List<KhuyenMaiDTO> ds = thanhToanServiceImpl.getDsKhuyenMai();
+                        List<KhuyenMaiDTO> ds = thanhToanServiceImpl.getDsKhuyenMaiHopLe();
                         response = Response.builder().object(ds).build();
                     }
                     case TIEN_SAU_KHI_AP_GIAM_GIA -> {
                         Map<String, Object> params = (Map<String, Object>) request.getObject();
                         double tongTien = (double) params.get("tongTien");
                         KhuyenMaiDTO km = (KhuyenMaiDTO) params.get("km");
+                        KiemTraKhuyenMaiResult rs = thanhToanServiceImpl.tienSauKhiApGiamGia(tongTien, km);
                         response = Response.builder()
-                                .object(thanhToanServiceImpl.tienSauKhiApGiamGia(tongTien, km))
+                                .object(rs)
                                 .build();
                     }
 

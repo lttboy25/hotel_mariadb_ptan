@@ -27,8 +27,8 @@ public interface ThanhToanService {
 
     HoaDonDTO thanhToan(ThanhToanRequest thanhToanRequest);
 
-    List<KhuyenMaiDTO> getDsKhuyenMai();
+    List<KhuyenMaiDTO> getDsKhuyenMaiHopLe();
 
-    double tienSauKhiApGiamGia(double tongTien, KhuyenMaiDTO KhuyenMai);
+    KiemTraKhuyenMaiResult tienSauKhiApGiamGia(double tongTien, KhuyenMaiDTO KhuyenMai);
 
 }

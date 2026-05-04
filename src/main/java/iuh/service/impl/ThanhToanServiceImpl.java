@@ -14,138 +14,165 @@ import iuh.enums.*;
 import iuh.mapper.Mapper;
 
 public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
-        private PhongServiceImpl phongServiceImpl = new PhongServiceImpl();
-        private ChiTietPhieuDatPhongServiceImpl chiTietPhieuDatPhongServiceImpl = new ChiTietPhieuDatPhongServiceImpl();
-        private HoaDonDaoImpl hoaDonDao = new HoaDonDaoImpl();
-        private ChiTietHoaDonDaoImpl chiTietHoaDonDao = new ChiTietHoaDonDaoImpl();
-        private PhieuDatPhongServiceImpl phieuDatPhongServiceImpl = new PhieuDatPhongServiceImpl();
-        private NhanVienServiceImpl nhanVienServiceImpl = new NhanVienServiceImpl();
-        private KhuyenMaiServiceImpl khuyenMaiServiceImpl = new KhuyenMaiServiceImpl();
+    private PhongServiceImpl phongServiceImpl = new PhongServiceImpl();
+    private ChiTietPhieuDatPhongServiceImpl chiTietPhieuDatPhongServiceImpl = new ChiTietPhieuDatPhongServiceImpl();
+    private HoaDonDaoImpl hoaDonDao = new HoaDonDaoImpl();
+    private ChiTietHoaDonDaoImpl chiTietHoaDonDao = new ChiTietHoaDonDaoImpl();
+    private PhieuDatPhongServiceImpl phieuDatPhongServiceImpl = new PhieuDatPhongServiceImpl();
+    private NhanVienServiceImpl nhanVienServiceImpl = new NhanVienServiceImpl();
+    private KhuyenMaiServiceImpl khuyenMaiServiceImpl = new KhuyenMaiServiceImpl();
 
-        @Override
-        public List<ChiTietPhieuDatPhongDTO> getDanhSachPhieuDatPhongDeThanhToan(String cccd) {
-                return chiTietPhieuDatPhongServiceImpl
-                                .getChiTietPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong.NHAN_PHONG,
-                                                TrangThaiChiTietPhieuDatPhong.NHAN_PHONG, cccd)
-                                .stream()
-                                .map(e -> Mapper.map(e))
-                                .collect(Collectors.toList());
+    @Override
+    public List<ChiTietPhieuDatPhongDTO> getDanhSachPhieuDatPhongDeThanhToan(String cccd) {
+        return chiTietPhieuDatPhongServiceImpl
+                .getChiTietPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong.NHAN_PHONG,
+                        TrangThaiChiTietPhieuDatPhong.NHAN_PHONG, cccd)
+                .stream()
+                .map(e -> Mapper.map(e))
+                .collect(Collectors.toList());
 
+    }
+
+    @Override
+    public boolean coTheThanhToan(double tienKhachDua, double tongTien) {
+        if (tienKhachDua < tongTien)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public HoaDonDTO thanhToan(ThanhToanRequest thanhToanRequest) {
+        List<ChiTietPhieuDatPhongDTO> listThanhToanDto = thanhToanRequest.getListThanhToan();
+        double tienKhachDua = thanhToanRequest.getTienKhachDua();
+        double tienThua = thanhToanRequest.getTienThua();
+        double tongTienDaTinh = thanhToanRequest.getTongTien();
+        String maNhanVien = thanhToanRequest.getMaNhanVien();
+
+        // ── 1. Validate đầu vào ──
+        if (listThanhToanDto == null || listThanhToanDto.isEmpty())
+            return null;
+
+        List<ChiTietPhieuDatPhong> listThanhToan = listThanhToanDto.stream()
+                .map(Mapper::map)
+                .collect(Collectors.toList());
+
+        // ── 2. Kiểm tra trạng thái từng phòng ──
+        for (ChiTietPhieuDatPhong ctpdp : listThanhToan) {
+            if (TrangThaiChiTietPhieuDatPhong.DA_THANH_TOAN.equals(ctpdp.getTrangThai())) {
+                throw new RuntimeException("Phòng " + ctpdp.getPhong().getMaPhong() + " đã thanh toán!");
+            }
         }
 
-        @Override
-        public boolean coTheThanhToan(double tienKhachDua, double tongTien) {
-                if (tienKhachDua < tongTien)
-                        return false;
+        // ── 3. Tạo danh sách ChiTietHoaDon ──
+        LocalDateTime now = LocalDateTime.now();
+        PhieuDatPhong phieuDatPhong = listThanhToan.get(0).getPhieuDatPhong();
+        NhanVienDTO nv = nhanVienServiceImpl.getNhanVienById(maNhanVien).orElse(null);
 
-                return true;
+        List<ChiTietHoaDon> dsChiTietHoaDon = listThanhToan.stream()
+                .map(ctpdp -> {
+                    ChiTietHoaDon cthd = new ChiTietHoaDon();
+                    cthd.setChiTietPhieuDatPhong(ctpdp);
+                    cthd.setPhong(ctpdp.getPhong());
+                    cthd.setNgayTao(now);
+                    cthd.setTongTien(ctpdp.tinhThanhTien());
+                    return cthd;
+                })
+                .collect(Collectors.toList());
+
+        // ── 4. Tạo và lưu HoaDon ──
+        HoaDon hoaDon = new HoaDon();
+        hoaDon.setNgayDat(now);
+        hoaDon.setNgayTao(now);
+        hoaDon.setKhachHang(phieuDatPhong.getKhachHang());
+        hoaDon.setNhanVien(Mapper.map(nv));
+        hoaDon.setTrangThai(TrangThaiHoaDon.DA_THANH_TOAN);
+        hoaDon.setTongTien(tongTienDaTinh);
+        hoaDon.setTienKhachDua(tienKhachDua);
+        hoaDon.setTienThoi(tienThua);
+
+        hoaDon = hoaDonDao.save(Mapper.map(hoaDon));
+        if (hoaDon == null)
+            throw new RuntimeException("Không thể tạo hóa đơn");
+
+        // ── 5. Lưu ChiTietHoaDon + cập nhật trạng thái phòng ──
+        for (ChiTietHoaDon cthd : dsChiTietHoaDon) {
+            cthd.setHoaDon(hoaDon);
+
+            if (chiTietHoaDonDao.save(Mapper.map(cthd)) == null)
+                throw new RuntimeException("Lỗi lưu chi tiết hóa đơn phòng " + cthd.getPhong().getMaPhong());
+
+            if (!chiTietPhieuDatPhongServiceImpl.updateTrangThaiByMaPhong(
+                    cthd.getPhong().getMaPhong(),
+                    TrangThaiChiTietPhieuDatPhong.DA_THANH_TOAN))
+                throw new RuntimeException("Lỗi cập nhật chi tiết phiếu phòng " + cthd.getPhong().getMaPhong());
+
+            if (!phongServiceImpl.updateStatusRoom(
+                    cthd.getPhong().getMaPhong(),
+                    TrangThaiPhong.SAN_SANG,
+                    TinhTrangPhong.TRONG))
+                throw new RuntimeException("Lỗi cập nhật trạng thái phòng " + cthd.getPhong().getMaPhong());
         }
 
-        @Override
-        public HoaDonDTO thanhToan(ThanhToanRequest thanhToanRequest) {
-                List<ChiTietPhieuDatPhongDTO> listThanhToanDto = thanhToanRequest.getListThanhToan();
-                double tienKhachDua = thanhToanRequest.getTienKhachDua();
-                double tienThua = thanhToanRequest.getTienThua();
-                double tongTienDaTinh = thanhToanRequest.getTongTien(); // ← đã có KM + VAT
+        // ── 6. Cập nhật trạng thái PhieuDatPhong nếu thanh toán toàn bộ ──
+        boolean thanhToanToanBo = chiTietPhieuDatPhongServiceImpl
+                .getChiTietPhieuDatPhongByMaPDP(phieuDatPhong.getMaPhieuDatPhong())
+                .stream()
+                .allMatch(ct -> TrangThaiChiTietPhieuDatPhong.DA_THANH_TOAN.equals(ct.getTrangThai()));
 
-                List<ChiTietPhieuDatPhong> listThanhToan = listThanhToanDto.stream()
-                                .map(Mapper::map).collect(Collectors.toList());
+        if (thanhToanToanBo)
+            phieuDatPhongServiceImpl.updateTrangThai(
+                    phieuDatPhong.getMaPhieuDatPhong(),
+                    TrangThaiPhieuDatPhong.DA_THANH_TOAN);
 
-                if (listThanhToan == null || listThanhToan.isEmpty())
-                        return null;
+        // ── 7. Build và trả về DTO đầy đủ ──
+        HoaDonDTO hoaDonDTO = Mapper.map(hoaDon);
+        hoaDonDTO.setChiTietHoaDon(
+                dsChiTietHoaDon.stream()
+                        .map(Mapper::map)
+                        .collect(Collectors.toList()));
 
-                LocalDateTime now = LocalDateTime.now();
-                List<ChiTietHoaDon> dsChiTietHoaDon = new ArrayList<>();
-                PhieuDatPhong phieuDatPhong = listThanhToan.get(0).getPhieuDatPhong();
+        return hoaDonDTO;
+    }
 
-                for (ChiTietPhieuDatPhong ctpdp : listThanhToan) {
-                        if (TrangThaiChiTietPhieuDatPhong.DA_THANH_TOAN.equals(ctpdp.getTrangThai())) {
-                                throw new RuntimeException(
-                                                "Phòng " + ctpdp.getPhong().getMaPhong() + " đã thanh toán!");
-                        }
+    @Override
+    public List<KhuyenMaiDTO> getDsKhuyenMaiHopLe() {
+        LocalDateTime now = LocalDateTime.now();
+        return khuyenMaiServiceImpl.getKhuyenMaiByTrangThai(TrangThai.DANG_AP_DUNG)
+                .stream()
+                .filter(km -> km.getNgayBatDau() != null
+                        && km.getNgayKetThuc() != null
+                        && !now.isBefore(km.getNgayBatDau())
+                        && !now.isAfter(km.getNgayKetThuc()))
+                .collect(Collectors.toList());
+    }
 
-                        ChiTietHoaDon cthd = new ChiTietHoaDon();
-                        cthd.setChiTietPhieuDatPhong(ctpdp);
-                        cthd.setPhong(ctpdp.getPhong());
-                        cthd.setNgayTao(now);
-                        cthd.setTongTien(cthd.getTongTien());
-                        dsChiTietHoaDon.add(cthd);
-                }
+    @Override
+    public KiemTraKhuyenMaiResult tienSauKhiApGiamGia(double tongTien, KhuyenMaiDTO khuyenMai) {
+        double vat = tongTien * 0.1;
 
-                NhanVienDTO nv = nhanVienServiceImpl.getNhanVienById(thanhToanRequest.getMaNhanVien()).orElse(null);
-
-                HoaDon hoaDon = new HoaDon();
-                hoaDon.setNgayDat(now);
-                hoaDon.setKhachHang(phieuDatPhong.getKhachHang());
-                hoaDon.setNhanVien(Mapper.map(nv));
-                hoaDon.setTrangThai(TrangThaiHoaDon.DA_THANH_TOAN);
-                hoaDon.setNgayTao(now);
-                hoaDon.setTongTien(tongTienDaTinh); // ← dùng giá trị đã tính (có KM)
-                hoaDon.setTienKhachDua(tienKhachDua);
-                hoaDon.setTienThoi(tienThua);
-
-                hoaDon = hoaDonDao.save(Mapper.map(hoaDon));
-                if (hoaDon == null) {
-                        throw new RuntimeException("Không thể tạo hóa đơn");
-                }
-
-                for (ChiTietHoaDon cthd : dsChiTietHoaDon) {
-
-                        cthd.setHoaDon(hoaDon);
-
-                        ChiTietHoaDon luuChiTietHoaDon = chiTietHoaDonDao.save(Mapper.map(cthd));
-                        if (luuChiTietHoaDon == null) {
-                                throw new RuntimeException("Lỗi lưu chi tiết hóa đơn");
-                        }
-
-                        boolean ktraChiTietPhieu = chiTietPhieuDatPhongServiceImpl
-                                        .updateTrangThaiByMaPhong(cthd.getPhong().getMaPhong(),
-                                                        TrangThaiChiTietPhieuDatPhong.DA_THANH_TOAN);
-
-                        if (!ktraChiTietPhieu) {
-                                throw new RuntimeException("Lỗi cập nhật chi tiết phiếu");
-                        }
-
-                        boolean ktraPhong = phongServiceImpl
-                                        .updateStatusRoom(cthd.getPhong().getMaPhong(), TrangThaiPhong.SAN_SANG,
-                                                        TinhTrangPhong.TRONG);
-
-                        if (!ktraPhong) {
-                                throw new RuntimeException("Lỗi cập nhật phòng");
-                        }
-                }
-
-                List<ChiTietPhieuDatPhongDTO> dsAll = chiTietPhieuDatPhongServiceImpl
-                                .getChiTietPhieuDatPhongByMaPDP(phieuDatPhong.getMaPhieuDatPhong());
-
-                boolean thanhToanToanBoPhieu = true;
-                for (ChiTietPhieuDatPhongDTO ct : dsAll) {
-                        if (!TrangThaiChiTietPhieuDatPhong.DA_THANH_TOAN.equals(ct.getTrangThai())) {
-                                thanhToanToanBoPhieu = false;
-                                break;
-                        }
-                }
-
-                if (thanhToanToanBoPhieu) {
-                        phieuDatPhongServiceImpl.updateTrangThai(
-                                        phieuDatPhong.getMaPhieuDatPhong(),
-                                        TrangThaiPhieuDatPhong.DA_THANH_TOAN);
-                }
-
-                return Mapper.map(hoaDon);
+        if (khuyenMai == null || khuyenMai.getHeSo() == 0) {
+            return KiemTraKhuyenMaiResult.builder()
+                    .tien(tongTien + vat)
+                    .message("Không có khuyến mãi áp dụng, chỉ tính VAT")
+                    .build();
         }
 
-        @Override
-        public List<KhuyenMaiDTO> getDsKhuyenMai() {
-                return khuyenMaiServiceImpl.getKhuyenMaiByTrangThai(TrangThai.DANG_AP_DUNG);
+        if (tongTien < khuyenMai.getTongTienToiThieu()) {
+            return KiemTraKhuyenMaiResult.builder()
+                    .tien(tongTien + vat)
+                    .message("Tổng tiền chưa đạt mức tối thiểu, chỉ tính VAT")
+                    .build();
         }
 
-        @Override
-        public double tienSauKhiApGiamGia(double tongTien, KhuyenMaiDTO khuyenMai) {
-                if (khuyenMai == null || khuyenMai.getHeSo() == 0) {
-                        return tongTien;
-                }
-                return tongTien - khuyenMai.getHeSo() * tongTien;
-        }
+        double soTienSeGiam = Math.min(
+                khuyenMai.getHeSo() * tongTien,
+                khuyenMai.getTongKhuyenMaiToiDa());
+
+        return KiemTraKhuyenMaiResult.builder()
+                .tien(tongTien - soTienSeGiam + vat)
+                .message("Áp dụng khuyến mãi " + khuyenMai.getTenKhuyenMai())
+                .build();
+    }
 
 }
