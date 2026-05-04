@@ -236,6 +236,10 @@ public class ClientHanler implements Runnable {
                         var history = caLamViecNhanVienServiceImpl.getShiftHistory(maNV);
                         response = Response.builder().object(history).build();
                     }
+                    case GET_ALL_CA -> {
+                        var cas = caLamViecNhanVienServiceImpl.getAllCa();
+                        response = Response.builder().object(cas).build();
+                    }
                     case GET_DANH_SACH_DE_THANH_TOAN -> {
                         String cccd = (String) request.getObject();
                         List<ChiTietPhieuDatPhongDTO> ds = thanhToanServiceImpl

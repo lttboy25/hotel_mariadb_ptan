@@ -1,12 +1,11 @@
 package iuh.view;
 
+import iuh.dto.CaDTO;
 import iuh.dto.CaLamViecNhanVienDTO;
-import iuh.entity.Ca;
 import iuh.network.ClientConnection;
 import iuh.network.CommandType;
 import iuh.network.Request;
 import iuh.network.Response;
-import iuh.dao.impl.CaDaoImpl;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -40,7 +39,6 @@ public class CaLamViecPanel extends JPanel {
     static final DateTimeFormatter FMT_DATE = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private final ClientConnection clientConnection = ClientConnection.getInstance();
-    private final CaDaoImpl caDao = new CaDaoImpl();
 
     private CaLamViecNhanVienDTO activeShift;
 
@@ -139,16 +137,8 @@ public class CaLamViecPanel extends JPanel {
         // Form fields
         tfTienMoCa = createStyledTextField("Nhập tiền mở ca...");
         cbCa = new JComboBox<>();
-        List<Ca> cas = caDao.loadAll();
-        if (cas.isEmpty()) {
-            cbCa.addItem("Ca 1 (06:00 - 14:00)");
-            cbCa.addItem("Ca 2 (14:00 - 22:00)");
-            cbCa.addItem("Ca 3 (22:00 - 06:00)");
-        } else {
-            for (Ca c : cas)
-                cbCa.addItem(c.getMaCa());
-        }
         cbCa.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        loadCaList();
 
         // Info labels (visible when shift is active)
         lblTienMoCaVal = createInfoLabel("Tiền mở ca:", "0 VNĐ");
@@ -309,6 +299,30 @@ public class CaLamViecPanel extends JPanel {
                     String.format("%,.0f", dto.getTongChi()),
                     dto.getTrangThai()
             });
+        }
+    }
+
+    private void loadCaList() {
+        try {
+            Request request = Request.builder()
+                    .commandType(CommandType.GET_ALL_CA)
+                    .build();
+            Response response = clientConnection.sendRequest(request);
+            List<CaDTO> cas = (List<CaDTO>) response.getObject();
+            cbCa.removeAllItems();
+            if (cas == null || cas.isEmpty()) {
+                cbCa.addItem("Ca 1");
+                cbCa.addItem("Ca 2");
+                cbCa.addItem("Ca 3");
+            } else {
+                for (CaDTO c : cas) {
+                    cbCa.addItem(c.getMaCa());
+                }
+            }
+        } catch (Exception e) {
+            cbCa.addItem("Ca 1");
+            cbCa.addItem("Ca 2");
+            cbCa.addItem("Ca 3");
         }
     }
 

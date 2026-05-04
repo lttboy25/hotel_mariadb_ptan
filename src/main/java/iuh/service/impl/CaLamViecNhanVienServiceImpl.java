@@ -1,9 +1,12 @@
 package iuh.service.impl;
 
+import iuh.dao.CaDao;
 import iuh.dao.CaLamViecNhanVienDao;
 import iuh.dao.HoaDonDao;
+import iuh.dao.impl.CaDaoImpl;
 import iuh.dao.impl.CaLamViecNhanVienDaoImpl;
 import iuh.dao.impl.HoaDonDaoImpl;
+import iuh.dto.CaDTO;
 import iuh.dto.CaLamViecNhanVienDTO;
 import iuh.entity.Ca;
 import iuh.entity.CaLamViecNhanVien;
@@ -19,10 +22,12 @@ public class CaLamViecNhanVienServiceImpl implements CaLamViecNhanVienService {
 
     private final CaLamViecNhanVienDao caLamViecNhanVienDao;
     private final HoaDonDao hoaDonDao;
+    private final CaDao caDao;
 
     public CaLamViecNhanVienServiceImpl() {
         this.caLamViecNhanVienDao = new CaLamViecNhanVienDaoImpl();
         this.hoaDonDao = new HoaDonDaoImpl();
+        this.caDao = new CaDaoImpl();
     }
 
     @Override
@@ -94,5 +99,11 @@ public class CaLamViecNhanVienServiceImpl implements CaLamViecNhanVienService {
                 .max(Integer::compare)
                 .orElse(0);
         return String.format("CALV%03d", maxId + 1);
+    }
+    @Override
+    public List<CaDTO> getAllCa() {
+        return caDao.loadAll().stream()
+                .map(this::mapToCaDTO)
+                .collect(Collectors.toList());
     }
 }
