@@ -18,8 +18,6 @@ import java.util.List;
  */
 public interface NhanPhongService {
     List<ChiTietPhieuDatPhongDTO> getDanhSachPhongDeNhanByCCCD(String cccd);
-
-
-
+    
     boolean nhanPhong(List<ChiTietPhieuDatPhongDTO> listNhanPhong);
 }

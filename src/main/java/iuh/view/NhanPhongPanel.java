@@ -4,6 +4,9 @@ import iuh.dto.ChiTietPhieuDatPhongDTO;
 import iuh.dto.KhachHangDTO;
 import iuh.dto.PhongDTO;
 import iuh.enums.TrangThaiChiTietPhieuDatPhong;
+import iuh.network.ClientConnection;
+import iuh.network.CommandType;
+import iuh.network.Request;
 import iuh.service.impl.NhanPhongServiceImpl;
 import iuh.service.impl.CaLamViecNhanVienServiceImpl;
 import iuh.dto.CaLamViecNhanVienDTO;
@@ -21,12 +24,12 @@ import java.util.Locale;
 
 /**
  * NhanPhongPanel - Giao diện trang Nhận Phòng
- *
+ * <p>
  * Quy trình:
  * B1: Nhập CCCD → Tìm phiếu đặt phòng đã đặt cọc
  * B2: Tick checkbox chọn 1 hoặc nhiều phòng muốn nhận
  * B3: Nhấn "Xác nhận nhận phòng" → phòng chuyển trạng thái → refresh
- *
+ * <p>
  * Double-click vào dòng → hiện popup chi tiết ChiTietPhieuDatPhong
  */
 public class NhanPhongPanel extends JPanel {
@@ -408,10 +411,15 @@ public class NhanPhongPanel extends JPanel {
         danhSachChiTiet.clear();
         modelBang.setRowCount(0);
 
-        danhSachChiTiet = nhanPhongServiceImpl.getDanhSachPhongDeNhanByCCCD(cccd);
+        danhSachChiTiet = (List<ChiTietPhieuDatPhongDTO>) ClientConnection
+                .getInstance().sendRequest(
+                        Request.builder()
+                                .commandType(CommandType.GET_DANH_SACH_PHONG_DE_NHAN)
+                                .object(cccd)
+                                .build()).getObject();
 
         for (ChiTietPhieuDatPhongDTO ct : danhSachChiTiet) {
-            modelBang.addRow(new Object[] {
+            modelBang.addRow(new Object[]{
                     false,
                     ct.getPhong().getSoPhong(),
                     ct.getPhong().getLoaiPhong(),
@@ -507,7 +515,14 @@ public class NhanPhongPanel extends JPanel {
 
         boolean ok = false;
         try {
-            ok = nhanPhongServiceImpl.nhanPhong(listNhanPhong);
+
+            ok = (boolean) ClientConnection.getInstance().sendRequest(
+                    Request
+                            .builder()
+                            .object(listNhanPhong)
+                            .commandType(CommandType.NHAN_PHONG)
+                            .build()
+            ).getObject();
         } catch (Exception ex) {
             // ex.getMessage() có thể null nếu là UnsupportedOperationException
             String msg = ex.getMessage() != null ? ex.getMessage() : ex.getClass().getSimpleName();
@@ -687,6 +702,7 @@ public class NhanPhongPanel extends JPanel {
     private JButton buildGreenButton(String text, int w, int h) {
         JButton btn = new JButton(text) {
             private boolean hovered = false;
+
             {
                 addMouseListener(new MouseAdapter() {
                     @Override

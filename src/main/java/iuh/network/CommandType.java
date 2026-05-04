@@ -78,5 +78,8 @@ public enum CommandType {
 
     // ======= Quản lý hóa đơn ========
     GET_ALL_HOA_DON,
-    SEARCH_HOA_DON
+    SEARCH_HOA_DON,
+
+    GET_DANH_SACH_PHONG_DE_NHAN,
+    NHAN_PHONG,
 }

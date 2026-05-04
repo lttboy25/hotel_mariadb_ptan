@@ -29,7 +29,7 @@ public class MainSever {
                         new ChiTietPhieuDatPhongServiceImpl(),
                         new DoiPhongServiceImpl(),
                         new HoaDonServiceImpl(),
-                        new ChiTietPhieuDatPhongServiceImpl()));
+                        new NhanPhongServiceImpl()));
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

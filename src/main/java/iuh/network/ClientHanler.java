@@ -33,7 +33,7 @@ public class ClientHanler implements Runnable {
     private final ChiTietPhieuDatPhongServiceImpl chiTietPhieuDatPhongService;
     private final DoiPhongServiceImpl doiPhongServiceImpl;
     private final HoaDonServiceImpl hoaDonServiceImpl;
-    private final ChiTietPhieuDatPhongServiceImpl chiTietPhieuDatPhongServiceImpl;
+    private final NhanPhongServiceImpl nhanPhongServiceImpl;
 
     @Override
     public void run() {
@@ -308,14 +308,14 @@ public class ClientHanler implements Runnable {
                     // ========GIA HAN PHONG========
                     case TIM_PHONG_DANG_THUE -> {
                         String keyword = (String) request.getObject();
-                        List<ChiTietPhieuDatPhongDTO> listPhongDangThue = chiTietPhieuDatPhongServiceImpl
+                        List<ChiTietPhieuDatPhongDTO> listPhongDangThue = chiTietPhieuDatPhongService
                                 .timPhongDangThue(keyword);
                         response = Response.builder().object(listPhongDangThue).build();
                     }
                     case IS_ROOM_AVAILABLE_FOR_EXTENSION -> {
                         GiaHanRequestDTO data = (GiaHanRequestDTO) request.getObject();
 
-                        boolean isRight = chiTietPhieuDatPhongServiceImpl
+                        boolean isRight = chiTietPhieuDatPhongService
                                 .isRoomAvailableForExtension(data.getChiTietId(), data.getNewEndTime());
 
                         response = Response.builder().object(isRight).build();
@@ -323,7 +323,7 @@ public class ClientHanler implements Runnable {
                     case GIA_HAN_NHIEU -> {
                         Map<Long, LocalDateTime> requests = (Map<Long, LocalDateTime>) request.getObject();
 
-                        chiTietPhieuDatPhongServiceImpl.giaHanNhieu(requests);
+                        chiTietPhieuDatPhongService.giaHanNhieu(requests);
 
                         response = Response.builder().object(true).build();
                     }
@@ -349,6 +349,18 @@ public class ClientHanler implements Runnable {
                                 )
                                 .build();
 
+                    }
+                    case GET_DANH_SACH_PHONG_DE_NHAN -> {
+                        String cccd = (String) request.getObject();
+                        response = Response.builder()
+                                .object(nhanPhongServiceImpl.getDanhSachPhongDeNhanByCCCD(cccd))
+                                .build();
+                    }
+
+                    case NHAN_PHONG -> {
+                        List<ChiTietPhieuDatPhongDTO> listNhanPhong = (List<ChiTietPhieuDatPhongDTO>) request.getObject();
+                        boolean rs = nhanPhongServiceImpl.nhanPhong(listNhanPhong);
+                        response = Response.builder().object(rs).build();
                     }
 
                 }
