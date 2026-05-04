@@ -74,5 +74,9 @@ public enum CommandType {
     // ============GIA HẠN PHÒNG========
     TIM_PHONG_DANG_THUE,
     IS_ROOM_AVAILABLE_FOR_EXTENSION,
-    GIA_HAN_NHIEU
+    GIA_HAN_NHIEU,
+
+    // ======= Quản lý hóa đơn ========
+    GET_ALL_HOA_DON,
+    SEARCH_HOA_DON
 }

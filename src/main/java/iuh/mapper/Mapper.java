@@ -2,15 +2,31 @@ package iuh.mapper;
 
 import iuh.dto.*;
 import iuh.entity.*;
-import iuh.enums.TinhTrangPhong;
-import iuh.enums.TrangThaiPhong;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+/**
+ * Mapper – chuyển đổi hai chiều giữa Entity và DTO.
+ * <p>
+ * QUY TẮC tránh vòng lặp đệ quy / LazyInitializationException:
+ * <p>
+ * 1. HoaDon      → HoaDonDTO          : map chiTietHoaDon (đã JOIN FETCH ở DAO)
+ * 2. ChiTietHoaDon → ChiTietHoaDonDTO : KHÔNG map ngược hoaDon (set null)
+ * tránh: HoaDon→ChiTiet→HoaDon→...
+ * 3. PhieuDatPhong → PhieuDatPhongDTO  : KHÔNG map dsachPhieuDatPhong (set [])
+ * 4. ChiTietPhieuDatPhong → DTO        : map phieuDatPhong (shallow – không có list)
+ * KHÔNG map chiTietHoaDon ngược
+ * 5. TaiKhoan    → TaiKhoanDTO         : KHÔNG map ngược nhanVien
+ * 6. PhieuHuyPhong → DTO               : KHÔNG map ngược chiTietPhieuDatPhong
+ * 7. CaLamViecNhanVien → DTO           : chỉ lấy mã/tên từ Ca & NhanVien (không map full entity)
+ */
 public class Mapper {
 
-    // ==================== KhachHang ====================
+    // =========================================================================
+    // KhachHang
+    // =========================================================================
+
     public static KhachHang map(KhachHangDTO dto) {
         if (dto == null) return null;
         return KhachHang.builder()
@@ -35,17 +51,26 @@ public class Mapper {
                 .build();
     }
 
-    // ==================== TaiKhoan ====================
+    // =========================================================================
+    // TaiKhoan
+    // =========================================================================
+
+    /**
+     * DTO → Entity: KHÔNG set nhanVien — JPA tự quản lý qua @MapsId
+     */
     public static TaiKhoan map(TaiKhoanDTO dto) {
         if (dto == null) return null;
         return TaiKhoan.builder()
                 .maNhanVien(dto.getMaNhanVien())
                 .matKhau(dto.getMatKhau())
                 .vaiTro(dto.getVaiTro())
-                // nhanVien không set để tránh vòng lặp — JPA tự quản lý qua @MapsId
+                // nhanVien = null: tránh vòng lặp NhanVien↔TaiKhoan
                 .build();
     }
 
+    /**
+     * Entity → DTO: KHÔNG map ngược nhanVien để tránh đệ quy
+     */
     public static TaiKhoanDTO map(TaiKhoan entity) {
         if (entity == null) return null;
         return TaiKhoanDTO.builder()
@@ -55,7 +80,10 @@ public class Mapper {
                 .build();
     }
 
-    // ==================== NhanVien ====================
+    // =========================================================================
+    // NhanVien
+    // =========================================================================
+
     public static NhanVien map(NhanVienDTO dto) {
         if (dto == null) return null;
         return NhanVien.builder()
@@ -69,7 +97,6 @@ public class Mapper {
                 .ngayBatDau(dto.getNgayBatDau())
                 .trangThai(dto.getTrangThai())
                 .diaChi(dto.getDiaChi())
-                // TaiKhoan không set nhanVien ngược lại để tránh vòng lặp
                 .taiKhoan(map(dto.getTaiKhoan()))
                 .build();
     }
@@ -91,7 +118,10 @@ public class Mapper {
                 .build();
     }
 
-    // ==================== LoaiPhong ====================
+    // =========================================================================
+    // LoaiPhong
+    // =========================================================================
+
     public static LoaiPhong map(LoaiPhongDTO dto) {
         if (dto == null) return null;
         return LoaiPhong.builder()
@@ -116,14 +146,16 @@ public class Mapper {
                 .build();
     }
 
-    // ==================== Phong ====================
+    // =========================================================================
+    // Phong
+    // =========================================================================
+
     public static Phong map(PhongDTO dto) {
         if (dto == null) return null;
         return Phong.builder()
                 .maPhong(dto.getMaPhong())
                 .soPhong(dto.getSoPhong())
                 .loaiPhong(map(dto.getLoaiPhong()))
-                // valueOf không cần thiết vì cùng enum type — gán trực tiếp
                 .trangThai(dto.getTrangThai())
                 .tang(dto.getTang())
                 .tinhTrang(dto.getTinhTrang())
@@ -144,7 +176,10 @@ public class Mapper {
                 .build();
     }
 
-    // ==================== KhuyenMai ====================
+    // =========================================================================
+    // KhuyenMai
+    // =========================================================================
+
     public static KhuyenMai map(KhuyenMaiDTO dto) {
         if (dto == null) return null;
         return KhuyenMai.builder()
@@ -159,6 +194,9 @@ public class Mapper {
                 .build();
     }
 
+    /**
+     * Entity → DTO: KHÔNG map Set<HoaDon> — tránh lazy + đệ quy
+     */
     public static KhuyenMaiDTO map(KhuyenMai entity) {
         if (entity == null) return null;
         return KhuyenMaiDTO.builder()
@@ -173,7 +211,144 @@ public class Mapper {
                 .build();
     }
 
-    // ==================== HoaDon ====================
+    // =========================================================================
+    // PhieuHuyPhong
+    // =========================================================================
+
+    /**
+     * Entity → DTO: KHÔNG map ngược chiTietPhieuDatPhong
+     * tránh: ChiTietPhieuDatPhong → PhieuHuyPhong → ChiTietPhieuDatPhong → ...
+     */
+    public static PhieuHuyPhongDTO map(PhieuHuyPhong entity) {
+        if (entity == null) return null;
+        return PhieuHuyPhongDTO.builder()
+                .maHuyPhong(entity.getMaHuyPhong())
+                .lyDo(entity.getLyDo())
+                .ngayHuy(entity.getNgayHuy())
+                // chiTietPhieuDatPhong = null: tránh đệ quy
+                .build();
+    }
+
+    /**
+     * DTO → Entity: KHÔNG set chiTietPhieuDatPhong — service tự set sau
+     */
+    public static PhieuHuyPhong map(PhieuHuyPhongDTO dto) {
+        if (dto == null) return null;
+        return PhieuHuyPhong.builder()
+                .maHuyPhong(dto.getMaHuyPhong())
+                .lyDo(dto.getLyDo())
+                .ngayHuy(dto.getNgayHuy())
+                // chiTietPhieuDatPhong = null: service tự set
+                .build();
+    }
+
+    // =========================================================================
+    // PhieuDatPhong
+    // =========================================================================
+
+    /**
+     * DTO → Entity: KHÔNG map dsachPhieuDatPhong
+     * Khi cần persist ChiTietPhieuDatPhong, service tự set phieuDatPhong trên entity.
+     */
+    public static PhieuDatPhong map(PhieuDatPhongDTO dto) {
+        if (dto == null) return null;
+        return PhieuDatPhong.builder()
+                .maPhieuDatPhong(dto.getMaPhieuDatPhong())
+                .ngayTao(dto.getNgayTao())
+                .trangThai(dto.getTrangThai())
+                .tienDatCoc(dto.getTienDatCoc())
+                .khachHang(map(dto.getKhachHang()))
+                // dsachPhieuDatPhong = []: tránh StackOverflow ChiTiet→PhieuDat→ChiTiet
+                .dsachPhieuDatPhong(new ArrayList<>())
+                .build();
+    }
+
+    /**
+     * Entity → DTO: KHÔNG load dsachPhieuDatPhong (LAZY)
+     * Nếu cần chi tiết, dùng mapPhieuDatPhongWithDetails() sau khi JOIN FETCH ở DAO.
+     */
+    public static PhieuDatPhongDTO map(PhieuDatPhong entity) {
+        if (entity == null) return null;
+        return PhieuDatPhongDTO.builder()
+                .maPhieuDatPhong(entity.getMaPhieuDatPhong())
+                .ngayTao(entity.getNgayTao())
+                .trangThai(entity.getTrangThai())
+                .tienDatCoc(entity.getTienDatCoc())
+                .khachHang(map(entity.getKhachHang()))
+                // dsachPhieuDatPhong = []: tránh LazyInitializationException
+                .dsachPhieuDatPhong(new ArrayList<>())
+                .build();
+    }
+
+    /**
+     * Entity → DTO có chi tiết — chỉ gọi khi DAO đã JOIN FETCH dsachPhieuDatPhong.
+     */
+    public static PhieuDatPhongDTO mapWithDetails(PhieuDatPhong entity) {
+        if (entity == null) return null;
+        return PhieuDatPhongDTO.builder()
+                .maPhieuDatPhong(entity.getMaPhieuDatPhong())
+                .ngayTao(entity.getNgayTao())
+                .trangThai(entity.getTrangThai())
+                .tienDatCoc(entity.getTienDatCoc())
+                .khachHang(map(entity.getKhachHang()))
+                .dsachPhieuDatPhong(entity.getDsachPhieuDatPhong() != null
+                        ? entity.getDsachPhieuDatPhong().stream()
+                          .map(Mapper::map)
+                          .collect(Collectors.toList())
+                        : new ArrayList<>())
+                .build();
+    }
+
+    // =========================================================================
+    // ChiTietPhieuDatPhong
+    // =========================================================================
+
+    /**
+     * DTO → Entity: phieuDatPhong được map shallow (không có list con)
+     * → an toàn, không đệ quy.
+     */
+    public static ChiTietPhieuDatPhong map(ChiTietPhieuDatPhongDTO dto) {
+        if (dto == null) return null;
+        return ChiTietPhieuDatPhong.builder()
+                .id(dto.getId())
+                .phieuDatPhong(map(dto.getPhieuDatPhong()))   // shallow — dsach = []
+                .phong(map(dto.getPhong()))
+                .trangThai(dto.getTrangThai())
+                .soGioLuuTru(dto.getSoGioLuuTru())
+                .thoiGianNhanPhong(dto.getThoiGianNhanPhong())
+                .thoiGianTraPhong(dto.getThoiGianTraPhong())
+                .soNguoi(dto.getSoNguoi())
+                // phieuHuyPhong = null: service tự set nếu cần
+                .build();
+    }
+
+    /**
+     * Entity → DTO:
+     * - phieuDatPhong: map shallow (không có list con)
+     * - phieuHuyPhong: map nếu có, KHÔNG map ngược chiTietPhieuDatPhong
+     * - chiTietHoaDon (OneToOne ngược): bỏ qua — không cần thiết ở đây
+     */
+    public static ChiTietPhieuDatPhongDTO map(ChiTietPhieuDatPhong entity) {
+        if (entity == null) return null;
+        return ChiTietPhieuDatPhongDTO.builder()
+                .id(entity.getId())
+                .phieuDatPhong(map(entity.getPhieuDatPhong()))  // shallow
+                .phong(map(entity.getPhong()))
+                .trangThai(entity.getTrangThai())
+                .soGioLuuTru(entity.getSoGioLuuTru())
+                .thoiGianNhanPhong(entity.getThoiGianNhanPhong())
+                .thoiGianTraPhong(entity.getThoiGianTraPhong())
+                .soNguoi(entity.getSoNguoi())
+                .build();
+    }
+
+    // =========================================================================
+    // HoaDon
+    // =========================================================================
+
+    /**
+     * DTO → Entity: KHÔNG map chiTietHoaDon để tránh cascade phức tạp
+     */
     public static HoaDon map(HoaDonDTO dto) {
         if (dto == null) return null;
         return HoaDon.builder()
@@ -187,10 +362,15 @@ public class Mapper {
                 .tongTien(dto.getTongTien())
                 .tienKhachDua(dto.getTienKhachDua())
                 .tienThoi(dto.getTienThoi())
-                // chiTietHoaDon không map ngược để tránh cascade phức tạp
+                // chiTietHoaDon = []: service/DAO tự quản lý cascade
+                .chiTietHoaDon(new ArrayList<>())
                 .build();
     }
 
+    /**
+     * Entity → DTO có chi tiết — chỉ gọi khi DAO đã JOIN FETCH chiTietHoaDon.
+     * ChiTietHoaDon con sẽ KHÔNG map ngược hoaDon (set null) để tránh đệ quy.
+     */
     public static HoaDonDTO map(HoaDon entity) {
         if (entity == null) return null;
         return HoaDonDTO.builder()
@@ -206,18 +386,44 @@ public class Mapper {
                 .tienThoi(entity.getTienThoi())
                 .chiTietHoaDon(entity.getChiTietHoaDon() != null
                         ? entity.getChiTietHoaDon().stream()
-                        .map(Mapper::map)
-                        .collect(Collectors.toList())
+                          .map(Mapper::map)           // gọi map(ChiTietHoaDon) — hoaDon = null
+                          .collect(Collectors.toList())
                         : new ArrayList<>())
                 .build();
     }
 
-    // ==================== ChiTietHoaDon ====================
+    /**
+     * Entity → DTO không load chiTietHoaDon — dùng cho danh sách (tránh N+1 / lazy).
+     */
+    public static HoaDonDTO mapSummary(HoaDon entity) {
+        if (entity == null) return null;
+        return HoaDonDTO.builder()
+                .maHoaDon(entity.getMaHoaDon())
+                .ngayDat(entity.getNgayDat())
+                .khachHang(map(entity.getKhachHang()))
+                .nhanVien(map(entity.getNhanVien()))
+                .khuyenMai(map(entity.getKhuyenMai()))
+                .ngayTao(entity.getNgayTao())
+                .trangThai(entity.getTrangThai())
+                .tongTien(entity.getTongTien())
+                .tienKhachDua(entity.getTienKhachDua())
+                .tienThoi(entity.getTienThoi())
+                .chiTietHoaDon(new ArrayList<>())  // không load — tránh lazy + N+1
+                .build();
+    }
+
+    // =========================================================================
+    // ChiTietHoaDon
+    // =========================================================================
+
+    /**
+     * DTO → Entity: map hoaDon shallow (không có list chiTietHoaDon)
+     */
     public static ChiTietHoaDon map(ChiTietHoaDonDTO dto) {
         if (dto == null) return null;
         return ChiTietHoaDon.builder()
                 .id(dto.getId())
-                .hoaDon(map(dto.getHoaDon()))
+                .hoaDon(map(dto.getHoaDon()))              // shallow — chiTietHoaDon = []
                 .chiTietPhieuDatPhong(map(dto.getChiTietPhieuDatPhong()))
                 .phong(map(dto.getPhong()))
                 .ngayTao(dto.getNgayTao())
@@ -225,11 +431,15 @@ public class Mapper {
                 .build();
     }
 
+    /**
+     * Entity → DTO: KHÔNG map ngược hoaDon
+     * tránh: HoaDon → ChiTietHoaDon → HoaDon → ChiTietHoaDon → ... (StackOverflow)
+     */
     public static ChiTietHoaDonDTO map(ChiTietHoaDon entity) {
         if (entity == null) return null;
         return ChiTietHoaDonDTO.builder()
                 .id(entity.getId())
-                .hoaDon(map(entity.getHoaDon()))
+                .hoaDon(null)                              // KHÔNG map ngược — tránh đệ quy
                 .chiTietPhieuDatPhong(map(entity.getChiTietPhieuDatPhong()))
                 .phong(map(entity.getPhong()))
                 .ngayTao(entity.getNgayTao())
@@ -237,75 +447,13 @@ public class Mapper {
                 .build();
     }
 
-    // ==================== PhieuDatPhong ====================
+    // =========================================================================
+    // CaLamViecNhanVien
+    // =========================================================================
+
     /**
-     * DTO → Entity: KHÔNG map dsachPhieuDatPhong để tránh đệ quy
-     * ChiTietPhieuDatPhong → PhieuDatPhong → ChiTietPhieuDatPhong → ...
-     * Khi cần persist chi tiết, set phieuDatPhong trực tiếp trên entity.
-     */
-    public static PhieuDatPhong map(PhieuDatPhongDTO dto) {
-        if (dto == null) return null;
-        return PhieuDatPhong.builder()
-                .maPhieuDatPhong(dto.getMaPhieuDatPhong())
-                .ngayTao(dto.getNgayTao())
-                .trangThai(dto.getTrangThai())
-                .tienDatCoc(dto.getTienDatCoc())
-                .khachHang(map(dto.getKhachHang()))
-                // Không map dsachPhieuDatPhong — tránh StackOverflow
-                .dsachPhieuDatPhong(new ArrayList<>())
-                .build();
-    }
-
-    public static PhieuDatPhongDTO map(PhieuDatPhong entity) {
-        if (entity == null) return null;
-        return PhieuDatPhongDTO.builder()
-                .maPhieuDatPhong(entity.getMaPhieuDatPhong())
-                .ngayTao(entity.getNgayTao())
-                .trangThai(entity.getTrangThai())
-                .tienDatCoc(entity.getTienDatCoc())
-                .khachHang(map(entity.getKhachHang()))
-                // Không load LAZY collection — tránh LazyInitializationException
-                .dsachPhieuDatPhong(new ArrayList<>())
-                .build();
-    }
-
-    // ==================== ChiTietPhieuDatPhong ====================
-    public static ChiTietPhieuDatPhong map(ChiTietPhieuDatPhongDTO dto) {
-        if (dto == null) return null;
-        return ChiTietPhieuDatPhong.builder()
-                .id(dto.getId())
-                // PhieuDatPhong.dsachPhieuDatPhong sẽ là [] — an toàn, không đệ quy
-                .phieuDatPhong(map(dto.getPhieuDatPhong()))
-                .phong(map(dto.getPhong()))
-                .trangThai(dto.getTrangThai())
-                .soGioLuuTru(dto.getSoGioLuuTru())
-                .thoiGianNhanPhong(dto.getThoiGianNhanPhong())
-                .thoiGianTraPhong(dto.getThoiGianTraPhong())
-                .soNguoi(dto.getSoNguoi())
-                // phieuHuyPhong không map — DTO đang giữ entity type (cần refactor DTO)
-                .build();
-    }
-
-    public static ChiTietPhieuDatPhongDTO map(ChiTietPhieuDatPhong entity) {
-        if (entity == null) return null;
-        return ChiTietPhieuDatPhongDTO.builder()
-                .id(entity.getId())
-                .phieuDatPhong(map(entity.getPhieuDatPhong()))
-                .phong(map(entity.getPhong()))
-                .trangThai(entity.getTrangThai())
-                .soGioLuuTru(entity.getSoGioLuuTru())
-                .thoiGianNhanPhong(entity.getThoiGianNhanPhong())
-                .thoiGianTraPhong(entity.getThoiGianTraPhong())
-                .soNguoi(entity.getSoNguoi())
-                // phieuHuyPhong bỏ qua — tránh vòng lặp entity↔entity
-                .build();
-    }
-
-    // ==================== CaLamViecNhanVien ====================
-    /**
-     * DTO → Entity: ca và nhanVien KHÔNG thể set từ DTO vì chỉ có mã (String),
-     * không có full entity. Service phải fetch Ca và NhanVien từ DB rồi set thủ công.
-     * Method này chỉ dùng để đọc các field scalar.
+     * DTO → Entity: ca và nhanVien KHÔNG thể set từ DTO vì chỉ lưu mã (String).
+     * Service phải fetch Ca và NhanVien từ DB rồi set thủ công sau khi gọi method này.
      */
     public static CaLamViecNhanVien map(CaLamViecNhanVienDTO dto) {
         if (dto == null) return null;
@@ -319,10 +467,13 @@ public class Mapper {
                 .ngay(dto.getNgay())
                 .thoiGianBatDau(dto.getThoiGianBatDau())
                 .thoiGianKetThuc(dto.getThoiGianKetThuc())
-                // ca và nhanVien = null — service tự set sau khi fetch DB
+                // ca = null, nhanVien = null: service tự set sau khi fetch DB
                 .build();
     }
 
+    /**
+     * Entity → DTO: chỉ lấy mã/tên từ Ca & NhanVien — không map full entity
+     */
     public static CaLamViecNhanVienDTO map(CaLamViecNhanVien entity) {
         if (entity == null) return null;
         return CaLamViecNhanVienDTO.builder()
@@ -341,7 +492,10 @@ public class Mapper {
                 .build();
     }
 
-    // ==================== DatPhongResultDTO ====================
+    // =========================================================================
+    // DatPhongResultDTO  (utility – không có entity tương ứng)
+    // =========================================================================
+
     public static DatPhongResultDTO mapToDatPhongResult(PhieuDatPhong phieuDatPhong,
                                                         DatPhongRequestDTO request) {
         if (phieuDatPhong == null) return null;

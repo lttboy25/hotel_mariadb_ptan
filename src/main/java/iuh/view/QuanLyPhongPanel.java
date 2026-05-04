@@ -70,7 +70,6 @@ public class QuanLyPhongPanel extends JPanel {
         card.add(buildTable(), BorderLayout.CENTER);
         add(card, BorderLayout.CENTER);
 
-        SwingUtilities.invokeLater(this::refreshTable);
     }
 
     private JPanel buildToolbar() {
@@ -128,7 +127,7 @@ public class QuanLyPhongPanel extends JPanel {
     }
 
     private JScrollPane buildTable() {
-        tableModel = new DefaultTableModel(new Object[0][0], new String[] {
+        tableModel = new DefaultTableModel(new Object[0][0], new String[]{
                 "Mã phòng", "Số phòng", "Tầng", "Loại phòng", "Mô tả", "Tình trạng", "Trạng thái"
         }) {
             @Override
@@ -146,7 +145,7 @@ public class QuanLyPhongPanel extends JPanel {
         DefaultTableCellRenderer base = new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable t, Object v, boolean sel, boolean foc, int row,
-                    int col) {
+                                                           int col) {
                 super.getTableCellRendererComponent(t, v, sel, foc, row, col);
                 setBackground(sel ? ROW_SEL : BG_WHITE);
                 setForeground(col == 0 ? BLUE : TEXT_DARK);
@@ -161,7 +160,7 @@ public class QuanLyPhongPanel extends JPanel {
         DefaultTableCellRenderer tinhTrangRenderer = new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable t, Object val, boolean sel, boolean foc, int row,
-                    int col) {
+                                                           int col) {
                 String text = val == null ? "" : val.toString();
                 JPanel cell = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
                 cell.setBackground(sel ? ROW_SEL : BG_WHITE);
@@ -202,7 +201,7 @@ public class QuanLyPhongPanel extends JPanel {
         DefaultTableCellRenderer trangThaiRenderer = new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable t, Object val, boolean sel, boolean foc, int row,
-                    int col) {
+                                                           int col) {
                 String text = val == null ? "" : val.toString();
                 JPanel cell = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
                 cell.setBackground(sel ? ROW_SEL : BG_WHITE);
@@ -247,7 +246,7 @@ public class QuanLyPhongPanel extends JPanel {
         table.getColumnModel().getColumn(6).setCellRenderer(trangThaiRenderer);
 
         // Cài đặt độ rộng cột
-        int[] widths = { 80, 80, 55, 160, 200, 110, 130 };
+        int[] widths = {80, 80, 55, 160, 200, 110, 130};
         for (int i = 0; i < widths.length; i++) {
             table.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
         }
@@ -310,7 +309,7 @@ public class QuanLyPhongPanel extends JPanel {
     }
 
     private Object[] toRow(PhongDTO p) {
-        return new Object[] {
+        return new Object[]{
                 p.getMaPhong(),
                 p.getSoPhong(),
                 p.getTang(),
@@ -528,7 +527,7 @@ class PhongModal extends JDialog {
     }
 
     private void addRow2(JPanel form, GridBagConstraints g, int row, String l1, JComponent f1, String l2,
-            JComponent f2) {
+                         JComponent f2) {
         g.gridwidth = 1;
         g.insets = new Insets(0, 0, 4, 12);
         g.gridy = row * 2;

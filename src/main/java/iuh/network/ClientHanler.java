@@ -2,6 +2,7 @@ package iuh.network;
 
 import iuh.dto.*;
 import iuh.entity.LoaiPhong;
+import iuh.enums.TrangThaiHoaDon;
 import iuh.service.impl.*;
 import lombok.RequiredArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,6 +32,7 @@ public class ClientHanler implements Runnable {
     private final PhieuHuyPhongServiceImpl phieuHuyPhongService;
     private final ChiTietPhieuDatPhongServiceImpl chiTietPhieuDatPhongService;
     private final DoiPhongServiceImpl doiPhongServiceImpl;
+    private final HoaDonServiceImpl hoaDonServiceImpl;
     private final ChiTietPhieuDatPhongServiceImpl chiTietPhieuDatPhongServiceImpl;
 
     @Override
@@ -323,6 +326,29 @@ public class ClientHanler implements Runnable {
                         chiTietPhieuDatPhongServiceImpl.giaHanNhieu(requests);
 
                         response = Response.builder().object(true).build();
+                    }
+                    case GET_ALL_HOA_DON -> {
+                        response = Response
+                                .builder()
+                                .object(
+                                        hoaDonServiceImpl.getAllHoaDon()
+                                )
+                                .build();
+                    }
+                    case SEARCH_HOA_DON -> {
+                        Map<String, Object> params = (Map<String, Object>) request.getObject();
+                        String keyword = (String) params.get("keyword");
+                        LocalDate tuNgay = (LocalDate) params.get("tuNgay");
+                        LocalDate denNgay = (LocalDate) params.get("denNgay");
+                        TrangThaiHoaDon trangThai = (TrangThaiHoaDon) params.get("trangThai");
+
+                        response = Response
+                                .builder()
+                                .object(
+                                        hoaDonServiceImpl.search(keyword, tuNgay, denNgay, trangThai)
+                                )
+                                .build();
+
                     }
 
                 }
