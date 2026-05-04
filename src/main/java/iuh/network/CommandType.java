@@ -64,6 +64,8 @@ public enum CommandType {
     DELETE_NHAN_VIEN,
     UPDATE_NHAN_VIEN,
     GENERATE_NEXT_MA_NHAN_VIEN,
+    DOI_MAT_KHAU,
+    LAY_MAT_KHAU_HIEN_TAI,
 
     // ========ĐỔI PHÒNG======
     GET_AVAILABLE_ROOMS,

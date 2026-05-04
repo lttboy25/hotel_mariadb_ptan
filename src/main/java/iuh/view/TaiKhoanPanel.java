@@ -2,7 +2,10 @@ package iuh.view;
 
 import iuh.dto.NhanVienDTO;
 import iuh.enums.TrangThaiNhanVien;
-import iuh.service.impl.NhanVienServiceImpl;
+import iuh.network.ClientConnection;
+import iuh.network.CommandType;
+import iuh.network.Request;
+import iuh.network.Response;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -33,7 +36,7 @@ public class TaiKhoanPanel extends JPanel {
     static final Font F_BTN = new Font("Segoe UI", Font.BOLD, 13);
     static final Font F_STATUS = new Font("Segoe UI", Font.BOLD, 11);
 
-    private final NhanVienServiceImpl nhanVienServiceImpl = new NhanVienServiceImpl();
+    private final ClientConnection clientConnection = ClientConnection.getInstance();
 
     private JLabel nameLbl;
     private JLabel emailLbl;
@@ -316,12 +319,19 @@ public class TaiKhoanPanel extends JPanel {
     private void loadUserData() {
         CurrentUser currentUser = CurrentUser.getInstance();
         NhanVienDTO nv = currentUser.getNhanVien();
-        if (nv == null) {
-            return;
+        NhanVienDTO fullNv = null;
+        if (nv != null && nv.getMaNhanVien() != null) {
+            try {
+                Request req = Request.builder()
+                        .commandType(CommandType.GET_NHAN_VIEN_BY_ID)
+                        .object(nv.getMaNhanVien())
+                        .build();
+                Response res = clientConnection.sendRequest(req);
+                fullNv = (NhanVienDTO) res.getObject();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-        NhanVienDTO fullNv = nv.getMaNhanVien() != null
-                ? nhanVienServiceImpl.getNhanVienDTOById(nv.getMaNhanVien())
-                : null;
         applyUserData(fullNv != null ? fullNv : nv);
     }
 
@@ -357,7 +367,19 @@ public class TaiKhoanPanel extends JPanel {
         tfNgayBatDau.setText(nv.getNgayBatDau() != null ? nv.getNgayBatDau().toString() : "");
         tfTrangThai.setText(trangThai.toString());
         tfTaiKhoan.setText(nv.getTaiKhoan().getMaNhanVien());
-        tfMatKhau.setText(nhanVienServiceImpl.layMatKhauHienTai(maNV) == null ? "" : "********");
+        String mkMask = "";
+        try {
+            Request req = Request.builder()
+                    .commandType(CommandType.LAY_MAT_KHAU_HIEN_TAI)
+                    .object(maNV)
+                    .build();
+            Response res = clientConnection.sendRequest(req);
+            String mk = (String) res.getObject();
+            mkMask = (mk == null || mk.isBlank()) ? "" : "********";
+        } catch (Exception e) {
+            mkMask = "********"; // Fallback
+        }
+        tfMatKhau.setText(mkMask);
         tfGioiTinh.setText(nv.getGioiTinhText());
     }
 
@@ -402,7 +424,12 @@ public class TaiKhoanPanel extends JPanel {
         }
 
         try {
-            boolean thanhCong = nhanVienServiceImpl.doiMatKhau(maNhanVien, matKhauCu, matKhauMoi);
+            Request req = Request.builder()
+                    .commandType(CommandType.DOI_MAT_KHAU)
+                    .object(new String[]{maNhanVien, matKhauCu, matKhauMoi})
+                    .build();
+            Response res = clientConnection.sendRequest(req);
+            boolean thanhCong = (boolean) res.getObject();
             if (!thanhCong) {
                 JOptionPane.showMessageDialog(this, "Mat khau hien tai khong dung.", "Thong bao", JOptionPane.WARNING_MESSAGE);
                 return;

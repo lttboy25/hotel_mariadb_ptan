@@ -12,8 +12,6 @@ import java.util.List;
 
 import iuh.dto.NhanVienDTO;
 import iuh.dto.ThongKeDTO;
-import iuh.service.ThongKeService;
-import iuh.service.impl.ThongKeServiceImpl;
 
 public class TrangChuPanel extends JPanel {
 
@@ -87,9 +85,13 @@ public class TrangChuPanel extends JPanel {
 
     public void refreshData() {
         try {
-            ThongKeService service = new ThongKeServiceImpl();
             LocalDate today = LocalDate.now();
-            ThongKeDTO data = service.layThongKe(today.withDayOfMonth(1), today);
+            iuh.network.Request req = iuh.network.Request.builder()
+                    .commandType(iuh.network.CommandType.LAY_THONG_KE)
+                    .object(new LocalDate[]{today.withDayOfMonth(1), today})
+                    .build();
+            iuh.network.Response res = iuh.network.ClientConnection.getInstance().sendRequest(req);
+            ThongKeDTO data = (ThongKeDTO) res.getObject();
 
             lblTongPhong.setText(String.valueOf(data.getTongSoPhong()));
             lblDangO.setText(String.valueOf(data.getSoPhongDangSuDung()));
@@ -102,6 +104,7 @@ public class TrangChuPanel extends JPanel {
                 lblEmpName.setText(nvSession.getTenNhanVien());
                 lblEmpEmail.setText(nvSession.getEmail());
                 lblEmpPhone.setText(nvSession.getSoDienThoai());
+                lblEmpRole.setText(nvSession.getTaiKhoan() != null ? nvSession.getTaiKhoan().getVaiTro() : "Nhân viên");
             }
             updateChart(data.getDsDatPhongTheoThang());
         } catch (Exception e) { e.printStackTrace(); }

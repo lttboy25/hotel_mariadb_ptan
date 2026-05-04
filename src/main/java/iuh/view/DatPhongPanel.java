@@ -7,7 +7,7 @@ import iuh.network.Response;
 import iuh.dto.DatPhongRequestDTO;
 import iuh.dto.DatPhongResultDTO;
 import iuh.dto.KhachHangDTO;
-import iuh.entity.Phong;
+import iuh.dto.PhongDTO;
 import iuh.enums.TinhTrangPhong;
 import iuh.enums.TrangThaiPhieuDatPhong;
 import iuh.enums.TrangThaiPhong;
@@ -126,10 +126,12 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
                     .object(new LocalDateTime[]{checkIn, checkOut})
                     .build();
             Response response = clientConnection.sendRequest(request);
-            List<Phong> phongs = (List<Phong>) response.getObject();
+            List<PhongDTO> phongs = (List<PhongDTO>) response.getObject();
             allRooms.clear();
-            for (Phong p : phongs) {
-                allRooms.add(toRoom(p));
+            if (phongs != null) {
+                for (PhongDTO p : phongs) {
+                    allRooms.add(toRoom(p));
+                }
             }
         } catch (Exception e) {
             allRooms.clear();
@@ -139,15 +141,13 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
         }
     }
 
-    /** Chuyển entity Phong → model nội bộ Room */
-    private Room toRoom(Phong p) {
+    /** Chuyển DTO Phong → model nội bộ Room */
+    private Room toRoom(PhongDTO p) {
         String id = p.getMaPhong();
         String type = (p.getLoaiPhong() == null || p.getLoaiPhong().getTenLoaiPhong() == null)
                 ? "Chưa xác định"
                 : p.getLoaiPhong().getTenLoaiPhong();
         String floor = (p.getTang() <= 0) ? "" : "Tầng " + p.getTang();
-        String tinhTrang = p.getTinhTrang() != null ? p.getTinhTrang().toString() : "";
-        String trangThai = p.getTrangThai() != null ? p.getTrangThai().toString() : "";
         boolean available = TinhTrangPhong.TRONG.equals(p.getTinhTrang())
                 || TrangThaiPhong.SAN_SANG.equals(p.getTrangThai());
         int maxAdults = (p.getLoaiPhong() == null) ? 0 : p.getLoaiPhong().getSoNguoiLonToiDa();
@@ -567,11 +567,13 @@ public class DatPhongPanel extends JPanel implements ChangeListener {
                     .object(new LocalDateTime[]{checkIn, checkOut})
                     .build();
             Response response = clientConnection.sendRequest(request);
-            List<Phong> phongs = (List<Phong>) response.getObject();
+            List<PhongDTO> phongs = (List<PhongDTO>) response.getObject();
 
             allRooms.clear();
-            for (Phong p : phongs) {
-                allRooms.add(toRoom(p));
+            if (phongs != null) {
+                for (PhongDTO p : phongs) {
+                    allRooms.add(toRoom(p));
+                }
             }
 
         } catch (Exception ex) {
