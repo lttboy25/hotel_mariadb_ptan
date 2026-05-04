@@ -28,7 +28,7 @@ public interface ChiTietPhieuDatPhongService {
     @Deprecated
     boolean updateTrangThaiByMaPhong(String maPhong, TrangThaiChiTietPhieuDatPhong trangThai);
 
-    List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong statusTicket,
+    List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(
             TrangThaiChiTietPhieuDatPhong statusDetail,
             String cccd);
 

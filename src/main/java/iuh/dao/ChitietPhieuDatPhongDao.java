@@ -34,9 +34,9 @@ public interface ChitietPhieuDatPhongDao {
     @Deprecated
     boolean updateStatusDetailTicketByRoomCode(String maPhong, TrangThaiChiTietPhieuDatPhong status);
 
-    List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong statusTicket,
-                                                                  TrangThaiChiTietPhieuDatPhong statusDetail,
-                                                                  String cccd);
+    List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(
+            TrangThaiChiTietPhieuDatPhong statusDetail,
+            String cccd);
 
     // Tìm các phòng đang ở trạng thái 'Đã đặt' dựa trên CCCD
     List<ChiTietPhieuDatPhong> getPhongDeHuyByCCCD(String cccd);

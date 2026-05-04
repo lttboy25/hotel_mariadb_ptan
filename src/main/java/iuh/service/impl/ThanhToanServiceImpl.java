@@ -25,7 +25,7 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
     @Override
     public List<ChiTietPhieuDatPhongDTO> getDanhSachPhieuDatPhongDeThanhToan(String cccd) {
         return chiTietPhieuDatPhongServiceImpl
-                .getChiTietPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong.NHAN_PHONG,
+                .getChiTietPhieuDatPhongByToPayment(
                         TrangThaiChiTietPhieuDatPhong.NHAN_PHONG, cccd)
                 .stream()
                 .map(e -> Mapper.map(e))

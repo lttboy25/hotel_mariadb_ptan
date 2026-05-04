@@ -150,15 +150,13 @@ public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietP
     }
 
     @Override
-    public List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong statusTicket,
-                                                                         TrangThaiChiTietPhieuDatPhong statusDetail,
-                                                                         String cccd) {
+    public List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(
+            TrangThaiChiTietPhieuDatPhong statusDetail,
+            String cccd) {
         return doInTransaction(em -> em.createQuery("""
                         SELECT ctpdp FROM ChiTietPhieuDatPhong ctpdp
-                        WHERE ctpdp.phieuDatPhong.trangThai = :statusTicket
-                               AND ctpdp.phieuDatPhong.khachHang.CCCD = :cccd
+                        WHERE ctpdp.phieuDatPhong.khachHang.CCCD = :cccd
                                AND ctpdp.trangThai = :statusDetail""", ChiTietPhieuDatPhong.class)
-                .setParameter("statusTicket", statusTicket)
                 .setParameter("cccd", cccd)
                 .setParameter("statusDetail", statusDetail)
                 .getResultList());
@@ -188,11 +186,13 @@ public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietP
                         AND ct.phieuDatPhong.trangThai = :dadat
                         AND ct.trangThai != :daNhan
                         AND ct.trangThai != :daThanhToan
+                        AND ct.trangThai != :daHuy
                         """, ChiTietPhieuDatPhong.class)
                 .setParameter("dadat", TrangThaiPhieuDatPhong.DA_DAT)
                 .setParameter("cccd", cccd.trim())
                 .setParameter("daNhan", TrangThaiChiTietPhieuDatPhong.NHAN_PHONG)
                 .setParameter("daThanhToan", TrangThaiChiTietPhieuDatPhong.DA_THANH_TOAN)
+                .setParameter("daHuy", TrangThaiChiTietPhieuDatPhong.DA_HUY)
                 .getResultList());
     }
 

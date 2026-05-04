@@ -49,14 +49,14 @@ public class ChiTietPhieuDatPhongServiceImpl implements ChiTietPhieuDatPhongServ
     }
 
     @Override
-    public List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(TrangThaiPhieuDatPhong statusTicket,
+    public List<ChiTietPhieuDatPhong> getChiTietPhieuDatPhongByToPayment(
             TrangThaiChiTietPhieuDatPhong statusDetail,
             String cccd) {
-        if (statusTicket == null || statusDetail == null || cccd == null) {
+        if (statusDetail == null || cccd == null) {
             throw new NullPointerException("Lấy danh sách phiếu đặt phòng bị rỗng");
         }
 
-        return chitietPhieuDatPhongDao.getChiTietPhieuDatPhongByToPayment(statusTicket, statusDetail, cccd);
+        return chitietPhieuDatPhongDao.getChiTietPhieuDatPhongByToPayment(statusDetail, cccd);
 
     }
 
