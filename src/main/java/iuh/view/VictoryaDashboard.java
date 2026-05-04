@@ -5,8 +5,11 @@ import iuh.dto.NhanVienDTO;
 import javax.swing.*;
 import javax.swing.border.*;
 
-import iuh.service.impl.CaLamViecNhanVienServiceImpl;
 import iuh.dto.CaLamViecNhanVienDTO;
+import iuh.network.ClientConnection;
+import iuh.network.CommandType;
+import iuh.network.Request;
+import iuh.network.Response;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -359,8 +362,17 @@ public class VictoryaDashboard extends JFrame {
                     // Kiểm tra ca làm việc cho các trang bị giới hạn
                     if (!cardKey.equals("trangchu") && !cardKey.equals("calamviec") && !cardKey.equals("taikhoan")) {
                         String maNV = CurrentUser.getInstance().getMaNhanVien();
-                        CaLamViecNhanVienServiceImpl shiftService = new CaLamViecNhanVienServiceImpl();
-                        CaLamViecNhanVienDTO activeShift = shiftService.getActiveShift(maNV);
+                        CaLamViecNhanVienDTO activeShift = (CaLamViecNhanVienDTO) ClientConnection
+                                .getInstance()
+                                .sendRequest(
+                                        Request.builder()
+                                                .commandType(CommandType.GET_ACTIVE_SHIFT)
+                                                .object(maNV)
+                                                .build()
+                                )
+                                .getObject();
+
+
                         if (activeShift == null) {
                             JOptionPane.showMessageDialog(VictoryaDashboard.this,
                                     "Bạn phải MỞ CA LÀM VIỆC trước khi thực hiện các nghiệp vụ này!",
