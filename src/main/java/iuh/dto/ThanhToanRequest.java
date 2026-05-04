@@ -1,6 +1,5 @@
 package iuh.dto;
 
-import iuh.view.CurrentUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

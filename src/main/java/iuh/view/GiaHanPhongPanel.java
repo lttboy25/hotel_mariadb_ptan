@@ -3,8 +3,7 @@ package iuh.view;
 import iuh.dto.ChiTietPhieuDatPhongDTO;
 import iuh.dto.GiaHanRequestDTO;
 import iuh.dto.PhongDTO;
-import iuh.entity.ChiTietPhieuDatPhong;
-import iuh.entity.Phong;
+
 import iuh.network.ClientConnection;
 import iuh.network.CommandType;
 import iuh.network.Request;
@@ -25,46 +24,48 @@ import java.util.List;
 
 /**
  * GiaHanPhongPanel – dữ liệu thật qua ChiTietPhieuDatPhongServiceImpl → ChitietPhieuDatPhongDaoImpl.
- *
+ * <p>
  * Luồng:
- *  1. Nhập SĐT → nhấn "Tìm" (hoặc Enter) → bảng trái hiện phòng đang thuê
- *  2. Click dòng → toggle chọn → bảng phải hiện dòng gia hạn
- *  3. Chọn loại (Theo giờ / Theo ngày) + spinner số lượng → tự tính ngày mới
- *  4. Nhấn "Gia hạn ngay" → lưu DB → thông báo thành công
+ * 1. Nhập SĐT → nhấn "Tìm" (hoặc Enter) → bảng trái hiện phòng đang thuê
+ * 2. Click dòng → toggle chọn → bảng phải hiện dòng gia hạn
+ * 3. Chọn loại (Theo giờ / Theo ngày) + spinner số lượng → tự tính ngày mới
+ * 4. Nhấn "Gia hạn ngay" → lưu DB → thông báo thành công
  */
 public class GiaHanPhongPanel extends JPanel {
 
     // ── Màu sắc ──────────────────────────────────────────────────────────────
-    private static final Color BG_MAIN    = new Color(0xF4F6FB);
-    private static final Color BG_WHITE   = Color.WHITE;
-    private static final Color BLUE       = new Color(0x3B6FF0);
+    private static final Color BG_MAIN = new Color(0xF4F6FB);
+    private static final Color BG_WHITE = Color.WHITE;
+    private static final Color BLUE = new Color(0x3B6FF0);
     private static final Color BLUE_LIGHT = new Color(0xEBF0FF);
-    private static final Color BLUE_ROW   = new Color(0xE8EFFE);
-    private static final Color TEXT_DARK  = new Color(0x1A1A2E);
-    private static final Color TEXT_MID   = new Color(0x4A5268);
-    private static final Color TEXT_GRAY  = new Color(0xA0A8B8);
+    private static final Color BLUE_ROW = new Color(0xE8EFFE);
+    private static final Color TEXT_DARK = new Color(0x1A1A2E);
+    private static final Color TEXT_MID = new Color(0x4A5268);
+    private static final Color TEXT_GRAY = new Color(0xA0A8B8);
     private static final Color BORDER_COL = new Color(0xE4E9F2);
-    private static final Color GREEN      = new Color(0x3DBE8A);
+    private static final Color GREEN = new Color(0x3DBE8A);
     private static final Color GRAY_TAG_BG = new Color(0xEEF0F5);
-    private static final Color PURPLE_BTN  = new Color(0x5B6CF9);
+    private static final Color PURPLE_BTN = new Color(0x5B6CF9);
     private static final Color PURPLE_DARK = new Color(0x4455E0);
-    private static final Color HEADER_BG   = new Color(0xF0F4FF);
-    private static final Color RED         = new Color(0xE04040);
+    private static final Color HEADER_BG = new Color(0xF0F4FF);
+    private static final Color RED = new Color(0xE04040);
 
     // ── Font ─────────────────────────────────────────────────────────────────
     private static final Font F_SECTION = new Font("Segoe UI", Font.BOLD, 16);
-    private static final Font F_LABEL   = new Font("Segoe UI", Font.PLAIN, 13);
-    private static final Font F_BOLD13  = new Font("Segoe UI", Font.BOLD, 13);
-    private static final Font F_BOLD14  = new Font("Segoe UI", Font.BOLD, 14);
-    private static final Font F_SMALL   = new Font("Segoe UI", Font.PLAIN, 11);
-    private static final Font F_TABLE   = new Font("Segoe UI", Font.PLAIN, 13);
+    private static final Font F_LABEL = new Font("Segoe UI", Font.PLAIN, 13);
+    private static final Font F_BOLD13 = new Font("Segoe UI", Font.BOLD, 13);
+    private static final Font F_BOLD14 = new Font("Segoe UI", Font.BOLD, 14);
+    private static final Font F_SMALL = new Font("Segoe UI", Font.PLAIN, 11);
+    private static final Font F_TABLE = new Font("Segoe UI", Font.PLAIN, 13);
     private static final Font F_TABLE_H = new Font("Segoe UI", Font.BOLD, 12);
 
-    private static final DateTimeFormatter FMT_DT   = DateTimeFormatter.ofPattern("HH:mm dd/MM/yyyy");
+    private static final DateTimeFormatter FMT_DT = DateTimeFormatter.ofPattern("HH:mm dd/MM/yyyy");
     private static final DateTimeFormatter FMT_DATE = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     // ── State ─────────────────────────────────────────────────────────────────
-    /** Danh sách chi tiết phiếu đang hiển thị (load từ DB) */
+    /**
+     * Danh sách chi tiết phiếu đang hiển thị (load từ DB)
+     */
     private List<ChiTietPhieuDatPhongDTO> danhSachDangThue = new ArrayList<>();
 
     /**
@@ -74,24 +75,24 @@ public class GiaHanPhongPanel extends JPanel {
     private final Map<Long, RowModel> selectedRows = new LinkedHashMap<>();
 
     // ── UI components ─────────────────────────────────────────────────────────
-    private JTextField        searchField;
-    private JLabel            statusLabel;
+    private JTextField searchField;
+    private JLabel statusLabel;
     private DefaultTableModel roomTableModel;
-    private JTable            roomTable;
-    private JPanel            extendRowsPanel;
+    private JTable roomTable;
+    private JPanel extendRowsPanel;
 
     // ── Service ───────────────────────────────────────────────────────────────
     private final ChiTietPhieuDatPhongServiceImpl service = new ChiTietPhieuDatPhongServiceImpl();
 
     // ── Inner model mỗi dòng bên phải ────────────────────────────────────────
     private static class RowModel {
-        final Long            chiTietId;
-        final LocalDateTime   thoiGianTraCu;
+        final Long chiTietId;
+        final LocalDateTime thoiGianTraCu;
         String loaiGiaHan = "Theo giờ";
-        int    soLuong    = 1;
+        int soLuong = 1;
 
         RowModel(Long id, LocalDateTime tra) {
-            this.chiTietId     = id;
+            this.chiTietId = id;
             this.thoiGianTraCu = tra;
         }
 
@@ -131,18 +132,18 @@ public class GiaHanPhongPanel extends JPanel {
         mainRow.setBackground(BG_MAIN);
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill    = GridBagConstraints.BOTH;
-        gbc.gridy   = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridy = 0;
         gbc.weighty = 1.0;
 
-        gbc.gridx   = 0;
+        gbc.gridx = 0;
         gbc.weightx = 0.60;
-        gbc.insets  = new Insets(0, 0, 0, 20);
+        gbc.insets = new Insets(0, 0, 0, 20);
         mainRow.add(buildLeftPanel(), gbc);
 
-        gbc.gridx   = 1;
+        gbc.gridx = 1;
         gbc.weightx = 0.40;
-        gbc.insets  = new Insets(0, 0, 0, 0);
+        gbc.insets = new Insets(0, 0, 0, 0);
         mainRow.add(buildRightPanel(), gbc);
 
         add(mainRow, BorderLayout.CENTER);
@@ -187,7 +188,8 @@ public class GiaHanPhongPanel extends JPanel {
 
         // Icon kính lúp
         JPanel iconWrap = new JPanel() {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -215,29 +217,41 @@ public class GiaHanPhongPanel extends JPanel {
         wrapper.setBorder(new CompoundBorder(
                 new LineBorder(BORDER_COL, 1, true),
                 new EmptyBorder(0, 0, 0, 8)));
-        wrapper.add(iconWrap,    BorderLayout.WEST);
+        wrapper.add(iconWrap, BorderLayout.WEST);
         wrapper.add(searchField, BorderLayout.CENTER);
 
         JButton btnSearch = buildBlueButton("Tìm", 60, 40);
         searchField.getDocument().addDocumentListener(new DocumentListener() {
-            public void insertUpdate(DocumentEvent e) { doSearch(); }
-            public void removeUpdate(DocumentEvent e) { doSearch(); }
-            public void changedUpdate(DocumentEvent e) { doSearch(); }
+            public void insertUpdate(DocumentEvent e) {
+                doSearch();
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                doSearch();
+            }
+
+            public void changedUpdate(DocumentEvent e) {
+                doSearch();
+            }
         });
 
-        row.add(wrapper,   BorderLayout.CENTER);
+        row.add(wrapper, BorderLayout.CENTER);
         row.add(btnSearch, BorderLayout.EAST);
         return row;
     }
 
     private JScrollPane buildRoomTable() {
-        String[] cols = { "Số phòng", "Loại phòng", "Tầng", "Ngày nhận", "Ngày trả" };
+        String[] cols = {"Số phòng", "Loại phòng", "Tầng", "Ngày nhận", "Ngày trả"};
         roomTableModel = new DefaultTableModel(cols, 0) {
-            @Override public boolean isCellEditable(int r, int c) { return false; }
+            @Override
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
         };
 
         roomTable = new JTable(roomTableModel) {
-            @Override public Component prepareRenderer(TableCellRenderer r, int row, int col) {
+            @Override
+            public Component prepareRenderer(TableCellRenderer r, int row, int col) {
                 Component c = super.prepareRenderer(r, row, col);
                 boolean sel = isRowSelected(row);
                 c.setBackground(sel ? BLUE_ROW : (row % 2 == 0 ? BG_WHITE : new Color(0xFAFBFD)));
@@ -264,13 +278,14 @@ public class GiaHanPhongPanel extends JPanel {
         });
 
         // Căn chỉnh độ rộng cột
-        int[] widths = { 80, 120, 70, 130, 130 };
+        int[] widths = {80, 120, 70, 130, 130};
         for (int i = 0; i < widths.length; i++)
             roomTable.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
 
         // Cột số phòng bôi xanh
         roomTable.getColumnModel().getColumn(0).setCellRenderer(new DefaultTableCellRenderer() {
-            @Override public Component getTableCellRendererComponent(
+            @Override
+            public Component getTableCellRendererComponent(
                     JTable t, Object v, boolean sel, boolean foc, int row, int col) {
                 super.getTableCellRendererComponent(t, v, sel, foc, row, col);
                 setForeground(BLUE);
@@ -336,8 +351,8 @@ public class GiaHanPhongPanel extends JPanel {
         header.setBackground(HEADER_BG);
         header.setBorder(new EmptyBorder(10, 16, 10, 16));
 
-        String[] labels = { "Số phòng", "Loại gia hạn", "Ngày trả", "Gia hạn đến", "Thời gian" };
-        Color[]  colors = { TEXT_MID, new Color(0x5B6CF9), TEXT_MID, GREEN, TEXT_MID };
+        String[] labels = {"Số phòng", "Loại gia hạn", "Ngày trả", "Gia hạn đến", "Thời gian"};
+        Color[] colors = {TEXT_MID, new Color(0x5B6CF9), TEXT_MID, GREEN, TEXT_MID};
         for (int i = 0; i < labels.length; i++) {
             JLabel lbl = new JLabel(labels[i], JLabel.CENTER);
             lbl.setFont(F_TABLE_H);
@@ -347,7 +362,9 @@ public class GiaHanPhongPanel extends JPanel {
         return header;
     }
 
-    /** Vẽ lại danh sách dòng gia hạn theo selectedRows */
+    /**
+     * Vẽ lại danh sách dòng gia hạn theo selectedRows
+     */
     private void refreshExtendRows() {
         extendRowsPanel.removeAll();
         if (selectedRows.isEmpty()) {
@@ -440,9 +457,11 @@ public class GiaHanPhongPanel extends JPanel {
         return row;
     }
 
-    /** Dropdown Theo giờ / Theo ngày — cập nhật model rồi vẽ lại */
+    /**
+     * Dropdown Theo giờ / Theo ngày — cập nhật model rồi vẽ lại
+     */
     private JPanel buildTypeDropdown(RowModel model) {
-        JLabel text  = new JLabel(model.loaiGiaHan);
+        JLabel text = new JLabel(model.loaiGiaHan);
         text.setFont(F_BOLD13);
         text.setForeground(TEXT_MID);
 
@@ -451,7 +470,8 @@ public class GiaHanPhongPanel extends JPanel {
         arrow.setForeground(TEXT_GRAY);
 
         JPanel pill = new JPanel(new BorderLayout(4, 0)) {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(GRAY_TAG_BG);
@@ -467,10 +487,11 @@ public class GiaHanPhongPanel extends JPanel {
         pill.add(arrow, BorderLayout.EAST);
 
         pill.addMouseListener(new MouseAdapter() {
-            @Override public void mouseClicked(MouseEvent e) {
+            @Override
+            public void mouseClicked(MouseEvent e) {
                 JPopupMenu menu = new JPopupMenu();
                 menu.setBorder(new LineBorder(BORDER_COL, 1, true));
-                for (String opt : new String[]{ "Theo giờ", "Theo ngày" }) {
+                for (String opt : new String[]{"Theo giờ", "Theo ngày"}) {
                     JMenuItem item = new JMenuItem(opt);
                     item.setFont(F_LABEL);
                     item.addActionListener(ae -> {
@@ -485,10 +506,13 @@ public class GiaHanPhongPanel extends JPanel {
         return pill;
     }
 
-    /** Ô hiển thị ngày — viền xám (ngày cũ) hoặc nền xanh (ngày mới) */
+    /**
+     * Ô hiển thị ngày — viền xám (ngày cũ) hoặc nền xanh (ngày mới)
+     */
     private JPanel buildDateCell(String date, boolean isGreen) {
         JPanel cell = new JPanel() {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(isGreen ? GREEN : BG_WHITE);
@@ -531,7 +555,9 @@ public class GiaHanPhongPanel extends JPanel {
     // LOGIC CHÍNH
     // =========================================================================
 
-    /** Tìm kiếm phòng đang thuê theo SĐT */
+    /**
+     * Tìm kiếm phòng đang thuê theo SĐT
+     */
     private void doSearch() {
         String keyword = searchField.getText().trim();
 
@@ -562,24 +588,29 @@ public class GiaHanPhongPanel extends JPanel {
                     "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }
-    /** Đổ dữ liệu thật vào bảng trái */
+
+    /**
+     * Đổ dữ liệu thật vào bảng trái
+     */
     private void loadRoomTable(List<ChiTietPhieuDatPhongDTO> list) {
         roomTableModel.setRowCount(0);
         for (ChiTietPhieuDatPhongDTO ct : list) {
-            PhongDTO p       = ct.getPhong();
-            String soPhong  = (p != null) ? p.getSoPhong()  : "--";
-            String loai     = (p != null && p.getLoaiPhong() != null)
+            PhongDTO p = ct.getPhong();
+            String soPhong = (p != null) ? p.getSoPhong() : "--";
+            String loai = (p != null && p.getLoaiPhong() != null)
                     ? p.getLoaiPhong().getTenLoaiPhong() : "--";
-            String tang     = (p != null) ? "Tầng " + p.getTang() : "--";
+            String tang = (p != null) ? "Tầng " + p.getTang() : "--";
             String ngayNhan = ct.getThoiGianNhanPhong() != null
                     ? ct.getThoiGianNhanPhong().format(FMT_DT) : "--";
-            String ngayTra  = ct.getThoiGianTraPhong() != null
+            String ngayTra = ct.getThoiGianTraPhong() != null
                     ? ct.getThoiGianTraPhong().format(FMT_DT) : "--";
-            roomTableModel.addRow(new Object[]{ soPhong, loai, tang, ngayNhan, ngayTra });
+            roomTableModel.addRow(new Object[]{soPhong, loai, tang, ngayNhan, ngayTra});
         }
     }
 
-    /** Xác nhận gia hạn → gọi service → thông báo */
+    /**
+     * Xác nhận gia hạn → gọi service → thông báo
+     */
     private void doGiaHan() {
         if (selectedRows.isEmpty()) {
             JOptionPane.showMessageDialog(this,
@@ -661,7 +692,8 @@ public class GiaHanPhongPanel extends JPanel {
     // =========================================================================
     private JLabel buildCheckIcon() {
         JLabel lbl = new JLabel() {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 int s = Math.min(getWidth(), getHeight()) - 2;
@@ -682,7 +714,8 @@ public class GiaHanPhongPanel extends JPanel {
 
     private JLabel buildCalendarIcon(Color color) {
         JLabel ico = new JLabel() {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(color);
@@ -712,11 +745,25 @@ public class GiaHanPhongPanel extends JPanel {
     private JButton buildConfirmButton() {
         JButton btn = new JButton("Gia hạn ngay") {
             private boolean hovered = false;
-            { addMouseListener(new MouseAdapter() {
-                @Override public void mouseEntered(MouseEvent e) { hovered = true;  repaint(); }
-                @Override public void mouseExited(MouseEvent e)  { hovered = false; repaint(); }
-            }); }
-            @Override protected void paintComponent(Graphics g) {
+
+            {
+                addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        hovered = true;
+                        repaint();
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        hovered = false;
+                        repaint();
+                    }
+                });
+            }
+
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(getModel().isPressed() ? PURPLE_DARK
@@ -739,7 +786,8 @@ public class GiaHanPhongPanel extends JPanel {
 
     private JButton buildBlueButton(String text, int w, int h) {
         JButton btn = new JButton(text) {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(getModel().isPressed() ? new Color(0x2A5CD4)
@@ -787,12 +835,17 @@ public class GiaHanPhongPanel extends JPanel {
     }
 
     static class RoundedPanel extends JPanel {
-        private final int   radius;
+        private final int radius;
         private final Color bg;
+
         RoundedPanel(int radius, Color bg) {
-            this.radius = radius; this.bg = bg; setOpaque(false);
+            this.radius = radius;
+            this.bg = bg;
+            setOpaque(false);
         }
-        @Override protected void paintComponent(Graphics g) {
+
+        @Override
+        protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setColor(bg);

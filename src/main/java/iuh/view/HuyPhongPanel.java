@@ -97,7 +97,7 @@ public class HuyPhongPanel extends JPanel {
         // =========================================================
         // 2. BẢNG DANH SÁCH
         // =========================================================
-        String[] cols = { "Chọn", "Mã Phiếu", "Phòng", "Loại", "Tên KH", "CCCD", "Ngày Nhận", "Ngày Trả" };
+        String[] cols = {"Chọn", "Mã Phiếu", "Phòng", "Loại", "Tên KH", "CCCD", "Ngày Nhận", "Ngày Trả"};
         tableModel = new DefaultTableModel(cols, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -168,7 +168,7 @@ public class HuyPhongPanel extends JPanel {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         for (ChiTietPhieuDatPhongDTO ct : dsChiTiet) {
-            tableModel.addRow(new Object[] {
+            tableModel.addRow(new Object[]{
                     false,
                     ct.getPhieuDatPhong() != null ? ct.getPhieuDatPhong().getMaPhieuDatPhong() : "",
                     ct.getPhong() != null ? ct.getPhong().getMaPhong() : "",
@@ -314,7 +314,7 @@ public class HuyPhongPanel extends JPanel {
         JButton btnCancel = createBtn("Hủy bỏ", 110, 40, MID, new Color(0x323846));
         JButton btnConfirm = createBtn("Xác nhận Hủy", 150, 40, RED, new Color(0xB91C1C));
 
-        final String[] finalLyDo = { null };
+        final String[] finalLyDo = {null};
         btnCancel.addActionListener(e -> dialog.dispose());
 
         double finalTongTienHoan = tongTienHoan;
@@ -345,7 +345,7 @@ public class HuyPhongPanel extends JPanel {
                 dsPhieuHuyDTO.add(iuh.dto.PhieuHuyPhongDTO.builder()
                         .lyDo(finalLyDo[0])
                         .ngayHuy(LocalDateTime.now())
-                        .chiTietPhieuDatPhong(Mapper.map(ct))
+                        .chiTietPhieuDatPhong(ct)
                         .build());
             }
 
@@ -426,7 +426,7 @@ public class HuyPhongPanel extends JPanel {
         DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                    boolean hasFocus, int row, int column) {
+                                                           boolean hasFocus, int row, int column) {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 c.setFont(F_LABEL);
                 c.setBackground(WHITE);
@@ -442,7 +442,7 @@ public class HuyPhongPanel extends JPanel {
         DefaultTableCellRenderer textRenderer = new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                    boolean hasFocus, int row, int column) {
+                                                           boolean hasFocus, int row, int column) {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 setBorder(new EmptyBorder(0, 10, 0, 10));
                 return c;

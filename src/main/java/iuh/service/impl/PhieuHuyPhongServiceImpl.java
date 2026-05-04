@@ -1,11 +1,14 @@
 package iuh.service.impl;
 
 import iuh.dao.impl.PhieuHuyPhongDaoImpl;
+import iuh.dto.ChiTietPhieuDatPhongDTO;
 import iuh.dto.HuyPhongRequest;
 import iuh.dto.HuyPhongResultDTO;
 import iuh.dto.PhieuHuyPhongDTO;
 import iuh.entity.PhieuHuyPhong;
+import iuh.mapper.Mapper;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,12 +49,12 @@ public class PhieuHuyPhongServiceImpl implements iuh.service.PhieuHuyPhongServic
             }
 
             List<PhieuHuyPhong> listPhieuHuy = listPhieuHuy1.stream().map(
-                    e -> PhieuHuyPhong.builder()
-                            .maHuyPhong(e.getMaHuyPhong())
-                            .lyDo(e.getLyDo())
-                            .ngayHuy(e.getNgayHuy())
-                            .chiTietPhieuDatPhong(e.getChiTietPhieuDatPhong())
-                            .build())
+                            e -> PhieuHuyPhong.builder()
+                                    .maHuyPhong(e.getMaHuyPhong())
+                                    .lyDo(e.getLyDo())
+                                    .ngayHuy(e.getNgayHuy())
+                                    .chiTietPhieuDatPhong(Mapper.map(e.getChiTietPhieuDatPhong()))
+                                    .build())
                     .toList();
 
             boolean result = phieuHuyPhongDao.huyNhieuPhongNghiepVu(listPhieuHuy, tienHoan);
@@ -76,4 +79,5 @@ public class PhieuHuyPhongServiceImpl implements iuh.service.PhieuHuyPhongServic
                     .build();
         }
     }
+
 }

@@ -1,7 +1,6 @@
 package iuh.view;
 
 import iuh.dto.NhanVienDTO;
-import iuh.entity.NhanVien;
 import iuh.enums.TrangThaiNhanVien;
 import iuh.network.*;
 import iuh.service.impl.NhanVienServiceImpl;
@@ -160,7 +159,7 @@ public class QuanLyNhanVienPanel extends JPanel {
                     .build();
             Response response = ClientConnection.getInstance().sendRequest(request);
             //@SuppressWarnings("unchecked")
-                    list = (List<NhanVienDTO>) response.getObject();
+            list = (List<NhanVienDTO>) response.getObject();
         } else {
             Request request = Request.builder()
                     .commandType(CommandType.SEARCH_NHAN_VIEN)
@@ -168,7 +167,7 @@ public class QuanLyNhanVienPanel extends JPanel {
                     .build();
             Response response = ClientConnection.getInstance().sendRequest(request);
             //@SuppressWarnings("unchecked")
-                    list = (List<NhanVienDTO>) response.getObject();
+            list = (List<NhanVienDTO>) response.getObject();
         }
 
         tableModel.setRowCount(0);

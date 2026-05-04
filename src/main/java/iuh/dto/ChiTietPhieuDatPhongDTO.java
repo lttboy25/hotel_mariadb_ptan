@@ -3,9 +3,6 @@ package iuh.dto;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import iuh.entity.PhieuDatPhong;
-import iuh.entity.PhieuHuyPhong;
-import iuh.entity.Phong;
 import iuh.enums.TrangThaiChiTietPhieuDatPhong;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,5 +44,5 @@ public class ChiTietPhieuDatPhongDTO implements Serializable {
         return this.soGioLuuTru * donGiaTheoGio;
     }
 
-    private PhieuHuyPhong phieuHuyPhong;
+    private PhieuHuyPhongDTO phieuHuyPhong;
 }

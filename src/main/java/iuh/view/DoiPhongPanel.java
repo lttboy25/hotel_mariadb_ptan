@@ -15,65 +15,71 @@ import iuh.network.CommandType;
 import iuh.network.Request;
 import iuh.network.Response;
 import iuh.service.impl.DoiPhongServiceImpl;
-import iuh.entity.Phong;
 
 public class DoiPhongPanel extends JPanel {
 
     // ── Palette ─── đồng bộ GiaHanPhongPanel ─────────────────────────────────
-    static final Color BG          = new Color(0xF4F6FB);
-    static final Color WHITE       = Color.WHITE;
-    static final Color BLUE        = new Color(0x3B6FF0);
-    static final Color BLUE_DARK   = new Color(0x2A5CD4);
-    static final Color BLUE_LIGHT  = new Color(0xEBF0FF);
-    static final Color BLUE_ROW    = new Color(0xE8EFFE);
-    static final Color DARK        = new Color(0x1A1A2E);
-    static final Color MID         = new Color(0x4A5268);
-    static final Color GRAY        = new Color(0xA0A8B8);
-    static final Color BORDER      = new Color(0xE4E9F2);
-    static final Color TEAL        = new Color(0x0EA47A);
-    static final Color TEAL_L      = new Color(0xE6FAF5);
-    static final Color RED         = new Color(0xE04040);
-    static final Color RED_L       = new Color(0xFFF5F5);
-    static final Color PANEL_R     = new Color(0xF8FAFD);
-    static final Color HEADER_BG   = new Color(0xF0F4FF);
+    static final Color BG = new Color(0xF4F6FB);
+    static final Color WHITE = Color.WHITE;
+    static final Color BLUE = new Color(0x3B6FF0);
+    static final Color BLUE_DARK = new Color(0x2A5CD4);
+    static final Color BLUE_LIGHT = new Color(0xEBF0FF);
+    static final Color BLUE_ROW = new Color(0xE8EFFE);
+    static final Color DARK = new Color(0x1A1A2E);
+    static final Color MID = new Color(0x4A5268);
+    static final Color GRAY = new Color(0xA0A8B8);
+    static final Color BORDER = new Color(0xE4E9F2);
+    static final Color TEAL = new Color(0x0EA47A);
+    static final Color TEAL_L = new Color(0xE6FAF5);
+    static final Color RED = new Color(0xE04040);
+    static final Color RED_L = new Color(0xFFF5F5);
+    static final Color PANEL_R = new Color(0xF8FAFD);
+    static final Color HEADER_BG = new Color(0xF0F4FF);
 
     // badge
-    static final Color STD_BG = new Color(0xF1F5F9); static final Color STD_FG = new Color(0x475569);
-    static final Color SUP_BG = new Color(0xEFF6FF); static final Color SUP_FG = new Color(0x2563EB);
-    static final Color DEL_BG = new Color(0xFEFCE8); static final Color DEL_FG = new Color(0x854D0E);
+    static final Color STD_BG = new Color(0xF1F5F9);
+    static final Color STD_FG = new Color(0x475569);
+    static final Color SUP_BG = new Color(0xEFF6FF);
+    static final Color SUP_FG = new Color(0x2563EB);
+    static final Color DEL_BG = new Color(0xFEFCE8);
+    static final Color DEL_FG = new Color(0x854D0E);
 
     // ── Fonts ─── đồng bộ GiaHanPhongPanel ───────────────────────────────────
-    static final Font F_SECTION = new Font("Segoe UI", Font.BOLD,  16);
-    static final Font F_BOLD14  = new Font("Segoe UI", Font.BOLD,  14);
-    static final Font F_BOLD13  = new Font("Segoe UI", Font.BOLD,  13);
-    static final Font F_BOLD12  = new Font("Segoe UI", Font.BOLD,  12);
-    static final Font F_LABEL   = new Font("Segoe UI", Font.PLAIN, 13);
+    static final Font F_SECTION = new Font("Segoe UI", Font.BOLD, 16);
+    static final Font F_BOLD14 = new Font("Segoe UI", Font.BOLD, 14);
+    static final Font F_BOLD13 = new Font("Segoe UI", Font.BOLD, 13);
+    static final Font F_BOLD12 = new Font("Segoe UI", Font.BOLD, 12);
+    static final Font F_LABEL = new Font("Segoe UI", Font.PLAIN, 13);
     static final Font F_PLAIN12 = new Font("Segoe UI", Font.PLAIN, 12);
     static final Font F_PLAIN11 = new Font("Segoe UI", Font.PLAIN, 11);
-    static final Font F_TABLE   = new Font("Segoe UI", Font.PLAIN, 13);
-    static final Font F_TABLE_H = new Font("Segoe UI", Font.BOLD,  12);
+    static final Font F_TABLE = new Font("Segoe UI", Font.PLAIN, 13);
+    static final Font F_TABLE_H = new Font("Segoe UI", Font.BOLD, 12);
 
     // ── Data ──────────────────────────────────────────────────────────────────
     static class Room {
         String id, type, floor, oldPrice, newPrice;
+
         Room(String id, String type, String floor, String oldPrice, String newPrice) {
-            this.id = id; this.type = type; this.floor = floor;
-            this.oldPrice = oldPrice; this.newPrice = newPrice;
+            this.id = id;
+            this.type = type;
+            this.floor = floor;
+            this.oldPrice = oldPrice;
+            this.newPrice = newPrice;
         }
     }
 
-    private final List<Room> bookedRooms    = new ArrayList<>();
-    private final List<Room> availRooms     = new ArrayList<>();
+    private final List<Room> bookedRooms = new ArrayList<>();
+    private final List<Room> availRooms = new ArrayList<>();
     private final List<Room> allBookedRooms = new ArrayList<>();
 
     private int selectedBooked = 0;
-    private int selectedAvail  = 0;
+    private int selectedAvail = 0;
 
     private DefaultTableModel bookedModel;
     private DefaultTableModel availModel;
     private JTable bookedTable;
     private JTable availTable;
-    private JPanel    summaryPanel;
+    private JPanel summaryPanel;
     private JTextField searchField;
 
     private final DoiPhongServiceImpl doiPhongServiceImpl = new DoiPhongServiceImpl();
@@ -107,7 +113,9 @@ public class DoiPhongPanel extends JPanel {
     private double parsePrice(String price) {
         try {
             return Double.parseDouble(price.replace(",", "").replace(" VND", "").trim());
-        } catch (NumberFormatException e) { return 0; }
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 
     private void initData(String maPDP) {
@@ -148,7 +156,7 @@ public class DoiPhongPanel extends JPanel {
 
     private void reloadAll() {
         selectedBooked = 0;
-        selectedAvail  = 0;
+        selectedAvail = 0;
         if (searchField != null) searchField.setText("");
         initData(null);
         refreshBookedTable();
@@ -194,7 +202,8 @@ public class DoiPhongPanel extends JPanel {
         right.setOpaque(false);
         right.add(lbl("🔔", new Font("Segoe UI", Font.PLAIN, 18), GRAY));
         JPanel avatar = new JPanel() {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(new Color(0x6B9EFF));
@@ -254,10 +263,18 @@ public class DoiPhongPanel extends JPanel {
         JPanel center = new JPanel(new GridBagLayout());
         center.setOpaque(false);
         GridBagConstraints gc = new GridBagConstraints();
-        gc.fill = GridBagConstraints.BOTH; gc.weightx = 1; gc.gridx = 0;
-        gc.gridy = 0; gc.weighty = 0.45; center.add(top, gc);
-        gc.gridy = 1; gc.weighty = 0;    center.add(Box.createVerticalStrut(20), gc);
-        gc.gridy = 2; gc.weighty = 0.55; center.add(sec2, gc);
+        gc.fill = GridBagConstraints.BOTH;
+        gc.weightx = 1;
+        gc.gridx = 0;
+        gc.gridy = 0;
+        gc.weighty = 0.45;
+        center.add(top, gc);
+        gc.gridy = 1;
+        gc.weighty = 0;
+        center.add(Box.createVerticalStrut(20), gc);
+        gc.gridy = 2;
+        gc.weighty = 0.55;
+        center.add(sec2, gc);
 
         left.add(center, BorderLayout.CENTER);
         return left;
@@ -271,7 +288,8 @@ public class DoiPhongPanel extends JPanel {
 
         // Icon kính lúp vẽ tay — giống GiaHanPhongPanel
         JPanel iconWrap = new JPanel() {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -323,12 +341,14 @@ public class DoiPhongPanel extends JPanel {
         searchField.addActionListener(doSearch);
 
         JButton refreshBtn = new JButton("Làm mới") {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(getModel().isRollover() ? new Color(0x5A6478) : new Color(0x6B7280));
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
-                g2.setColor(WHITE); g2.setFont(F_BOLD12);
+                g2.setColor(WHITE);
+                g2.setFont(F_BOLD12);
                 FontMetrics fm = g2.getFontMetrics();
                 g2.drawString(getText(),
                         (getWidth() - fm.stringWidth(getText())) / 2,
@@ -336,8 +356,10 @@ public class DoiPhongPanel extends JPanel {
                 g2.dispose();
             }
         };
-        refreshBtn.setOpaque(false); refreshBtn.setContentAreaFilled(false);
-        refreshBtn.setBorderPainted(false); refreshBtn.setForeground(WHITE);
+        refreshBtn.setOpaque(false);
+        refreshBtn.setContentAreaFilled(false);
+        refreshBtn.setBorderPainted(false);
+        refreshBtn.setForeground(WHITE);
         refreshBtn.setFont(F_BOLD12);
         refreshBtn.setPreferredSize(new Dimension(90, 40));
         refreshBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -370,7 +392,10 @@ public class DoiPhongPanel extends JPanel {
     private JPanel buildBookedTable() {
         String[] cols = {"Số phòng", "Loại phòng", "Tầng", "Giá / ngày"};
         bookedModel = new DefaultTableModel(cols, 0) {
-            @Override public boolean isCellEditable(int r, int c) { return false; }
+            @Override
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
         };
         bookedTable = createStyledTable(bookedModel);
         bookedTable.getSelectionModel().addListSelectionListener(e -> {
@@ -405,7 +430,10 @@ public class DoiPhongPanel extends JPanel {
     private JPanel buildAvailTable() {
         String[] cols = {"Số phòng", "Loại phòng", "Tầng", "Giá / ngày"};
         availModel = new DefaultTableModel(cols, 0) {
-            @Override public boolean isCellEditable(int r, int c) { return false; }
+            @Override
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
         };
         availTable = createStyledTable(availModel);
         availTable.getSelectionModel().addListSelectionListener(e -> {
@@ -438,7 +466,8 @@ public class DoiPhongPanel extends JPanel {
     // ── JTable factory — đồng bộ GiaHanPhongPanel ────────────────────────────
     private JTable createStyledTable(DefaultTableModel model) {
         JTable table = new JTable(model) {
-            @Override public Component prepareRenderer(TableCellRenderer r, int row, int col) {
+            @Override
+            public Component prepareRenderer(TableCellRenderer r, int row, int col) {
                 Component c = super.prepareRenderer(r, row, col);
                 if (isRowSelected(row)) {
                     c.setBackground(BLUE_ROW);
@@ -473,7 +502,8 @@ public class DoiPhongPanel extends JPanel {
 
         // Số phòng: blue + bold + center
         table.getColumnModel().getColumn(0).setCellRenderer(new DefaultTableCellRenderer() {
-            @Override public Component getTableCellRendererComponent(
+            @Override
+            public Component getTableCellRendererComponent(
                     JTable t, Object v, boolean sel, boolean focus, int row, int col) {
                 super.getTableCellRendererComponent(t, v, sel, focus, row, col);
                 setForeground(BLUE);
@@ -505,7 +535,8 @@ public class DoiPhongPanel extends JPanel {
 
         GridBagConstraints gc = new GridBagConstraints();
         gc.fill = GridBagConstraints.HORIZONTAL;
-        gc.weightx = 1.0; gc.gridx = 0;
+        gc.weightx = 1.0;
+        gc.gridx = 0;
 
         gc.gridy = 0;
         JLabel sumTitle = new JLabel("Tóm tắt đổi phòng");
@@ -545,7 +576,8 @@ public class DoiPhongPanel extends JPanel {
         gc.gridy = 10;
         right.add(buildConfirmBtn(), gc);
 
-        gc.gridy = 11; gc.weighty = 1.0;
+        gc.gridy = 11;
+        gc.weighty = 1.0;
         right.add(Box.createVerticalGlue(), gc);
 
         return right;
@@ -557,7 +589,7 @@ public class DoiPhongPanel extends JPanel {
         p.setOpaque(false);
 
         Room from = safeGet(bookedRooms, selectedBooked);
-        Room to   = safeGet(availRooms,  selectedAvail);
+        Room to = safeGet(availRooms, selectedAvail);
 
         p.add(chip(from != null ? from.id : "—"));
         JLabel arrow = lbl("→", new Font("Segoe UI", Font.PLAIN, 16), GRAY);
@@ -568,7 +600,8 @@ public class DoiPhongPanel extends JPanel {
 
     private JLabel chip(String text) {
         JLabel l = new JLabel(text) {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(WHITE);
@@ -593,7 +626,8 @@ public class DoiPhongPanel extends JPanel {
 
         // Header
         JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0)) {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(headerBg);
@@ -607,7 +641,8 @@ public class DoiPhongPanel extends JPanel {
 
         // dot
         JPanel dot = new JPanel() {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(accentColor);
@@ -629,11 +664,11 @@ public class DoiPhongPanel extends JPanel {
         body.setAlignmentX(LEFT_ALIGNMENT);
 
         Room r = isOriginal ? safeGet(bookedRooms, selectedBooked) : safeGet(availRooms, selectedAvail);
-        String id    = r != null ? r.id       : "—";
-        String type  = r != null ? r.type     : "—";
+        String id = r != null ? r.id : "—";
+        String type = r != null ? r.type : "—";
         String price = r != null ? r.newPrice + " / ngày" : "—";
 
-        body.add(infoRow("Số phòng",  id,    true));
+        body.add(infoRow("Số phòng", id, true));
         body.add(Box.createVerticalStrut(7));
         body.add(sep());
         body.add(Box.createVerticalStrut(7));
@@ -641,7 +676,7 @@ public class DoiPhongPanel extends JPanel {
         body.add(Box.createVerticalStrut(7));
         body.add(sep());
         body.add(Box.createVerticalStrut(7));
-        body.add(infoRow("Giá",        price,false));
+        body.add(infoRow("Giá", price, false));
         card.add(body);
         return card;
     }
@@ -649,14 +684,14 @@ public class DoiPhongPanel extends JPanel {
     // ── Fee card ──────────────────────────────────────────────────────────────
     private JPanel buildFeeCard() {
         Room from = safeGet(bookedRooms, selectedBooked);
-        Room to   = safeGet(availRooms,  selectedAvail);
+        Room to = safeGet(availRooms, selectedAvail);
 
-        double giacu  = from != null ? parsePrice(from.newPrice) : 0;
-        double giamoi = to   != null ? parsePrice(to.newPrice)   : 0;
-        double chenh  = giamoi - giacu;
+        double giacu = from != null ? parsePrice(from.newPrice) : 0;
+        double giamoi = to != null ? parsePrice(to.newPrice) : 0;
+        double chenh = giamoi - giacu;
 
-        String strTienDaCoc   = formatPrice(giacu  * 0.3);
-        String strCocMoi      = formatPrice(giamoi * 0.3);
+        String strTienDaCoc = formatPrice(giacu * 0.3);
+        String strCocMoi = formatPrice(giamoi * 0.3);
         String strTienCocThem = formatPrice(Math.max(0, chenh) * 0.3);
 
         JPanel card = roundCard(RED);
@@ -664,7 +699,8 @@ public class DoiPhongPanel extends JPanel {
 
         // Header
         JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0)) {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(RED_L);
@@ -676,7 +712,8 @@ public class DoiPhongPanel extends JPanel {
         header.setBorder(new EmptyBorder(8, 12, 8, 12));
         header.setMaximumSize(new Dimension(Integer.MAX_VALUE, 36));
         JPanel rdot = new JPanel() {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(RED);
@@ -696,11 +733,11 @@ public class DoiPhongPanel extends JPanel {
         body.setBorder(new EmptyBorder(10, 14, 12, 14));
         body.setAlignmentX(LEFT_ALIGNMENT);
 
-        body.add(infoRow("Tiền đã cọc",            strTienDaCoc,   false));
+        body.add(infoRow("Tiền đã cọc", strTienDaCoc, false));
         body.add(Box.createVerticalStrut(7));
         body.add(sep());
         body.add(Box.createVerticalStrut(7));
-        body.add(infoRow("Cọc phòng mới (30%)",    strCocMoi,      false));
+        body.add(infoRow("Cọc phòng mới (30%)", strCocMoi, false));
         body.add(Box.createVerticalStrut(7));
         body.add(sep());
         body.add(Box.createVerticalStrut(7));
@@ -725,7 +762,8 @@ public class DoiPhongPanel extends JPanel {
         wrapper.setOpaque(false);
 
         JButton btn = new JButton("Xác nhận đổi phòng") {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(getModel().isRollover() ? BLUE_DARK : BLUE);
@@ -739,27 +777,29 @@ public class DoiPhongPanel extends JPanel {
                 g2.dispose();
             }
         };
-        btn.setOpaque(false); btn.setContentAreaFilled(false);
-        btn.setBorderPainted(false); btn.setForeground(WHITE);
+        btn.setOpaque(false);
+        btn.setContentAreaFilled(false);
+        btn.setBorderPainted(false);
+        btn.setForeground(WHITE);
         btn.setPreferredSize(new Dimension(0, 46));
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         btn.addActionListener(e -> {
             if (selectedBooked < 0 || selectedBooked >= bookedRooms.size()
-                    || selectedAvail  < 0 || selectedAvail  >= availRooms.size()) {
+                    || selectedAvail < 0 || selectedAvail >= availRooms.size()) {
                 JOptionPane.showMessageDialog(this, "Vui lòng chọn đủ hai phòng!", "Thông báo", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             Room from = bookedRooms.get(selectedBooked);
-            Room to   = availRooms.get(selectedAvail);
-            double giacu  = parsePrice(from.newPrice);
+            Room to = availRooms.get(selectedAvail);
+            double giacu = parsePrice(from.newPrice);
             double giamoi = parsePrice(to.newPrice);
 
             if (giamoi < giacu) {
                 JOptionPane.showMessageDialog(this,
                         "Không thể đổi sang phòng có giá thấp hơn!\n"
                                 + from.id + " (" + formatPrice(giacu) + ") → "
-                                + to.id   + " (" + formatPrice(giamoi) + ")",
+                                + to.id + " (" + formatPrice(giamoi) + ")",
                         "Không hợp lệ", JOptionPane.WARNING_MESSAGE);
                 return;
             }
@@ -811,23 +851,38 @@ public class DoiPhongPanel extends JPanel {
 
         GridBagConstraints gc = new GridBagConstraints();
         gc.fill = GridBagConstraints.HORIZONTAL;
-        gc.weightx = 1.0; gc.gridx = 0;
+        gc.weightx = 1.0;
+        gc.gridx = 0;
 
         gc.gridy = 0;
         JLabel sumTitle2 = new JLabel("Tóm tắt đổi phòng");
-        sumTitle2.setFont(F_SECTION); sumTitle2.setForeground(DARK);
+        sumTitle2.setFont(F_SECTION);
+        sumTitle2.setForeground(DARK);
         right.add(sumTitle2, gc);
-        gc.gridy = 1;  right.add(Box.createVerticalStrut(10), gc);
-        gc.gridy = 2;  right.add(buildArrowChip(), gc);
-        gc.gridy = 3;  right.add(Box.createVerticalStrut(14), gc);
-        gc.gridy = 4;  right.add(buildInfoCard("Phòng ban đầu",  TEAL, TEAL_L, true),  gc);
-        gc.gridy = 5;  right.add(Box.createVerticalStrut(10), gc);
-        gc.gridy = 6;  right.add(buildInfoCard("Phòng đổi sang", TEAL, TEAL_L, false), gc);
-        gc.gridy = 7;  right.add(Box.createVerticalStrut(10), gc);
-        gc.gridy = 8;  summaryPanel = buildFeeCard(); right.add(summaryPanel, gc);
-        gc.gridy = 9;  right.add(Box.createVerticalStrut(16), gc);
-        gc.gridy = 10; right.add(buildConfirmBtn(), gc);
-        gc.gridy = 11; gc.weighty = 1.0; right.add(Box.createVerticalGlue(), gc);
+        gc.gridy = 1;
+        right.add(Box.createVerticalStrut(10), gc);
+        gc.gridy = 2;
+        right.add(buildArrowChip(), gc);
+        gc.gridy = 3;
+        right.add(Box.createVerticalStrut(14), gc);
+        gc.gridy = 4;
+        right.add(buildInfoCard("Phòng ban đầu", TEAL, TEAL_L, true), gc);
+        gc.gridy = 5;
+        right.add(Box.createVerticalStrut(10), gc);
+        gc.gridy = 6;
+        right.add(buildInfoCard("Phòng đổi sang", TEAL, TEAL_L, false), gc);
+        gc.gridy = 7;
+        right.add(Box.createVerticalStrut(10), gc);
+        gc.gridy = 8;
+        summaryPanel = buildFeeCard();
+        right.add(summaryPanel, gc);
+        gc.gridy = 9;
+        right.add(Box.createVerticalStrut(16), gc);
+        gc.gridy = 10;
+        right.add(buildConfirmBtn(), gc);
+        gc.gridy = 11;
+        gc.weighty = 1.0;
+        right.add(Box.createVerticalGlue(), gc);
 
         right.revalidate();
         right.repaint();
@@ -842,7 +897,8 @@ public class DoiPhongPanel extends JPanel {
 
     private JPanel roundCard(Color borderColor) {
         JPanel p = new JPanel() {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(WHITE);
@@ -876,12 +932,14 @@ public class DoiPhongPanel extends JPanel {
 
     private JButton roundBtn(String text, Color bg, Color fg, int w, int h, int arc) {
         JButton btn = new JButton(text) {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(getModel().isRollover() ? BLUE_DARK : bg);
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), arc, arc);
-                g2.setColor(fg); g2.setFont(F_BOLD12);
+                g2.setColor(fg);
+                g2.setFont(F_BOLD12);
                 FontMetrics fm = g2.getFontMetrics();
                 g2.drawString(getText(),
                         (getWidth() - fm.stringWidth(getText())) / 2,
@@ -889,8 +947,10 @@ public class DoiPhongPanel extends JPanel {
                 g2.dispose();
             }
         };
-        btn.setOpaque(false); btn.setContentAreaFilled(false);
-        btn.setBorderPainted(false); btn.setForeground(fg);
+        btn.setOpaque(false);
+        btn.setContentAreaFilled(false);
+        btn.setBorderPainted(false);
+        btn.setForeground(fg);
         btn.setFont(F_BOLD12);
         btn.setPreferredSize(new Dimension(w, h));
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -898,6 +958,9 @@ public class DoiPhongPanel extends JPanel {
     }
 
     static JLabel lbl(String t, Font f, Color c) {
-        JLabel l = new JLabel(t); l.setFont(f); l.setForeground(c); return l;
+        JLabel l = new JLabel(t);
+        l.setFont(f);
+        l.setForeground(c);
+        return l;
     }
 }

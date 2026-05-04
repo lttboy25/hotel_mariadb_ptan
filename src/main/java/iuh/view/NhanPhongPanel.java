@@ -7,8 +7,7 @@ import iuh.enums.TrangThaiChiTietPhieuDatPhong;
 import iuh.network.ClientConnection;
 import iuh.network.CommandType;
 import iuh.network.Request;
-import iuh.service.impl.NhanPhongServiceImpl;
-import iuh.service.impl.CaLamViecNhanVienServiceImpl;
+
 import iuh.dto.CaLamViecNhanVienDTO;
 
 import javax.swing.*;
@@ -90,9 +89,6 @@ public class NhanPhongPanel extends JPanel {
     private JLabel lblMaPhieu;
     private JButton btnXacNhan;
 
-    // ── Service & data
-    private NhanPhongServiceImpl nhanPhongServiceImpl = new NhanPhongServiceImpl();
-    private CaLamViecNhanVienServiceImpl shiftService = new CaLamViecNhanVienServiceImpl();
 
     private List<ChiTietPhieuDatPhongDTO> danhSachChiTiet = new ArrayList<>();
     private List<ChiTietPhieuDatPhongDTO> listNhanPhong = new ArrayList<>();
@@ -493,7 +489,15 @@ public class NhanPhongPanel extends JPanel {
     // ═══════════════════════════════════════════════════════════════════
     private void xacNhanNhanPhong() {
         String maNV = CurrentUser.getInstance().getMaNhanVien();
-        CaLamViecNhanVienDTO activeShift = shiftService.getActiveShift(maNV);
+        CaLamViecNhanVienDTO activeShift = (CaLamViecNhanVienDTO) ClientConnection
+                .getInstance()
+                .sendRequest(
+                        Request.builder()
+                                .commandType(CommandType.GET_ACTIVE_SHIFT)
+                                .object(maNV)
+                                .build()
+                )
+                .getObject();
         if (activeShift == null) {
             JOptionPane.showMessageDialog(this,
                     "Bạn phải MỞ CA LÀM VIỆC trước khi thực hiện nhận phòng!",

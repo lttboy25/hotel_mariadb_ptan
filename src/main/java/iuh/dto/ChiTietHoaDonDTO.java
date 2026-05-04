@@ -3,10 +3,6 @@ package iuh.dto;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import iuh.entity.ChiTietPhieuDatPhong;
-import iuh.entity.HoaDon;
-import iuh.entity.PhieuDatPhong;
-import iuh.entity.Phong;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

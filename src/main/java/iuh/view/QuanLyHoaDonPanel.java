@@ -1,12 +1,10 @@
 package iuh.view;
 
-import iuh.dto.ChiTietHoaDonDTO;
 import iuh.dto.HoaDonDTO;
 import iuh.enums.TrangThaiHoaDon;
 import iuh.network.ClientConnection;
 import iuh.network.CommandType;
 import iuh.network.Request;
-import iuh.service.impl.HoaDonServiceImpl;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -72,7 +70,6 @@ public class QuanLyHoaDonPanel extends JPanel {
 
     private final NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
     private final ClientConnection client = ClientConnection.getInstance();
-    private final HoaDonServiceImpl hoaDonService = new HoaDonServiceImpl();
 
     // ═══════════════════════════════════════════════════════════════════
     // KHỞI TẠO
@@ -289,13 +286,12 @@ public class QuanLyHoaDonPanel extends JPanel {
      */
     @SuppressWarnings("unchecked")
     private void loadAll() {
-//        List<HoaDonDTO> ds = (List<HoaDonDTO>) client
-//                .sendRequest(Request.builder()
-//                        .commandType(CommandType.GET_ALL_HOA_DON)
-//                        .build())
-//                .getObject();
+        List<HoaDonDTO> ds = (List<HoaDonDTO>) client
+                .sendRequest(Request.builder()
+                        .commandType(CommandType.GET_ALL_HOA_DON)
+                        .build())
+                .getObject();
 
-        List<HoaDonDTO> ds = hoaDonService.getAllHoaDon();
         fillTable(ds);
     }
 

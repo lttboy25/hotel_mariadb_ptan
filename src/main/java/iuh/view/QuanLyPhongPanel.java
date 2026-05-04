@@ -4,7 +4,7 @@ import iuh.dto.LoaiPhongDTO;
 import iuh.dto.PhongDTO;
 import iuh.enums.TinhTrangPhong;
 import iuh.enums.TrangThaiPhong;
-import iuh.mapper.Mapper;
+
 import iuh.network.ClientConnection;
 import iuh.network.CommandType;
 import iuh.network.Request;
@@ -47,7 +47,6 @@ public class QuanLyPhongPanel extends JPanel {
     private static final String SEARCH_PLACEHOLDER = "Tìm theo mã phòng, số phòng, loại...";
 
     private ClientConnection clientConnection = ClientConnection.getInstance();
-    private Mapper mapper = new Mapper();
 
     private DefaultTableModel tableModel;
     private JTable table;

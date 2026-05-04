@@ -1,12 +1,13 @@
 package iuh.view;
 
 import iuh.dto.NhanVienDTO;
-import iuh.entity.NhanVien;
 
 import javax.swing.*;
 import javax.swing.border.*;
+
 import iuh.service.impl.CaLamViecNhanVienServiceImpl;
 import iuh.dto.CaLamViecNhanVienDTO;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
@@ -58,7 +59,7 @@ public class VictoryaDashboard extends JFrame {
         NhanVienDTO nvHienTai = CurrentUser.getInstance().getNhanVien();
         TrangChuPanel trangChu = new TrangChuPanel(nvHienTai);
 
-    // Cấu hình Callback chuyển tab như đã hứa ở code trước
+        // Cấu hình Callback chuyển tab như đã hứa ở code trước
         trangChu.setOnSwitchToBooking(() -> {
             cardLayout.show(contentCards, "datphong");
         });
@@ -148,15 +149,15 @@ public class VictoryaDashboard extends JFrame {
         group.setOpaque(false);
         group.setMaximumSize(new Dimension(228, 800));
 
-        boolean[] expanded = { false };
+        boolean[] expanded = {false};
 
         // Child rows (initially hidden)
         Object[][] children = {
-                { NavIcon.DAT_PHONG, "Đặt Phòng", "datphong" },
-                { NavIcon.DAT_PHONG, "Nhận phòng", "nhanphong" },
-                { NavIcon.GIA_HAN, "Gia Hạn Phòng", "giahanphong" },
-                { NavIcon.DAT_PHONG, "Đổi phòng", "doiphong" },
-                { NavIcon.HUY_PHONG, "Hủy Phòng", "huyphong" }
+                {NavIcon.DAT_PHONG, "Đặt Phòng", "datphong"},
+                {NavIcon.DAT_PHONG, "Nhận phòng", "nhanphong"},
+                {NavIcon.GIA_HAN, "Gia Hạn Phòng", "giahanphong"},
+                {NavIcon.DAT_PHONG, "Đổi phòng", "doiphong"},
+                {NavIcon.HUY_PHONG, "Hủy Phòng", "huyphong"}
         };
 
         JPanel[] childPanels = new JPanel[children.length];
@@ -167,7 +168,7 @@ public class VictoryaDashboard extends JFrame {
         }
 
         // Parent row (with arrow)
-        boolean[] parentActive = { false };
+        boolean[] parentActive = {false};
         JPanel parentRow = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -268,7 +269,7 @@ public class VictoryaDashboard extends JFrame {
         int rowH = isChild ? 36 : 42;
 
         // Mutable active state via array trick
-        boolean[] active = { initActive };
+        boolean[] active = {initActive};
 
         JPanel row = new JPanel(new BorderLayout()) {
             @Override
@@ -541,8 +542,8 @@ class NavIconPanel extends JPanel {
                 int px = cx + (int) (r * 0.18f), py = cy + (int) (r * 0.05f);
                 int pw = (int) (r * 0.36f), ph = (int) (r * 0.95f);
                 g2.drawRoundRect(px, py, pw, ph, 2, 2);
-                int[] tipx = { px, px + pw, px + pw / 2 };
-                int[] tipy = { py + ph, py + ph, py + ph + (int) (r * 0.25f) };
+                int[] tipx = {px, px + pw, px + pw / 2};
+                int[] tipy = {py + ph, py + ph, py + ph + (int) (r * 0.25f)};
                 g2.drawPolyline(tipx, tipy, 3);
             }
             case NavIcon.GIA_HAN -> {
@@ -634,8 +635,8 @@ class NavIconPanel extends JPanel {
                 int ddx = cx - (int) (r * 0.72f), ddy = cy - (int) r;
                 int ddw = (int) (r * 1.44f), ddh = (int) (r * 2);
                 int fold = (int) (r * 0.48f);
-                int[] px2 = { ddx, ddx + ddw - fold, ddx + ddw, ddx + ddw, ddx };
-                int[] py2 = { ddy, ddy, ddy + fold, ddy + ddh, ddy + ddh };
+                int[] px2 = {ddx, ddx + ddw - fold, ddx + ddw, ddx + ddw, ddx};
+                int[] py2 = {ddy, ddy, ddy + fold, ddy + ddh, ddy + ddh};
                 g2.drawPolyline(px2, py2, 5);
                 g2.drawLine(ddx, ddy + ddh, ddx, ddy);
                 g2.drawLine(ddx + ddw - fold, ddy, ddx + ddw - fold, ddy + fold);

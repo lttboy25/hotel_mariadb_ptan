@@ -5,8 +5,12 @@
  */
 package iuh.service;
 
+import iuh.dto.ChiTietPhieuDatPhongDTO;
 import iuh.dto.HuyPhongRequest;
 import iuh.dto.HuyPhongResultDTO;
+import iuh.dto.PhieuHuyPhongDTO;
+
+import java.util.List;
 
 /*
  * @description

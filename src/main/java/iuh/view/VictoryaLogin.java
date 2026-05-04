@@ -6,7 +6,6 @@ import iuh.network.ClientConnection;
 import iuh.network.CommandType;
 import iuh.network.Request;
 import iuh.network.Response;
-import iuh.service.impl.NhanVienServiceImpl;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -65,7 +64,6 @@ public class VictoryaLogin extends JFrame {
         setContentPane(mainPanel);
         setVisible(true);
     }
-
 
 
     static class CityPanel extends JPanel {
@@ -174,6 +172,7 @@ public class VictoryaLogin extends JFrame {
             }
         }
     }
+
     private JPanel createRightPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(BG_WHITE);
@@ -222,13 +221,18 @@ public class VictoryaLogin extends JFrame {
         forgotLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         forgotLink.setAlignmentX(Component.LEFT_ALIGNMENT);
         forgotLink.addMouseListener(new MouseAdapter() {
-            @Override public void mouseClicked(MouseEvent e) {
+            @Override
+            public void mouseClicked(MouseEvent e) {
                 new QuenMatKhauFrame();
             }
-            @Override public void mouseEntered(MouseEvent e) {
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
                 forgotLink.setForeground(BLUE_DARK);
             }
-            @Override public void mouseExited(MouseEvent e) {
+
+            @Override
+            public void mouseExited(MouseEvent e) {
                 forgotLink.setForeground(BLUE_PRIMARY);
             }
         });
@@ -310,14 +314,17 @@ public class VictoryaLogin extends JFrame {
         tf.setCaretColor(BLUE_PRIMARY);
 
         tf.addFocusListener(new FocusAdapter() {
-            @Override public void focusGained(FocusEvent e) {
+            @Override
+            public void focusGained(FocusEvent e) {
                 tf.setBorder(new CompoundBorder(
                         new LineBorder(BLUE_PRIMARY, 2, true),
                         new EmptyBorder(7, 13, 7, 13)
                 ));
                 tf.repaint();
             }
-            @Override public void focusLost(FocusEvent e) {
+
+            @Override
+            public void focusLost(FocusEvent e) {
                 tf.setBorder(new CompoundBorder(
                         new LineBorder(BORDER_COLOR, 1, true),
                         new EmptyBorder(8, 14, 8, 14)
@@ -334,10 +341,29 @@ public class VictoryaLogin extends JFrame {
 
             {
                 addMouseListener(new MouseAdapter() {
-                    @Override public void mouseEntered(MouseEvent e) { hover = true; repaint(); }
-                    @Override public void mouseExited(MouseEvent e)  { hover = false; repaint(); }
-                    @Override public void mousePressed(MouseEvent e) { pressed = true; repaint(); }
-                    @Override public void mouseReleased(MouseEvent e){ pressed = false; repaint(); }
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        hover = true;
+                        repaint();
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        hover = false;
+                        repaint();
+                    }
+
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        pressed = true;
+                        repaint();
+                    }
+
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+                        pressed = false;
+                        repaint();
+                    }
                 });
             }
 
@@ -407,7 +433,8 @@ public class VictoryaLogin extends JFrame {
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         SwingUtilities.invokeLater(VictoryaLogin::new);
     }

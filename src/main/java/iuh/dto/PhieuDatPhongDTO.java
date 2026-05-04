@@ -5,8 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import iuh.entity.ChiTietPhieuDatPhong;
-import iuh.entity.KhachHang;
+
 import iuh.enums.TrangThaiPhieuDatPhong;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
