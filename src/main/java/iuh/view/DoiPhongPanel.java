@@ -14,7 +14,6 @@ import iuh.network.ClientConnection;
 import iuh.network.CommandType;
 import iuh.network.Request;
 import iuh.network.Response;
-import iuh.service.impl.DoiPhongServiceImpl;
 
 public class DoiPhongPanel extends JPanel {
 
@@ -82,8 +81,6 @@ public class DoiPhongPanel extends JPanel {
     private JPanel summaryPanel;
     private JTextField searchField;
 
-    private final DoiPhongServiceImpl doiPhongServiceImpl = new DoiPhongServiceImpl();
-
     // ── Constructor ───────────────────────────────────────────────────────────
     public DoiPhongPanel(String maPDP) {
         setLayout(new BorderLayout());
@@ -134,8 +131,7 @@ public class DoiPhongPanel extends JPanel {
                         p.getLoaiPhong().getTenLoaiPhong(),
                         "Tầng " + p.getTang(),
                         formatPrice(p.getLoaiPhong().getGia()),
-                        formatPrice(p.getLoaiPhong().getGia())
-                );
+                        formatPrice(p.getLoaiPhong().getGia()));
                 bookedRooms.add(r);
                 allBookedRooms.add(r);
             }
@@ -157,13 +153,13 @@ public class DoiPhongPanel extends JPanel {
     private void reloadAll() {
         selectedBooked = 0;
         selectedAvail = 0;
-        if (searchField != null) searchField.setText("");
+        if (searchField != null)
+            searchField.setText("");
         initData(null);
         refreshBookedTable();
         refreshAvailTable();
         refreshSummary();
     }
-
 
     private String getMaPDPByPhong(String maPhong) {
         Request request = Request.builder().commandType(CommandType.GET_MA_PDP_BY_PHONG).object(maPhong).build();
@@ -171,9 +167,8 @@ public class DoiPhongPanel extends JPanel {
         return rp.getObject() != null ? rp.getObject().toString() : null;
     }
 
-
     // =========================================================================
-    //  HEADER
+    // HEADER
     // =========================================================================
     private JPanel buildHeader() {
         JPanel h = new JPanel(new BorderLayout());
@@ -223,7 +218,7 @@ public class DoiPhongPanel extends JPanel {
     }
 
     // =========================================================================
-    //  LEFT PANEL
+    // LEFT PANEL
     // =========================================================================
     private JPanel buildLeft() {
         JPanel left = new JPanel(new BorderLayout(0, 14));
@@ -335,7 +330,8 @@ public class DoiPhongPanel extends JPanel {
             }
             selectedBooked = 0;
             refreshBookedTable();
-            if (!bookedRooms.isEmpty()) refreshSummary();
+            if (!bookedRooms.isEmpty())
+                refreshSummary();
         };
         searchBtn.addActionListener(doSearch);
         searchField.addActionListener(doSearch);
@@ -380,7 +376,8 @@ public class DoiPhongPanel extends JPanel {
         JButton btn = roundBtn("Chọn phòng này", BLUE, WHITE, 130, 30, 6);
         btn.addActionListener(e -> {
             if (selectedAvail < 0 || selectedAvail >= availRooms.size()) {
-                JOptionPane.showMessageDialog(this, "Vui lòng chọn phòng muốn đổi!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn phòng muốn đổi!", "Thông báo",
+                        JOptionPane.WARNING_MESSAGE);
                 return;
             }
             refreshSummary();
@@ -390,7 +387,7 @@ public class DoiPhongPanel extends JPanel {
 
     // ── Booked table ──────────────────────────────────────────────────────────
     private JPanel buildBookedTable() {
-        String[] cols = {"Số phòng", "Loại phòng", "Tầng", "Giá / ngày"};
+        String[] cols = { "Số phòng", "Loại phòng", "Tầng", "Giá / ngày" };
         bookedModel = new DefaultTableModel(cols, 0) {
             @Override
             public boolean isCellEditable(int r, int c) {
@@ -403,7 +400,8 @@ public class DoiPhongPanel extends JPanel {
                 int row = bookedTable.getSelectedRow();
                 if (row >= 0 && row < bookedRooms.size()) {
                     selectedBooked = row;
-                    if (searchField != null) searchField.setText(bookedRooms.get(row).id);
+                    if (searchField != null)
+                        searchField.setText(bookedRooms.get(row).id);
                     refreshSummary();
                 }
             }
@@ -421,14 +419,14 @@ public class DoiPhongPanel extends JPanel {
     private void refreshBookedTable() {
         bookedModel.setRowCount(0);
         for (Room r : bookedRooms)
-            bookedModel.addRow(new Object[]{r.id, r.type, r.floor, r.newPrice});
+            bookedModel.addRow(new Object[] { r.id, r.type, r.floor, r.newPrice });
         if (!bookedRooms.isEmpty() && selectedBooked < bookedRooms.size())
             bookedTable.getSelectionModel().setSelectionInterval(selectedBooked, selectedBooked);
     }
 
     // ── Available table ───────────────────────────────────────────────────────
     private JPanel buildAvailTable() {
-        String[] cols = {"Số phòng", "Loại phòng", "Tầng", "Giá / ngày"};
+        String[] cols = { "Số phòng", "Loại phòng", "Tầng", "Giá / ngày" };
         availModel = new DefaultTableModel(cols, 0) {
             @Override
             public boolean isCellEditable(int r, int c) {
@@ -458,7 +456,7 @@ public class DoiPhongPanel extends JPanel {
     private void refreshAvailTable() {
         availModel.setRowCount(0);
         for (Room r : availRooms)
-            availModel.addRow(new Object[]{r.id, r.type, r.floor, r.newPrice});
+            availModel.addRow(new Object[] { r.id, r.type, r.floor, r.newPrice });
         if (!availRooms.isEmpty() && selectedAvail < availRooms.size())
             availTable.getSelectionModel().setSelectionInterval(selectedAvail, selectedAvail);
     }
@@ -524,7 +522,7 @@ public class DoiPhongPanel extends JPanel {
     }
 
     // =========================================================================
-    //  RIGHT PANEL — summary
+    // RIGHT PANEL — summary
     // =========================================================================
     private JPanel buildRight() {
         JPanel right = new JPanel(new GridBagLayout());
@@ -787,7 +785,8 @@ public class DoiPhongPanel extends JPanel {
         btn.addActionListener(e -> {
             if (selectedBooked < 0 || selectedBooked >= bookedRooms.size()
                     || selectedAvail < 0 || selectedAvail >= availRooms.size()) {
-                JOptionPane.showMessageDialog(this, "Vui lòng chọn đủ hai phòng!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn đủ hai phòng!", "Thông báo",
+                        JOptionPane.WARNING_MESSAGE);
                 return;
             }
             Room from = bookedRooms.get(selectedBooked);
@@ -814,8 +813,7 @@ public class DoiPhongPanel extends JPanel {
                     DoiPhongRequestDTO dto = new DoiPhongRequestDTO(
                             maPDP,
                             from.id,
-                            to.id
-                    );
+                            to.id);
 
                     Request rs = Request.builder()
                             .commandType(CommandType.DOI_PHONG)
@@ -845,7 +843,8 @@ public class DoiPhongPanel extends JPanel {
     // ── refreshSummary ────────────────────────────────────────────────────────
     private void refreshSummary() {
         Container parent = summaryPanel.getParent();
-        if (parent == null) return;
+        if (parent == null)
+            return;
         JPanel right = (JPanel) parent;
         right.removeAll();
 
@@ -889,7 +888,7 @@ public class DoiPhongPanel extends JPanel {
     }
 
     // =========================================================================
-    //  HELPERS
+    // HELPERS
     // =========================================================================
     private Room safeGet(List<Room> list, int idx) {
         return (idx >= 0 && idx < list.size()) ? list.get(idx) : null;

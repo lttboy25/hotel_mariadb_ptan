@@ -8,7 +8,6 @@ import iuh.network.ClientConnection;
 import iuh.network.CommandType;
 import iuh.network.Request;
 import iuh.network.Response;
-import iuh.service.impl.ChiTietPhieuDatPhongServiceImpl;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -80,9 +79,6 @@ public class GiaHanPhongPanel extends JPanel {
     private DefaultTableModel roomTableModel;
     private JTable roomTable;
     private JPanel extendRowsPanel;
-
-    // ── Service ───────────────────────────────────────────────────────────────
-    private final ChiTietPhieuDatPhongServiceImpl service = new ChiTietPhieuDatPhongServiceImpl();
 
     // ── Inner model mỗi dòng bên phải ────────────────────────────────────────
     private static class RowModel {

@@ -79,7 +79,6 @@ public class VictoryaDashboard extends JFrame {
         contentCards.add(new TaiKhoanPanel(), "taikhoan");
         contentCards.add(new QuanLyKhachHangPanel(), "quanlykhachhang");
         contentCards.add(new QuanLyNhanVienPanel(), "quanlynhanvien");
-        contentCards.add(new QuanLyDichVuPanel(), "quanlydichvu");
         contentCards.add(new QuanLyHoaDonPanel(), "quanlyhoadon");
         contentCards.add(new QuanLyKhuyenMaiPanel(), "quanlykhuyenmai");
         contentCards.add(new GiaHanPhongPanel(), "giahanphong");
@@ -132,7 +131,6 @@ public class VictoryaDashboard extends JFrame {
         sidebar.add(navRow(NavIcon.TAI_KHOAN, "Tài Khoản", 0, false, "taikhoan"));
         sidebar.add(navRow(NavIcon.KHACH_HANG, "Quản lý Khách hàng", 0, false, "quanlykhachhang"));
         sidebar.add(navRow(NavIcon.NHAN_VIEN, "Quản lý nhân viên", 0, false, "quanlynhanvien"));
-        sidebar.add(navRow(NavIcon.DICH_VU, "Quản lý dịch vụ", 0, false, "quanlydichvu"));
         sidebar.add(navRow(NavIcon.HOA_DON, "Quản lý hóa đơn", 0, false, "quanlyhoadon"));
         sidebar.add(navRow(NavIcon.HOA_DON, "Quản lý phòng", 0, false, "quanlyphong"));
         sidebar.add(navRow(NavIcon.HOA_DON, "Thanh toán", 0, false, "thanhtoan"));
