@@ -296,4 +296,20 @@ public class ChitietPhieuDatPhongDaoImpl extends AbstractGenericDaoImpl<ChiTietP
                     .getResultList();
         });
     }
+
+    public boolean traPhong(ChiTietPhieuDatPhong ct) {
+        if (ct == null) return false;
+
+        return doInTransaction(em -> {
+            int rows = em.createQuery("""
+                                UPDATE ChiTietPhieuDatPhong ctpdp
+                                SET ctpdp.thoiGianTraPhong = :now
+                                WHERE ctpdp.id = :id
+                            """)
+                    .setParameter("now", LocalDateTime.now())
+                    .setParameter("id", ct.getId())
+                    .executeUpdate();
+            return rows > 0;
+        });
+    }
 }

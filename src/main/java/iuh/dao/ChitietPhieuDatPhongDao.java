@@ -52,4 +52,6 @@ public interface ChitietPhieuDatPhongDao {
     boolean isRoomAvailableForExtension(Long chiTietId, LocalDateTime newEndTime);
 
     List<ChiTietPhieuDatPhong> searchPhongDangThue(String keyword);
+
+    boolean traPhong(ChiTietPhieuDatPhong ds);
 }

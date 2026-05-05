@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import iuh.dao.impl.ChiTietHoaDonDaoImpl;
+import iuh.dao.impl.ChitietPhieuDatPhongDaoImpl;
 import iuh.dao.impl.HoaDonDaoImpl;
 import iuh.dto.*;
 import iuh.entity.*;
@@ -21,6 +22,7 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
     private PhieuDatPhongServiceImpl phieuDatPhongServiceImpl = new PhieuDatPhongServiceImpl();
     private NhanVienServiceImpl nhanVienServiceImpl = new NhanVienServiceImpl();
     private KhuyenMaiServiceImpl khuyenMaiServiceImpl = new KhuyenMaiServiceImpl();
+    private ChitietPhieuDatPhongDaoImpl chitietPhieuDatPhongDao = new ChitietPhieuDatPhongDaoImpl();
 
     @Override
     public List<ChiTietPhieuDatPhongDTO> getDanhSachPhieuDatPhongDeThanhToan(String cccd) {
@@ -61,6 +63,8 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
         for (ChiTietPhieuDatPhong ctpdp : listThanhToan) {
             if (TrangThaiChiTietPhieuDatPhong.DA_THANH_TOAN.equals(ctpdp.getTrangThai())) {
                 throw new RuntimeException("Phòng " + ctpdp.getPhong().getMaPhong() + " đã thanh toán!");
+            } else {
+
             }
         }
 
@@ -112,12 +116,16 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
                     TrangThaiChiTietPhieuDatPhong.DA_THANH_TOAN))
                 throw new RuntimeException("Lỗi cập nhật chi tiết phiếu phòng " + cthd.getPhong().getMaPhong());
 
+            if (!chitietPhieuDatPhongDao.traPhong(ctpdp))
+                throw new RuntimeException("Lỗi cập nhật thời gian trả phòng " + cthd.getPhong().getMaPhong());
+
             if (!phongServiceImpl.updateStatusRoom(
                     cthd.getPhong().getMaPhong(),
                     TrangThaiPhong.SAN_SANG,
                     TinhTrangPhong.TRONG))
                 throw new RuntimeException("Lỗi cập nhật trạng thái phòng " + cthd.getPhong().getMaPhong());
         }
+
 
         // ── 6. Cập nhật trạng thái PhieuDatPhong nếu thanh toán toàn bộ ──
         boolean thanhToanToanBo = chiTietPhieuDatPhongServiceImpl
