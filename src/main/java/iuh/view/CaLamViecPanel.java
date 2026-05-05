@@ -288,17 +288,23 @@ public class CaLamViecPanel extends JPanel {
                 .build();
         Response response = clientConnection.sendRequest(request);
         List<CaLamViecNhanVienDTO> history = (List<CaLamViecNhanVienDTO>) response.getObject();
-        for (CaLamViecNhanVienDTO dto : history) {
-            tableModel.addRow(new Object[] {
-                    dto.getMaCaLamViec(),
-                    dto.getTenNhanVien(),
-                    dto.getNgay().format(FMT_DATE),
-                    String.format("%,.0f", (double) dto.getTienMoCa()),
-                    String.format("%,.0f", dto.getTienKetCa()),
-                    String.format("%,.0f", dto.getTongThu()),
-                    String.format("%,.0f", dto.getTongChi()),
-                    dto.getTrangThai()
-            });
+
+        if (history != null) {
+            for (CaLamViecNhanVienDTO dto : history) {
+                // Chỉ hiển thị ca đã kết thúc
+                if ("DA_KET_THUC".equals(dto.getTrangThai())) {
+                    tableModel.addRow(new Object[] {
+                            dto.getMaCaLamViec(),
+                            dto.getTenNhanVien(),
+                            dto.getNgay().format(FMT_DATE),
+                            String.format("%,.0f", (double) dto.getTienMoCa()),
+                            String.format("%,.0f", dto.getTienKetCa()),
+                            String.format("%,.0f", dto.getTongThu()),
+                            String.format("%,.0f", dto.getTongChi()),
+                            dto.getTrangThai()
+                    });
+                }
+            }
         }
     }
 

@@ -8,7 +8,7 @@ import jakarta.persistence.Table;
 import lombok.*;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -26,8 +26,18 @@ public class Ca implements Serializable {
     @EqualsAndHashCode.Include
     @jakarta.persistence.Column(name = "maCa", nullable = false, length = 20)
     private String maCa;
-    private LocalDate ngayBatDau;
-    private LocalDate ngayKetThuc;
+
+    @jakarta.persistence.Column(name = "tenCa", length = 50)
+    private String tenCa;
+
+    @jakarta.persistence.Column(name = "gioBatDau")
+    private LocalTime gioBatDau;
+
+    @jakarta.persistence.Column(name = "gioKetThuc")
+    private LocalTime gioKetThuc;
+
+    @jakarta.persistence.Column(name = "moTa", length = 255)
+    private String moTa;
 
     @OneToMany(mappedBy = "ca")
     @JsonIgnore

@@ -82,7 +82,7 @@ public class CaLamViecNhanVienServiceImpl implements CaLamViecNhanVienService {
 
     @Override
     public List<CaLamViecNhanVienDTO> getShiftHistory(String maNhanVien) {
-        return caLamViecNhanVienDao.findByNhanVien(maNhanVien).stream()
+        return caLamViecNhanVienDao.findCompletedShifts(maNhanVien).stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }

@@ -3,7 +3,7 @@ package iuh.dto;
 import lombok.*;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,6 +13,8 @@ import java.time.LocalDate;
 @ToString
 public class CaDTO implements Serializable {
     private String maCa;
-    private LocalDate ngayBatDau;
-    private LocalDate ngayKetThuc;
+    private String tenCa;
+    private LocalTime gioBatDau;
+    private LocalTime gioKetThuc;
+    private String moTa;
 }

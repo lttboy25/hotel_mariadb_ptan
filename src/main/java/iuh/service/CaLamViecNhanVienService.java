@@ -37,8 +37,10 @@ public interface CaLamViecNhanVienService {
         if (entity == null) return null;
         return CaDTO.builder()
                 .maCa(entity.getMaCa())
-                .ngayBatDau(entity.getNgayBatDau())
-                .ngayKetThuc(entity.getNgayKetThuc())
+                .tenCa(entity.getTenCa())
+                .gioBatDau(entity.getGioBatDau())
+                .gioKetThuc(entity.getGioKetThuc())
+                .moTa(entity.getMoTa())
                 .build();
     }
 }

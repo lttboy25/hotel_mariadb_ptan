@@ -33,4 +33,13 @@ public class CaLamViecNhanVienDaoImpl extends AbstractGenericDaoImpl<CaLamViecNh
             }
         });
     }
+
+    @Override
+    public List<CaLamViecNhanVien> findCompletedShifts(String maNhanVien) {
+        return doInTransaction(em -> {
+            return em.createQuery("SELECT c FROM CaLamViecNhanVien c WHERE c.nhanVien.maNhanVien = :maNhanVien AND c.trangThai = 'DA_KET_THUC' ORDER BY c.ngay DESC", CaLamViecNhanVien.class)
+                    .setParameter("maNhanVien", maNhanVien)
+                    .getResultList();
+        });
+    }
 }

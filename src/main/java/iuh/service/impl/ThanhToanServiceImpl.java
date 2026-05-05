@@ -102,8 +102,13 @@ public class ThanhToanServiceImpl implements iuh.service.ThanhToanService {
             if (chiTietHoaDonDao.save(Mapper.map(cthd)) == null)
                 throw new RuntimeException("Lỗi lưu chi tiết hóa đơn phòng " + cthd.getPhong().getMaPhong());
 
-            if (!chiTietPhieuDatPhongServiceImpl.updateTrangThaiByMaPhong(
-                    cthd.getPhong().getMaPhong(),
+
+            ChiTietPhieuDatPhong ctpdp = cthd.getChiTietPhieuDatPhong();
+            if (ctpdp == null || ctpdp.getId() == null)
+                throw new RuntimeException("Lỗi: Chi tiết phiếu đặt phòng không có ID");
+
+            if (!chiTietPhieuDatPhongServiceImpl.updateStatusDetail(
+                    ctpdp.getId(),
                     TrangThaiChiTietPhieuDatPhong.DA_THANH_TOAN))
                 throw new RuntimeException("Lỗi cập nhật chi tiết phiếu phòng " + cthd.getPhong().getMaPhong());
 
