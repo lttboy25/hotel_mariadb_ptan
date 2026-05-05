@@ -7,14 +7,9 @@ public enum CommandType {
     GET_ALL_TANG,
     GET_ALL_LOAI_PHONG,
     GET_ROOMS_BY_KEYWORD,
-
     CREATE_PHONG,
-
     UPDATE_PHONG,
-
     DELETE_PHONG,
-
-    // ===== ĐẶT PHÒNG =====
     GET_PHONG_TRONG,
     LAY_MA_PHIEU_DAT_PHONG,
     DAT_PHONG,
